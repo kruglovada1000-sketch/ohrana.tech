@@ -68,14 +68,16 @@ def build_legacy_page(slug: str, source_name: str) -> None:
     chat = read_partial("chat.html")
     page_head = page_head_from_legacy(html)
 
+    # Page-specific CSS comes first; the homepage-derived shared shell comes last
+    # so header/footer/buttons/navigation keep one visual standard across pages.
     out = f'''<!DOCTYPE html>
 <html lang="ru" class="no-js">
 <head>
 {head_common}
 {page_head}
 {organization}
-<link rel="stylesheet" href="/assets/css/site-shell.css">
 <link rel="stylesheet" href="/assets/css/{slug}.css">
+<link rel="stylesheet" href="/assets/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
 <div id="progress"></div>
@@ -95,20 +97,52 @@ def build_legacy_page(slug: str, source_name: str) -> None:
     out_path.write_text(out, encoding="utf-8")
 
 
-def validate_html(path: Path) -> None:
+def validate_html(path: Path, *, require_prices_nav: bool = True) -> None:
     html = path.read_text(encoding="utf-8")
-    required = ["<title>", "rel=\"canonical\"", "<h1", "application/ld+json", "/assets/js/site.js"]
+    required = [
+        "<title>",
+        "rel=\"canonical\"",
+        "<h1",
+        "application/ld+json",
+        "/assets/js/site.js",
+    ]
+    if require_prices_nav:
+        required.append('href="/ceny/"')
     missing = [token for token in required if token not in html]
     if missing:
         raise RuntimeError(f"{path}: missing {missing}")
 
+    if len(re.findall(r"<header\b", html, re.I)) != 1:
+        raise RuntimeError(f"{path}: expected exactly one <header>")
+    if len(re.findall(r"<footer\b", html, re.I)) != 1:
+        raise RuntimeError(f"{path}: expected exactly one <footer>")
+    if re.search(r"<style\b", html, re.I):
+        raise RuntimeError(f"{path}: inline <style> remained after build")
+    if "{{site." in html:
+        raise RuntimeError(f"{path}: unresolved site template variable")
+
+
+def validate_pricing_registry() -> None:
+    pricing = json.loads((SRC / "pricing.json").read_text(encoding="utf-8"))
+    ids = {item["id"] for item in pricing["services"]}
+    if len(ids) != len(pricing["services"]):
+        raise RuntimeError("pricing.json: duplicate service ids")
+    for obj in pricing["objects"]:
+        unknown = [service_id for service_id in obj["recommended"] if service_id not in ids]
+        if unknown:
+            raise RuntimeError(f"pricing.json: {obj['name']} references unknown services {unknown}")
+        url = obj.get("url", "")
+        if not url.startswith("/"):
+            raise RuntimeError(f"pricing.json: invalid URL for {obj['name']}: {url}")
+
 
 def main() -> None:
     # First migrated commercial page. Add other legacy snapshots here after review.
+    validate_pricing_registry()
     build_legacy_page("ohrana-skladov", "ohrana-skladov.source.html")
     validate_html(ROOT / "ohrana-skladov" / "index.html")
     validate_html(ROOT / "ceny" / "index.html")
-    print("Built: /ohrana-skladov/; validated: /ceny/")
+    print("Built and validated: /ohrana-skladov/; validated: /ceny/; pricing registry OK")
 
 
 if __name__ == "__main__":
