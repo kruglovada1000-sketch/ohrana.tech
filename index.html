@@ -165,27 +165,27 @@ h2 em{font-style:italic;background:var(--gold-grad);-webkit-background-clip:text
 /* ============ КНОПКА «ОСНОВНОЙ САЙТ» (золотая, со стрелками) ============ */
 .hd-main-site{
   position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  display:inline-flex;align-items:center;justify-content:center;gap:12px;
-  background:var(--gold-grad);
-  color:#171003 !important;
-  border:2px solid #A97F2F;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(115deg,#CDB77F 0%,#B89A5D 48%,#80652F 100%);
+  color:#17130B !important;
+  border:1px solid rgba(169,127,47,.72);
   border-radius:100px;
-  padding:14px 36px;
-  font-weight:800;font-size:1rem;letter-spacing:.06em;
+  padding:11px 28px;
+  font-weight:800;font-size:.88rem;letter-spacing:.055em;
   white-space:nowrap;text-decoration:none;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 10px 30px rgba(232,200,122,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 6px 18px rgba(184,154,93,.16);
   transition:transform .35s var(--ease), box-shadow .35s var(--ease);
   z-index:5;
 }
 .hd-main-site:hover{
-  transform:translate(-50%,-50%) translateY(-3px);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 16px 40px rgba(232,200,122,.42);
+  transform:translate(-50%,-50%) translateY(-2px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 10px 24px rgba(184,154,93,.22);
 }
 .hd-main-site:active{transform:translate(-50%,-50%) scale(.97)}
 .hd-main-site .arw{
-  flex:none;width:20px;height:20px;
-  color:#A97F2F;
-  filter:drop-shadow(0 -1px 0 rgba(255,248,225,.95)) drop-shadow(0 2px 1px rgba(120,85,20,.75));
+  flex:none;width:17px;height:17px;
+  color:#80652F;
+  filter:drop-shadow(0 1px 1px rgba(30,22,8,.35));
   transition:transform .35s var(--ease);
 }
 .hd-main-site:hover .arw-l{transform:translateX(-5px)}
