@@ -11,10 +11,10 @@
     {"id":"event-standard","name":"Охрана мероприятия — стандарт","price_from":8000,"unit":"4 часа","url":"/ohrana-meropriyatiy/","note":"до 100 гостей"},
     {"id":"event-premium","name":"Охрана мероприятия — премиум","price_from":14000,"unit":"4 часа","url":"/ohrana-meropriyatiy/","note":"до 300 гостей"},
     {"id":"event-vip","name":"Охрана мероприятия — VIP","price_from":25000,"unit":"4 часа","url":"/ohrana-meropriyatiy/","note":"индивидуальный состав"},
-    {"id":"cargo-unarmed","name":"Невооружённое сопровождение груза","price_from":110,"unit":"час","url":"/soprovozhdenie-gruzov/","note":"охранник со спецсредствами"},
-    {"id":"cargo-armed","name":"Вооружённое сопровождение груза","price_from":10000,"unit":"сутки","url":"/soprovozhdenie-gruzov/","note":"охранник 5–6 разряда"},
-    {"id":"cargo-car","name":"Автомобиль прикрытия","price_from":18000,"unit":"сутки","url":"/soprovozhdenie-gruzov/","note":"отдельный экипаж"},
-    {"id":"cargo-route","name":"Маршрутное сопровождение","price_from":25000,"unit":"маршрут","url":"/soprovozhdenie-gruzov/","note":"разработка и контроль маршрута"}
+    {"id":"cargo-unarmed","name":"Невооружённое сопровождение груза","price_from":110,"unit":"час","url":"/stati/soprovozhdenie-gruzov.html","note":"охранник со спецсредствами"},
+    {"id":"cargo-armed","name":"Вооружённое сопровождение груза","price_from":10000,"unit":"сутки","url":"/stati/soprovozhdenie-gruzov.html","note":"охранник 5–6 разряда"},
+    {"id":"cargo-car","name":"Автомобиль прикрытия","price_from":18000,"unit":"сутки","url":"/stati/soprovozhdenie-gruzov.html","note":"отдельный экипаж"},
+    {"id":"cargo-route","name":"Маршрутное сопровождение","price_from":25000,"unit":"маршрут","url":"/stati/soprovozhdenie-gruzov.html","note":"разработка и контроль маршрута"}
   ],
   "objects": [
     {"name":"Склад / логистический центр","url":"/ohrana-skladov/","recommended":["physical-post","pult-chop"],"display_from":190000,"display_unit":"месяц","note":"КПП, патрулирование, отгрузка, периметр; пультовая охрана может рассчитываться отдельно"},
@@ -33,6 +33,6 @@
     {"name":"Школа / образовательный объект","url":"/ohrana-shkol/","recommended":["physical-post","pult-chop"],"display_from":null,"display_unit":null,"note":"пропускной режим и требования объекта"},
     {"name":"Дом / коттедж","url":"/ohrana-domov-i-kottedzhey/","recommended":["pult-chop","mobile-patrol"],"display_from":5000,"display_unit":"месяц","note":"базовый ориентир для пультовой охраны; оборудование рассчитывается отдельно"},
     {"name":"Мероприятие","url":"/ohrana-meropriyatiy/","recommended":["event-standard","event-premium","event-vip"],"display_from":8000,"display_unit":"4 часа","note":"зависит от формата, числа гостей, площадки и состава группы"},
-    {"name":"Сопровождение груза","url":"/soprovozhdenie-gruzov/","recommended":["cargo-unarmed","cargo-armed","cargo-car","cargo-route"],"display_from":110,"display_unit":"час","note":"вариант тарифа зависит от ценности груза, маршрута и состава сопровождения"}
+    {"name":"Сопровождение груза","url":"/stati/soprovozhdenie-gruzov.html","recommended":["cargo-unarmed","cargo-armed","cargo-car","cargo-route"],"display_from":110,"display_unit":"час","note":"вариант тарифа зависит от ценности груза, маршрута и состава сопровождения"}
   ]
 }
