@@ -1,0 +1,74 @@
+name: Build shared site templates
+
+on:
+  push:
+    branches:
+      - refactor/shared-site-template
+    paths:
+      - "site-src/**"
+      - "scripts/build_site.py"
+      - ".github/workflows/build-shared-site.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "site-src/**"
+      - "scripts/build_site.py"
+      - "ceny/**"
+      - "assets/**"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build static pages
+        run: python scripts/build_site.py
+
+      - name: Validate generated warehouse page
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          html = Path('ohrana-skladov/index.html').read_text(encoding='utf-8')
+          assert html.count('<header') == 1
+          assert html.count('<footer') == 1
+          assert 'href="/ceny/"' in html
+          assert '/assets/css/ohrana-skladov.css' in html
+          assert '/assets/css/site-shell.css' in html
+          assert html.index('/assets/css/ohrana-skladov.css') < html.index('/assets/css/site-shell.css')
+          assert '<style' not in html.lower()
+          assert re.search(r'<h1\b', html, re.I)
+          assert 'https://ohrana.tech/ohrana-skladov/' in html
+          assert 'application/ld+json' in html
+          print('Warehouse template validation OK')
+          PY
+
+      - name: Validate repository diff
+        run: git diff --check
+
+      - name: Commit generated files on refactor branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/refactor/shared-site-template'
+        run: |
+          if git diff --quiet -- ohrana-skladov/index.html assets/css/ohrana-skladov.css; then
+            echo "Generated files are already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ohrana-skladov/index.html assets/css/ohrana-skladov.css
+          git commit -m "build: generate warehouse page from shared template"
+          git push
