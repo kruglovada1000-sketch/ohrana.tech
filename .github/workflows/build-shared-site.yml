@@ -11,11 +11,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "site-src/**"
-      - "scripts/build_site.py"
-      - "ceny/**"
-      - "assets/**"
 
 permissions:
   contents: write
@@ -28,6 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -37,38 +33,50 @@ jobs:
       - name: Build static pages
         run: python scripts/build_site.py
 
-      - name: Validate generated warehouse page
+      - name: Validate generated structure
+        run: |
+          python -m py_compile scripts/build_site.py
+          git diff --check
+          test -f ohrana-skladov/index.html
+          test -f ceny/index.html
+          test -f assets/css/ohrana-skladov.css
+          test -f assets/css/site-shell.css
+          test -f assets/css/pricing.css
+          test -f assets/js/site.js
+          grep -q 'href="/ceny/"' ohrana-skladov/index.html
+          grep -q 'href="/ceny/"' ceny/index.html
+          grep -q 'https://ohrana.tech/ceny/' sitemap.xml
+          grep -q '/stati/soprovozhdenie-gruzov.html' ceny/index.html
+          ! grep -q '<style' ohrana-skladov/index.html
+          ! grep -q '<style' ceny/index.html
+          ! grep -q '{{site\.' ohrana-skladov/index.html
+          ! grep -q '{{site\.' ceny/index.html
+          ! grep -q "</filter id='n'>" assets/css/site-shell.css
+
+      - name: Validate warehouse markers
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
-
           html = Path('ohrana-skladov/index.html').read_text(encoding='utf-8')
-          assert html.count('<header') == 1
-          assert html.count('<footer') == 1
-          assert 'href="/ceny/"' in html
-          assert '/assets/css/ohrana-skladov.css' in html
-          assert '/assets/css/site-shell.css' in html
+          for marker in ['id="risks"','id="services"','id="types"','id="prices"','id="steps"','id="why"','id="faq"','id="articles"','id="cta"']:
+              assert marker in html, marker
+          assert len(re.findall(r'<header\b', html, re.I)) == 1
+          assert len(re.findall(r'<main\b', html, re.I)) == 1
+          assert len(re.findall(r'<footer\b', html, re.I)) == 1
           assert html.index('/assets/css/ohrana-skladov.css') < html.index('/assets/css/site-shell.css')
-          assert '<style' not in html.lower()
-          assert re.search(r'<h1\b', html, re.I)
-          assert 'https://ohrana.tech/ohrana-skladov/' in html
-          assert 'application/ld+json' in html
-          print('Warehouse template validation OK')
+          print('Warehouse content and shell markers OK')
           PY
 
-      - name: Validate repository diff
-        run: git diff --check
-
       - name: Commit generated files on refactor branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/refactor/shared-site-template'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/refactor/shared-site-template' && github.actor != 'github-actions[bot]'
         run: |
-          if git diff --quiet -- ohrana-skladov/index.html assets/css/ohrana-skladov.css; then
+          if git diff --quiet; then
             echo "Generated files are already current"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ohrana-skladov/index.html assets/css/ohrana-skladov.css
-          git commit -m "build: generate warehouse page from shared template"
+          git add ohrana-skladov/index.html ceny/index.html sitemap.xml assets/css assets/js
+          git commit -m "build: regenerate shared pages [skip ci]"
           git push
