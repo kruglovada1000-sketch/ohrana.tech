@@ -41,13 +41,14 @@ jobs:
         run: |
           python scripts/build_site.py
           python scripts/build_object_pages.py
+          python scripts/build_custom_pages.py
           python scripts/normalize_generated_links.py
           python scripts/normalize_jsonld_entities.py
           python scripts/normalize_sitemap.py
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/audit_migration_candidates.py scripts/normalize_generated_links.py scripts/normalize_jsonld_entities.py scripts/normalize_sitemap.py scripts/validate_shared_shell.py scripts/validate_sitemap.py scripts/validate_generated_html.py
+          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/build_custom_pages.py scripts/audit_migration_candidates.py scripts/normalize_generated_links.py scripts/normalize_jsonld_entities.py scripts/normalize_sitemap.py scripts/validate_shared_shell.py scripts/validate_custom_generated.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           python - <<'PY'
           from pathlib import Path
@@ -75,6 +76,11 @@ jobs:
               assert f'/assets/css/{slug}.css' in html, slug
               assert html.index(f'/assets/css/{slug}.css') < html.index('/assets/css/site-shell.css'), slug
 
+          custom = json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
+          custom_slugs = [page['slug'] for page in custom]
+          assert len(custom_slugs) == len(set(custom_slugs)), 'duplicate custom slug'
+          assert not set(slugs).intersection(custom_slugs), 'page present in regular and custom manifests'
+
           prices = Path('ceny/index.html').read_text(encoding='utf-8')
           assert 'href="/ceny/"' in prices
           assert '<style' not in prices.lower()
@@ -82,11 +88,14 @@ jobs:
           assert 'https://ohrana.tech/ceny/' in Path('sitemap.xml').read_text(encoding='utf-8')
           assert '/stati/soprovozhdenie-gruzov.html' in prices
           assert "</filter id='n'>" not in Path('assets/css/site-shell.css').read_text(encoding='utf-8')
-          print(f'Generated structure OK: {len(slugs)} object pages + prices')
+          print(f'Generated structure OK: {len(slugs)} regular object pages + {len(custom_slugs)} custom pages + prices')
           PY
 
       - name: Validate shared design shell
         run: python scripts/validate_shared_shell.py
+
+      - name: Validate custom interactive pages
+        run: python scripts/validate_custom_generated.py
 
       - name: Validate warehouse content markers
         run: |
@@ -118,7 +127,8 @@ jobs:
           import subprocess
           from pathlib import Path
 
-          manifest = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          regular = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          custom = json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
           paths = [
               'ohrana-skladov/index.html',
               'ceny/index.html',
@@ -126,14 +136,15 @@ jobs:
               'assets/css',
               'assets/js',
           ]
-          paths.extend(f"{page['slug']}/index.html" for page in manifest)
+          paths.extend(f"{page['slug']}/index.html" for page in regular)
+          paths.extend(f"{page['slug']}/index.html" for page in custom)
           subprocess.run(['git', 'add', '--', *paths], check=True)
           PY
           if git diff --cached --quiet; then
             echo "No generated changes to commit"
             exit 0
           fi
-          git commit -m "build: regenerate shared object batch [skip ci]"
+          git commit -m "build: regenerate shared site batch [skip ci]"
           if git push; then
             exit 0
           fi
