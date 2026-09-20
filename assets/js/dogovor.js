@@ -1,22 +1,6 @@
 (function(){
 'use strict';
 var RM=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-var FINE=window.matchMedia&&window.matchMedia('(hover:hover) and (pointer:fine)').matches;
-
-/* Page-specific flip cards: hover is CSS; touch/keyboard needs JS. */
-if(!FINE){
-  document.querySelectorAll('.flip').forEach(function(f){
-    f.addEventListener('click',function(e){
-      if(e.target.closest('a'))return;
-      f.classList.toggle('flipped');
-    });
-  });
-}
-document.querySelectorAll('.flip').forEach(function(f){
-  f.addEventListener('keydown',function(e){
-    if(e.key==='Enter'||e.key===' '){e.preventDefault();f.classList.toggle('flipped');}
-  });
-});
 
 /* Contract table-of-contents scroll spy. */
 (function(){
