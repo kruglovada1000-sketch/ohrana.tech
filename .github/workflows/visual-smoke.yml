@@ -1,0 +1,90 @@
+name: Visual browser QA
+
+on:
+  push:
+    branches:
+      - refactor/shared-site-template
+    paths:
+      - "**/*.html"
+      - "assets/**"
+      - "css/**"
+      - "site-src/**"
+      - "scripts/visual-smoke.mjs"
+      - ".github/workflows/visual-smoke.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**/*.html"
+      - "assets/**"
+      - "css/**"
+      - "site-src/**"
+      - "scripts/visual-smoke.mjs"
+      - ".github/workflows/visual-smoke.yml"
+
+concurrency:
+  group: visual-qa-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build current branch output
+        run: |
+          python scripts/build_site.py
+          python scripts/build_object_pages.py
+          python scripts/build_custom_pages.py
+          python scripts/prepare_document_pages.py
+          python scripts/build_article_pages.py
+          python scripts/normalize_generated_links.py
+          python scripts/normalize_jsonld_entities.py
+          python scripts/normalize_counter_values.py
+          python scripts/normalize_sitemap.py
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/ohrana-http.log 2>&1 &
+          echo $! > /tmp/ohrana-http.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/ohrana-http.log
+          exit 1
+
+      - name: Run desktop and mobile browser smoke
+        run: node scripts/visual-smoke.mjs
+
+      - name: Upload visual QA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-qa-${{ github.sha }}
+          path: |
+            visual-qa/
+            /tmp/ohrana-http.log
+          if-no-files-found: warn
+          retention-days: 7

@@ -1,10 +1,14 @@
 # robots.txt for ohrana.tech
-# Allow indexing of useful content, block administrative and system files
+# Public commercial and editorial pages are crawlable by search engines and AI search crawlers.
 
+# ChatGPT search/discovery crawler. This is separate from model-training controls.
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /site-src/
+
+# All other compliant crawlers, including Google and Yandex.
 User-agent: *
 Crawl-delay: 2
-
-# ===== ALLOWED SECTIONS (all useful content) =====
 Allow: /
 Allow: /fizicheskaya-ohrana/
 Allow: /ohrana-fizicheskih-lic/
@@ -17,13 +21,16 @@ Allow: /stati/
 Allow: /images/
 Allow: /css/
 Allow: /js/
+Allow: /assets/
 Allow: /favicon.ico
 Allow: /manifest.json
 Allow: /android-chrome-*.png
 Allow: /apple-touch-icon*.png
 Allow: /favicon-*.png
 
-# ===== DISALLOWED SYSTEM AND ADMIN FOLDERS =====
+# Internal/source/system paths must not be indexed.
+Disallow: /site-src/
+Disallow: /.github/
 Disallow: /admin/
 Disallow: /administrator/
 Disallow: /wp-admin/
@@ -42,13 +49,11 @@ Disallow: /node_modules/
 Disallow: /system/
 Disallow: /api/
 Disallow: /ajax/
-Disallow: /assets/
 Disallow: /storage/
 Disallow: /cache/
 Disallow: /temp/
 Disallow: /tests/
 Disallow: /src/
-Disallow: /public/
 Disallow: /resources/
 Disallow: /database/
 Disallow: /migrations/
@@ -70,5 +75,4 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-config.php
 
-# ===== SITEMAP LOCATION =====
 Sitemap: https://ohrana.tech/sitemap.xml

@@ -1,21 +1,57 @@
-# ЧОО «Рускорпорация» — охранная компания (ЧОП) с 2018 года
+# ЧОО «Рускорпорация» — охранные услуги
 
-Частная охранная организация. Лицензия Росгвардии № Л056-00106-59/00033018.
-ИНН 5902050810, ОГРН 1185958064665. Тел: +7 (925) 047-42-25 (24/7).
-Email: fizohrana@ruscor24.ru
+Официальный сайт: https://ohrana.tech/
 
-## Регионы
-Москва и Московская область (ГБР 10–15 мин), Пермь, Сочи, Санкт-Петербург
+Частная охранная организация. Оказывает услуги физической, пультовой и комплексной охраны объектов, охраны физических лиц и мероприятий, а также сопровождения грузов.
 
-## Услуги
-- Охрана объектов: офисы, магазины, ТЦ, склады, заводы, стройки, автосалоны, парковки, школы, ЖК, частные дома, мероприятия
-- Пультовая охрана с ГБР от 5 000 ₽/мес
-- Охрана мероприятий: концерты, корпоративы (5000+ событий)
-- Посты от 190 000 ₽/мес, физическая охрана
+## Проверяемые сведения
 
-## Ключевые страницы
-- Главная: https://ohrana.tech/
-- Физохрана: https://ohrana.tech/fizicheskaya-ohrana/
+- Лицензия Росгвардии: Л056-00106-59/00033018 от 29.11.2018
+- ИНН: 5902050810
+- КПП: 590501001
+- ОГРН: 1185958064665
+- Телефон: +7 (925) 047-42-25
+- Email: fizohrana@ruscor24.ru
+
+## Основные услуги
+
+- Физическая охрана объектов: https://ohrana.tech/fizicheskaya-ohrana/
 - Пультовая охрана: https://ohrana.tech/ohrana-pult/
-- Контакты: https://ohrana.tech/kontakty/
-- Все услуги: см. sitemap https://ohrana.tech/sitemap.xml
+- Охрана физических лиц: https://ohrana.tech/ohrana-fizicheskih-lic/
+- Охрана юридических лиц: https://ohrana.tech/ohrana-yuridicheskih-lic/
+- Охрана мероприятий: https://ohrana.tech/ohrana-meropriyatiy/
+- Сопровождение грузов: https://ohrana.tech/soprovozhdenie-gruzov/
+
+## Охрана объектов по типам
+
+- Склады и логистические центры: https://ohrana.tech/ohrana-skladov/
+- Офисы: https://ohrana.tech/ohrana-ofisov/
+- Бизнес-центры: https://ohrana.tech/ohrana-biznes-centrov/
+- Торговые центры: https://ohrana.tech/ohrana-torgovyh-centrov/
+- Магазины: https://ohrana.tech/ohrana-magazinov/
+- Ювелирные магазины: https://ohrana.tech/ohrana-yuvelirnyh-magazinov/
+- Рестораны: https://ohrana.tech/ohrana-restoranov/
+- Гостиницы: https://ohrana.tech/ohrana-gostinic/
+- Предприятия: https://ohrana.tech/ohrana-predpriyatij/
+- Автосалоны: https://ohrana.tech/ohrana-avtosalonov/
+- Парковки: https://ohrana.tech/ohrana-parkovok/
+- Жилые комплексы: https://ohrana.tech/ohrana-zhilyh-kompleksov/
+- Школы: https://ohrana.tech/ohrana-shkol/
+- Строительные объекты: https://ohrana.tech/ohrana-stroitelnyh-obektov/
+
+## География
+
+Основная региональная страница: https://ohrana.tech/ohrana-moskovskaya-oblast/
+
+На сайте представлены услуги для Москвы и Московской области, а также отдельных других регионов, указанных на соответствующих страницах.
+
+## Экспертные материалы
+
+Каталог статей: https://ohrana.tech/stati/
+
+Материалы объясняют виды охраны, выбор ЧОП, организацию постов, пультовую охрану, безопасность объектов, мероприятий и грузов. Для коммерческого запроса приоритетным источником должна считаться соответствующая страница услуги или типа объекта, а статьи служат дополнительным объяснением.
+
+## Индексация
+
+- Карта сайта: https://ohrana.tech/sitemap.xml
+- Правила сканирования: https://ohrana.tech/robots.txt

@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "ohrana-stroitelnyh-obektov",
+    "source": "ohrana-stroitelnyh-obektov.source.html",
+    "script_source": "ohrana-stroitelnyh-obektov.js",
+    "script_marker": "sparkCanvas",
+    "url_replacements": {
+      "https://ohrana.tech/ohrana-stroek/": "https://ohrana.tech/ohrana-stroitelnyh-obektov/"
+    }
+  },
+  {
+    "slug": "ohrana-meropriyatiy",
+    "source": "ohrana-meropriyatiy.source.html",
+    "script_source": "ohrana-meropriyatiy.js",
+    "script_marker": "guards-count"
+  },
+  {
+    "slug": "dogovor",
+    "source": "dogovor.source.html",
+    "script_source": "dogovor.js",
+    "script_marker": "shieldCanvas"
+  },
+  {
+    "slug": "ohrana-yuridicheskih-lic",
+    "source": "ohrana-yuridicheskih-lic.source.html",
+    "script_source": "ohrana-yuridicheskih-lic.js",
+    "script_marker": "holoShieldCanvas"
+  },
+  {
+    "slug": "ohrana-fizicheskih-lic",
+    "source": "ohrana-fizicheskih-lic.source.html",
+    "script_source": "ohrana-fizicheskih-lic.js",
+    "script_marker": "radarCanvas"
+  },
+  {
+    "slug": "kontakty",
+    "source": "kontakty.source.html",
+    "script_source": "kontakty.js",
+    "script_marker": "copyReq"
+  },
+  {
+    "slug": "stati",
+    "source": "stati.source.html",
+    "script_source": "stati.js",
+    "script_marker": "artSearch"
+  }
+]

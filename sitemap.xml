@@ -1,370 +1,357 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!--  ===== ГЛАВНАЯ СТРАНИЦА =====  -->
-<url>
-<loc>https://ohrana.tech/</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>weekly</changefreq>
-<priority>1.0</priority>
-</url>
-<!--  ===== ОСНОВНЫЕ СТРАНИЦЫ =====  -->
-<url>
-<loc>https://ohrana.tech/kontakty/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/dogovor/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>weekly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-moskovskaya-oblast/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<!--  ===== УСЛУГИ (ОСНОВНЫЕ) =====  -->
-<url>
-<loc>https://ohrana.tech/fizicheskaya-ohrana/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-fizicheskih-lic/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-yuridicheskih-lic/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-pult/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-predpriyatij/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-parkovok/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/kompleksnaja-ohrana/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-tehniki/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/tehnicheskaya-ohrana/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<!--  ===== ОХРАНА ОБЪЕКТОВ (ВСЕ КАРТОЧКИ С ГЛАВНОЙ) =====  -->
-<url>
-<loc>https://ohrana.tech/ohrana-ofisov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-biznes-centrov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-torgovyh-centrov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-magazinov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-uvelirnyh-magazinov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-restoranov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-gostinic/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-skladov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-stroyaploshchadok/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-avtosalonov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-kottedzhey/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-zhilyh-kompleksov/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-shkol/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-meropriyatiy/</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<!--  ===== ОТДЕЛЬНЫЕ ЛЕНДИНГИ (добавлены) =====  -->
-<url>
-<loc>https://ohrana.tech/bezopasnost-bez-illuziy/</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/kak-vybrat-ohranu-sklada/</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.6</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/ohrana-domov-i-kottedzhey/</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.6</priority>
-</url>
-<!--  ===== ВСЕ СТАТЬИ БЛОГА =====  -->
-<url>
-<loc>https://ohrana.tech/stati/5-priznakov-nenadyozhnoj-ohrannoj-firmy.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/soprovozhdenie-gruzov.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/fizicheskaya-ohrana-obektov.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/kak-obezopasit-meropriyatie.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/stoimost-bezopasnosti.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/pochemu-luchshe-nanyat-chop.html</loc>
-<lastmod>2026-08-21</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/chop-ruscorporation.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/ohrana-restoranov.html</loc>
-<lastmod>2026-09-03</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/ohrana-meropriyatij.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/lichnaya-ohrana-vip.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/ohrana-zhilyh-kompleksov.html</loc>
-<lastmod>2026-09-03</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/ohrana-spasaet-biznes.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/obyazannosti-ohrannika-na-obekte.html</loc>
-<lastmod>2026-09-03</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/kak-vybrat-chop-dlya-ohrany-strojki.html</loc>
-<lastmod>2026-09-03</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/kak-vybrat-chop-dlya-ohrany-obekta.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/pultovaya-ohrana-kak-rabotaet.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/kak-my-vychislili-vnutrennego-vora.html</loc>
-<lastmod>2026-09-02</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/zachem-soprovozhdenie-gruzov.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/ohrana-stroitelnyh-obektov.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/ohrana-uvelirnyh-magazinov.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/uslugi-chop-v-moskve.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/ekonomiya-na-ohrane.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/ohrana-fizicheskih-lic.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/kompleksnaya-ohrana.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/pultovaya-ohrana.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<!--  ===== НОВЫЕ СТАТЬИ (4 шт) =====  -->
-<url>
-<loc>https://ohrana.tech/stati/ohrana-stroitelnoj-ploshadki.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/nochnaya-ohrana-obektov.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/iskusstvennyj-intellekt-v-ohrane.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://ohrana.tech/stati/drony-v-ohrane.html</loc>
-<lastmod>2026-09-07</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
+  <url>
+    <loc>https://ohrana.tech/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/kontakty/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/dogovor/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-moskovskaya-oblast/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/fizicheskaya-ohrana/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-fizicheskih-lic/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-yuridicheskih-lic/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-pult/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-predpriyatij/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-parkovok/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-tehniki/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/tehnicheskaya-ohrana/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-ofisov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-biznes-centrov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-torgovyh-centrov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-magazinov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-yuvelirnyh-magazinov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-restoranov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-gostinic/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-skladov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-stroitelnyh-obektov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-avtosalonov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-zhilyh-kompleksov/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-shkol/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-meropriyatiy/</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/bezopasnost-bez-illuziy/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/kak-vybrat-ohranu-sklada/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ohrana-domov-i-kottedzhey/</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/5-priznakov-nenadyozhnoj-ohrannoj-firmy.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/soprovozhdenie-gruzov.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/fizicheskaya-ohrana-obektov.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/kak-obezopasit-meropriyatie.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/stoimost-bezopasnosti.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/pochemu-luchshe-nanyat-chop.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/chop-ruscorporation.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ohrana-restoranov.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ohrana-meropriyatij.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/lichnaya-ohrana-vip.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ohrana-zhilyh-kompleksov.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ohrana-spasaet-biznes.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/obyazannosti-ohrannika-na-obekte.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/kak-vybrat-chop-dlya-ohrany-strojki.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/kak-vybrat-chop-dlya-ohrany-obekta.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/pultovaya-ohrana-kak-rabotaet.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/kak-my-vychislili-vnutrennego-vora.html</loc>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/zachem-soprovozhdenie-gruzov.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ohrana-stroitelnyh-obektov.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ohrana-uvelirnyh-magazinov.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/uslugi-chop-v-moskve.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ekonomiya-na-ohrane.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ohrana-fizicheskih-lic.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/kompleksnaya-ohrana.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/pultovaya-ohrana.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/ohrana-stroitelnoj-ploshadki.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/nochnaya-ohrana-obektov.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/iskusstvennyj-intellekt-v-ohrane.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/stati/drony-v-ohrane.html</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ohrana.tech/ceny/</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
 </urlset>
