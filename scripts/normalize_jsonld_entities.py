@@ -26,7 +26,7 @@ def load_manifest(name: str) -> list[dict[str, object]]:
 
 def generated_pages() -> list[Path]:
     paths = [ROOT / "ohrana-skladov" / "index.html", ROOT / "ceny" / "index.html"]
-    for manifest_name in ("object-pages.json", "custom-pages.json"):
+    for manifest_name in ("object-pages.json", "shared-pages.json", "custom-pages.json"):
         paths.extend(ROOT / str(page["slug"]) / "index.html" for page in load_manifest(manifest_name))
     unique: list[Path] = []
     seen: set[Path] = set()
