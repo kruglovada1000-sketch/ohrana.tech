@@ -14,5 +14,24 @@ var faq=document.querySelectorAll('.faq-item .faq-q');faq.forEach(function(q){q.
 var chatBtn=document.getElementById('chatBtn'),chatPanel=document.getElementById('chatPanel');if(chatBtn&&chatPanel){chatBtn.addEventListener('click',function(e){e.stopPropagation();chatPanel.classList.toggle('open');});document.addEventListener('click',function(e){if(!chatPanel.contains(e.target)&&!chatBtn.contains(e.target))chatPanel.classList.remove('open');});}
 var filter=document.getElementById('priceFilter');if(filter){filter.addEventListener('input',function(){var q=(filter.value||'').trim().toLowerCase();document.querySelectorAll('[data-price-row]').forEach(function(row){var text=(row.textContent||'').toLowerCase();row.hidden=!!q&&text.indexOf(q)===-1;});});}
 var typeSelect=document.getElementById('priceType');if(typeSelect){typeSelect.addEventListener('change',function(){var v=typeSelect.value;document.querySelectorAll('[data-price-row]').forEach(function(row){row.hidden=!!v&&row.dataset.kind!==v;});});}
+
+document.querySelectorAll('form[action*="formspree.io"]').forEach(function(form){
+  if(form.dataset.sharedFormBound==='1')return;
+  form.dataset.sharedFormBound='1';
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var data=new FormData(form);
+    fetch(form.action,{method:'POST',body:data,headers:{'Accept':'application/json'}})
+      .then(function(res){
+        if(!res.ok){form.submit();return;}
+        goal('form_submit');goal('lead_form_ok');
+        form.style.display='none';
+        var ok=document.getElementById('formOk')||form.parentElement&&form.parentElement.querySelector('.form-ok');
+        if(ok){ok.style.display='block';ok.hidden=false;}
+      })
+      .catch(function(){form.submit();});
+  });
+});
+
 if(!rm&&window.matchMedia&&!window.matchMedia('(hover:none)').matches){var dot=document.querySelector('.cursor-dot'),ring=document.querySelector('.cursor-ring');if(dot&&ring){var mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.transform='translate('+(mx-3)+'px,'+(my-3)+'px)';},{passive:true});(function loop(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.transform='translate('+(rx-ring.offsetWidth/2)+'px,'+(ry-ring.offsetHeight/2)+'px)';requestAnimationFrame(loop);})();}}
 })();
