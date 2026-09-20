@@ -55,6 +55,8 @@ def build_regular_or_pre_main(page: dict[str, object]) -> None:
         raise RuntimeError(f"Missing <main> for pre-main page: {source_path}")
 
     hero = hero_match.group(0).strip()
+    hero = re.sub(r'^<header\b', '<section', hero, count=1, flags=re.I)
+    hero = re.sub(r'</header>\s*$', '</section>', hero, count=1, flags=re.I)
     main_inner = main_match.group(1).strip()
     without_hero = legacy[:hero_match.start()] + legacy[hero_match.end():]
     transformed = main_pattern.sub(f"<main>\n{hero}\n{main_inner}\n</main>", without_hero, count=1)
