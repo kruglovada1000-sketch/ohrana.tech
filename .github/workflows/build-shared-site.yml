@@ -50,6 +50,7 @@ jobs:
           python scripts/build_object_pages.py
           python scripts/build_custom_pages.py
           python scripts/prepare_document_pages.py
+          python scripts/build_article_pages.py
           python scripts/normalize_generated_links.py
           python scripts/normalize_jsonld_entities.py
           python scripts/normalize_counter_values.py
@@ -57,7 +58,7 @@ jobs:
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/build_custom_pages.py scripts/prepare_document_pages.py scripts/audit_migration_candidates.py scripts/audit_core_pages.py scripts/audit_remaining_pages.py scripts/normalize_generated_links.py scripts/normalize_jsonld_entities.py scripts/normalize_counter_values.py scripts/normalize_sitemap.py scripts/validate_shared_shell.py scripts/validate_custom_generated.py scripts/validate_sitemap.py scripts/validate_generated_html.py
+          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/build_custom_pages.py scripts/build_article_pages.py scripts/prepare_document_pages.py scripts/audit_migration_candidates.py scripts/audit_core_pages.py scripts/audit_remaining_pages.py scripts/normalize_generated_links.py scripts/normalize_jsonld_entities.py scripts/normalize_counter_values.py scripts/normalize_sitemap.py scripts/validate_shared_shell.py scripts/validate_custom_generated.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           python - <<'PY'
           from pathlib import Path
@@ -69,9 +70,11 @@ jobs:
           shared = json.loads(Path('site-src/shared-pages.json').read_text(encoding='utf-8'))
           custom = json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
           documents = json.loads(Path('site-src/document-pages.json').read_text(encoding='utf-8'))
+          article_report = json.loads(Path('site-src/article-pages.generated.json').read_text(encoding='utf-8'))
           assert objects, 'object page manifest is empty'
           assert shared, 'shared page manifest is empty'
           assert documents, 'document page manifest is empty'
+          assert article_report['total'] == len(article_report['regular']) + len(article_report['deferred']), 'article report count mismatch'
 
           object_slugs = [page['slug'] for page in objects]
           shared_slugs = [page['slug'] for page in shared]
@@ -101,6 +104,21 @@ jobs:
               assert html.index(f'/assets/css/{slug}.css') < html.index('/assets/css/site-shell.css'), slug
               assert '/assets/js/site.js' in html, slug
 
+          for article in article_report['regular']:
+              page = root / 'stati' / article['file']
+              css = root / article['css']
+              assert page.exists(), page
+              assert css.exists(), css
+              html = page.read_text(encoding='utf-8')
+              assert 'href="/ceny/"' in html, article['file']
+              assert '<style' not in html.lower(), article['file']
+              assert len(re.findall(r'<h1\b', html, re.I)) == 1, article['file']
+              assert len(re.findall(r'<header\b', html, re.I)) == 1, article['file']
+              assert len(re.findall(r'<main\b', html, re.I)) == 1, article['file']
+              assert len(re.findall(r'<footer\b', html, re.I)) == 1, article['file']
+              assert '/assets/js/site.js' in html and '/assets/js/article.js' in html, article['file']
+          assert Path('assets/js/article.js').exists(), 'article.js missing'
+
           for doc in documents:
               page = root / doc['path']
               html = page.read_text(encoding='utf-8')
@@ -120,6 +138,7 @@ jobs:
           print(
               f'Generated structure OK: {len(object_slugs) + 1} object pages + '
               f'{len(shared_slugs)} shared service pages + {len(custom_slugs)} custom pages + '
+              f'{len(article_report["regular"])} regular articles + {len(article_report["deferred"])} deferred articles + '
               f'{len(document_slugs)} managed document pages + prices'
           )
           PY
@@ -170,6 +189,9 @@ jobs:
               'sitemap.xml',
               'assets/css',
               'assets/js',
+              'site-src/articles',
+              'site-src/article-pages.generated.json',
+              'stati',
           ]
           paths.extend(f"{page['slug']}/index.html" for page in objects)
           paths.extend(f"{page['slug']}/index.html" for page in shared)
@@ -181,7 +203,7 @@ jobs:
             echo "No generated changes to commit"
             exit 0
           fi
-          git commit -m "build: regenerate shared site batch [skip ci]"
+          git commit -m "build: regenerate shared site and articles [skip ci]"
           if git push; then
             exit 0
           fi

@@ -1,0 +1,173 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import json
+import re
+import shutil
+from pathlib import Path
+
+from build_site import ROOT, SRC, SITE, page_head_from_legacy, legacy_defines_organization, read_partial
+
+ARTICLES = ROOT / 'stati'
+SNAPSHOTS = SRC / 'articles'
+REPORT = SRC / 'article-pages.generated.json'
+ARTICLE_JS_SOURCE = SRC / 'assets' / 'article.js'
+ARTICLE_JS_PUBLIC = ROOT / 'assets' / 'js' / 'article.js'
+ARTICLE_CSS_DIR = ROOT / 'assets' / 'css' / 'articles'
+
+CUSTOM_PATTERNS = {
+    'canvas': re.compile(r'<canvas\b|getContext\s*\(', re.I),
+    'calculator': re.compile(r'калькулятор|calculator|total-price|total_price|calc-btn|data-price|rates\s*=|rate\s*=', re.I),
+    'ymaps': re.compile(r'\bymaps\b', re.I),
+}
+
+COMPAT_CSS = r'''
+/* Compatibility layer: legacy article tokens mapped to homepage Gilded Noir. */
+:root{
+  --amber:var(--gold);--amber2:var(--gold2);--amber-deep:var(--gold-deep);
+  --steel:var(--mut);--disp:var(--serif);--body:var(--sans);
+  --txt:#D5D9E2;
+}
+body{font-family:var(--sans)}
+h1,h2,h3,h4{font-family:var(--serif)}
+.toc a.active,.article-toc a.active,[data-article-toc] a.active{color:var(--gold2)!important}
+'''
+
+
+def snapshot_name(public_name: str) -> str:
+    return public_name[:-5] + '.source.html'
+
+
+def ensure_snapshots() -> list[Path]:
+    SNAPSHOTS.mkdir(parents=True, exist_ok=True)
+    source_paths: list[Path] = []
+    for public in sorted(ARTICLES.glob('*.html')):
+        if public.name == 'index.html':
+            continue
+        snapshot = SNAPSHOTS / snapshot_name(public.name)
+        if not snapshot.exists():
+            shutil.copyfile(public, snapshot)
+            print(f'Snapshotted article: {public.name}')
+        source_paths.append(snapshot)
+    return source_paths
+
+
+def custom_reasons(text: str) -> list[str]:
+    return [name for name, pattern in CUSTOM_PATTERNS.items() if pattern.search(text)]
+
+
+def extract_styles(text: str, source: Path) -> str:
+    styles = re.findall(r'<style\b[^>]*>(.*?)</style>', text, re.I | re.S)
+    if not styles:
+        raise RuntimeError(f'No inline styles in article source: {source}')
+    return '\n\n'.join(chunk.strip() for chunk in styles if chunk.strip())
+
+
+def extract_main(text: str, source: Path) -> str:
+    match = re.search(r'<main\b[^>]*>.*?</main>', text, re.I | re.S)
+    if match:
+        main = match.group(0).strip()
+        if not re.search(r'<h1\b', main, re.I):
+            raise RuntimeError(f'Article main has no H1: {source}')
+        return main
+
+    body_match = re.search(r'<body\b[^>]*>(.*?)</body>', text, re.I | re.S)
+    if not body_match:
+        raise RuntimeError(f'Article has no body: {source}')
+    body = body_match.group(1)
+    header_end = re.search(r'</header>', body, re.I)
+    footer_start = re.search(r'<footer\b', body, re.I)
+    if not header_end or not footer_start or footer_start.start() <= header_end.end():
+        raise RuntimeError(f'Cannot isolate article content between header/footer: {source}')
+    unique = body[header_end.end():footer_start.start()].strip()
+    if not re.search(r'<h1\b', unique, re.I):
+        raise RuntimeError(f'Article body slice lost H1: {source}')
+    return '<main>\n' + unique + '\n</main>'
+
+
+def build_regular(source: Path) -> dict[str, str]:
+    public_name = source.name.replace('.source.html', '.html')
+    stem = public_name[:-5]
+    public = ARTICLES / public_name
+    text = source.read_text(encoding='utf-8')
+    main = extract_main(text, source)
+    css = extract_styles(text, source) + '\n' + COMPAT_CSS
+
+    ARTICLE_CSS_DIR.mkdir(parents=True, exist_ok=True)
+    css_path = ARTICLE_CSS_DIR / f'{stem}.css'
+    css_path.write_text(css + '\n', encoding='utf-8')
+
+    head = page_head_from_legacy(text)
+    org = '' if legacy_defines_organization(head) else read_partial('organization-jsonld.html')
+    out = f'''<!DOCTYPE html>
+<html lang="ru" class="no-js">
+<head>
+{read_partial('head-common.html')}
+{head}
+{org}
+<link rel="stylesheet" href="/assets/css/articles/{stem}.css">
+<link rel="stylesheet" href="/assets/css/site-shell.css">
+</head>
+<body data-metrika-id="{SITE['metrika_id']}">
+<div id="progress"></div>
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+{read_partial('header.html')}
+{main}
+{read_partial('footer.html')}
+{read_partial('mobile-bar.html')}
+{read_partial('chat.html')}
+<script src="/assets/js/site.js" defer></script>
+<script src="/assets/js/article.js" defer></script>
+</body>
+</html>
+'''
+    public.write_text(out, encoding='utf-8')
+    return {'file': public_name, 'source': source.name, 'css': f'assets/css/articles/{stem}.css'}
+
+
+def validate_regular(entry: dict[str, str]) -> None:
+    path = ARTICLES / entry['file']
+    html = path.read_text(encoding='utf-8')
+    errors: list[str] = []
+    for tag in ('h1', 'header', 'main', 'footer'):
+        if len(re.findall(rf'<{tag}\b', html, re.I)) != 1:
+            errors.append(f'exactly one <{tag}> required')
+    if re.search(r'<style\b', html, re.I): errors.append('inline style remained')
+    if 'href="/ceny/"' not in html: errors.append('prices nav missing')
+    if '/assets/js/site.js' not in html: errors.append('site.js missing')
+    if '/assets/js/article.js' not in html: errors.append('article.js missing')
+    if f'/assets/css/articles/{Path(entry["file"]).stem}.css' not in html: errors.append('article css missing')
+    if errors:
+        raise RuntimeError(f"{entry['file']}: " + '; '.join(errors))
+
+
+def main() -> None:
+    if not ARTICLES.exists():
+        raise RuntimeError('Missing /stati directory')
+    sources = ensure_snapshots()
+    ARTICLE_JS_PUBLIC.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ARTICLE_JS_SOURCE, ARTICLE_JS_PUBLIC)
+
+    regular: list[dict[str, str]] = []
+    deferred: list[dict[str, object]] = []
+    for source in sources:
+        text = source.read_text(encoding='utf-8')
+        reasons = custom_reasons(text)
+        public_name = source.name.replace('.source.html', '.html')
+        if reasons:
+            deferred.append({'file': public_name, 'source': source.name, 'reasons': reasons})
+            print(f'Deferred custom article: {public_name} ({", ".join(reasons)})')
+            continue
+        entry = build_regular(source)
+        validate_regular(entry)
+        regular.append(entry)
+        print(f'Built article: /stati/{public_name}')
+
+    report = {'regular': regular, 'deferred': deferred, 'total': len(sources)}
+    REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    print(f'Article batch: {len(regular)} regular, {len(deferred)} deferred custom, {len(sources)} total')
+
+
+if __name__ == '__main__':
+    main()
