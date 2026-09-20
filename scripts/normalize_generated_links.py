@@ -13,7 +13,41 @@ ALIASES = {
 RESOURCE_REPLACEMENTS = {
     'src="schit.jpg"': 'src="/images/schit.jpg"',
     "src='schit.jpg'": "src='/images/schit.jpg'",
+    'src="/ohrana-moskovskaya-oblast/schit.jpg"': 'src="/images/schit.jpg"',
+    "src='/ohrana-moskovskaya-oblast/schit.jpg'": "src='/images/schit.jpg'",
 }
+
+RESPONSIVE_FIX_MARKER = '/* browser-qa-responsive-fixes */'
+RESPONSIVE_FIXES = '''
+/* browser-qa-responsive-fixes */
+/* Keep wide price tables inside the mobile viewport. Their own content remains
+   horizontally scrollable instead of widening the entire document. */
+@media(max-width:768px){
+  main .price-table{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch;
+  }
+}
+/* Two legacy expert articles use a 12-column .crit7 grid. The generic tablet
+   rule has lower specificity, so explicitly collapse that grid here. */
+@media(max-width:960px){
+  main .cards-grid.crit7{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  main .cards-grid.crit7 .sign-card,
+  main .cards-grid.crit7 .sign-card:nth-child(n+4){
+    grid-column:auto!important;
+  }
+}
+@media(max-width:640px){
+  main .cards-grid.crit7{
+    grid-template-columns:1fr!important;
+  }
+}
+'''
 
 
 def load_manifest(name: str) -> list[dict[str, object]]:
@@ -43,6 +77,18 @@ def generated_pages() -> list[Path]:
     return unique
 
 
+def normalize_shared_css() -> bool:
+    path=ROOT/'assets'/'css'/'site-shell.css'
+    if not path.exists():
+        raise RuntimeError(f'Shared CSS missing before responsive normalization: {path}')
+    text=path.read_text(encoding='utf-8')
+    if RESPONSIVE_FIX_MARKER in text:
+        return False
+    path.write_text(text.rstrip()+"\n"+RESPONSIVE_FIXES,encoding='utf-8')
+    print('Applied browser-QA responsive guards: assets/css/site-shell.css')
+    return True
+
+
 def main() -> None:
     total=0
     resources=0
@@ -57,6 +103,7 @@ def main() -> None:
             if count: text=text.replace(old,new);resources+=count
         if text!=original:
             path.write_text(text,encoding='utf-8');print(f'Normalized generated links/resources: {path.relative_to(ROOT)}')
+    normalize_shared_css()
     print(f'Legacy link replacements: {total}')
     print(f'Legacy resource replacements: {resources}')
 
