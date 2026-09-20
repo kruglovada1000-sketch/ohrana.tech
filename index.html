@@ -1008,6 +1008,33 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
   #about .about-visual-wrap{padding-top:0}
 }
 
+
+
+/* home-about-rounded-frame-v5 */
+#about .about-visual{
+  aspect-ratio:auto;
+  display:block;
+  margin:0;
+  padding:clamp(18px,2.2vw,28px);
+  border:1px solid rgba(232,200,122,.78);
+  border-radius:24px;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+}
+#about .about-visual img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-width:100%;
+  max-height:none;
+  object-fit:contain;
+  object-position:center;
+}
+@media(max-width:560px){
+  #about .about-visual{padding:12px;border-radius:18px}
+}
+
 /* homepage-responsive-polish-v1 */
 @media(max-width:1100px){
   .wrap{padding-left:22px;padding-right:22px}
