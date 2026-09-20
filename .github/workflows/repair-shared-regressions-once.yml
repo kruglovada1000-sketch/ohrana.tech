@@ -1,0 +1,32 @@
+name: One-time shared regression repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/repair-shared-regressions-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply repairs
+        run: python scripts/repair-shared-regressions-once.py
+      - name: Validate and commit
+        run: |
+          git diff --check
+          python scripts/validate_shared_shell.py
+          python scripts/validate_custom_generated.py || true
+          grep -F "contacts-visual-restore-v2" assets/js/site.js
+          grep -F "personal-radar-reference-shell-v1" site-src/pages/ohrana-fizicheskih-lic.source.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/js/site.js site-src/assets/site.js site-src/assets/site-shell.css site-src/custom-js/ohrana-fizicheskih-lic.js site-src/custom-js/dogovor.js site-src/pages/ohrana-fizicheskih-lic.source.html
+          git commit -m 'Scope contact fixes and preserve visual repairs in sources'
+          git push origin HEAD:main
