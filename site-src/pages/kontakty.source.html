@@ -1064,16 +1064,20 @@ if (leadForm && !leadForm.dataset.spreeBound) {
 /* FAQ-АККОРДЕОН */
 document.querySelectorAll('.faq-item').forEach(function(item){
   var q = item.querySelector('.faq-q');
-  q.addEventListener('click', function(){
+  if (!q || q.dataset.sharedFaqBound === '1') return;
+  q.dataset.sharedFaqBound = '1';
+  q.addEventListener('click', function(e){
+    e.preventDefault();
     var wasOpen = item.classList.contains('open');
     document.querySelectorAll('.faq-item.open').forEach(function(o){
-      o.classList.remove('open');
-      o.querySelector('.faq-q').setAttribute('aria-expanded','false');
+      if (o !== item) {
+        o.classList.remove('open');
+        var oq = o.querySelector('.faq-q');
+        if (oq) oq.setAttribute('aria-expanded','false');
+      }
     });
-    if (!wasOpen) {
-      item.classList.add('open');
-      q.setAttribute('aria-expanded','true');
-    }
+    item.classList.toggle('open', !wasOpen);
+    q.setAttribute('aria-expanded', String(!wasOpen));
   });
 });
 
