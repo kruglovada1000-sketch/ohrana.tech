@@ -1,0 +1,34 @@
+name: Patch visual batch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/patch-visual-batch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply visual fixes
+        run: python scripts/patch_visual_batch_once.py
+      - name: Validate and commit
+        run: |
+          git diff --check
+          grep -F 'article-light-contrast-v2' assets/css/site-shell.css
+          grep -F 'homepage-visual-cleanup-v3' assets/css/home-light-fix.css
+          grep -F 'MAX_TARGETS = 15' assets/js/ohrana-fizicheskih-lic.js
+          grep -F 'ctx.strokeText(numbers[i],x,y);' assets/js/dogovor.js
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/css/site-shell.css site-src/assets/site-shell.css assets/css/home-light-fix.css assets/js/ohrana-fizicheskih-lic.js assets/js/dogovor.js
+          git commit -m 'Fix radar and light-theme contrast across key pages'
+          git push origin HEAD:main
