@@ -30,6 +30,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Audit object migration candidates
+        run: python scripts/audit_migration_candidates.py
+
       - name: Build static pages
         run: |
           python scripts/build_site.py
@@ -39,7 +42,7 @@ jobs:
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/normalize_generated_links.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
+          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/audit_migration_candidates.py scripts/normalize_generated_links.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           test -f ohrana-skladov/index.html
           test -f ohrana-ofisov/index.html
