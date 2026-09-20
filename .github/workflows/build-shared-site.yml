@@ -31,11 +31,13 @@ jobs:
           python-version: "3.12"
 
       - name: Build static pages
-        run: python scripts/build_site.py
+        run: |
+          python scripts/build_site.py
+          python scripts/normalize_sitemap.py
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/validate_sitemap.py
+          python -m py_compile scripts/build_site.py scripts/normalize_sitemap.py scripts/validate_sitemap.py
           git diff --check
           test -f ohrana-skladov/index.html
           test -f ceny/index.html
