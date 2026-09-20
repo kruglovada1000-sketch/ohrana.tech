@@ -14,7 +14,6 @@ from build_site import (
     legacy_defines_organization,
     page_head_from_legacy,
     read_partial,
-    validate_html,
 )
 
 
@@ -45,6 +44,36 @@ def extract_body_inline_scripts(legacy: str, source_path: Path) -> str:
     if not chunks:
         raise RuntimeError(f"No inline body scripts found in {source_path}")
     return "\n\n/* ---- preserved legacy body script ---- */\n\n".join(chunks) + "\n"
+
+
+def validate_custom_output(path: Path, slug: str, marker: str) -> None:
+    page = path.read_text(encoding="utf-8")
+    required = [
+        "<title>",
+        'rel="canonical"',
+        "<h1",
+        "application/ld+json",
+        'href="/ceny/"',
+        f'/assets/js/{slug}.js',
+        f'/assets/css/{slug}.css',
+        '/assets/css/site-shell.css',
+    ]
+    missing = [token for token in required if token not in page]
+    if missing:
+        raise RuntimeError(f"{path}: missing {missing}")
+    if len(re.findall(r"<header\b", page, re.I)) != 1:
+        raise RuntimeError(f"{path}: expected exactly one header")
+    if len(re.findall(r"<main\b", page, re.I)) != 1:
+        raise RuntimeError(f"{path}: expected exactly one main")
+    if len(re.findall(r"<footer\b", page, re.I)) != 1:
+        raise RuntimeError(f"{path}: expected exactly one footer")
+    if re.search(r"<style\b", page, re.I):
+        raise RuntimeError(f"{path}: inline style remained")
+    if "{{site." in page:
+        raise RuntimeError(f"{path}: unresolved template variable")
+    js = (ROOT / "assets" / "js" / f"{slug}.js").read_text(encoding="utf-8")
+    if marker and marker not in js:
+        raise RuntimeError(f"{path}: custom JS marker {marker!r} missing")
 
 
 def build_custom_page(config: dict[str, object]) -> None:
@@ -107,7 +136,7 @@ def build_custom_page(config: dict[str, object]) -> None:
     out_path = ROOT / slug / "index.html"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(out, encoding="utf-8")
-    validate_html(out_path)
+    validate_custom_output(out_path, slug, marker)
     print(f"Built custom page: /{slug}/; preserved script -> {js_path.relative_to(ROOT)}")
 
 
