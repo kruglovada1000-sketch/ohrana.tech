@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCE_DIR = ROOT / "site-src" / "pages"
 SLUGS = [
     "ohrana-ofisov",
     "ohrana-biznes-centrov",
@@ -33,14 +34,21 @@ RISK_MARKERS = {
 }
 
 
+def source_for(slug: str) -> tuple[Path, str]:
+    snapshot = SOURCE_DIR / f"{slug}.source.html"
+    if snapshot.exists():
+        return snapshot, "snapshot"
+    return ROOT / slug / "index.html", "live"
+
+
 def main() -> None:
-    print("slug\tclass\tforms\tscripts\trisks")
+    print("slug\tclass\tsource\tforms\tscripts\trisks")
     simple = []
     custom = []
     for slug in SLUGS:
-        path = ROOT / slug / "index.html"
+        path, source_kind = source_for(slug)
         if not path.exists():
-            print(f"{slug}\tMISSING\t0\t0\tmissing-file")
+            print(f"{slug}\tMISSING\t{source_kind}\t0\t0\tmissing-file")
             custom.append(slug)
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -55,7 +63,7 @@ def main() -> None:
             risks.append("no-style")
         cls = "SIMPLE" if not risks else "CUSTOM"
         (simple if cls == "SIMPLE" else custom).append(slug)
-        print(f"{slug}\t{cls}\t{forms}\t{scripts}\t{','.join(risks) or '-'}")
+        print(f"{slug}\t{cls}\t{source_kind}\t{forms}\t{scripts}\t{','.join(risks) or '-'}")
     print("\nSimple batch candidates:", ", ".join(simple) or "none")
     print("Custom-logic pages:", ", ".join(custom) or "none")
 
