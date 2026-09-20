@@ -189,24 +189,28 @@
       "repairs": []
     }
   ],
-  "deferred": [
+  "custom": [
     {
       "file": "kak-obezopasit-meropriyatie.html",
       "source": "kak-obezopasit-meropriyatie.source.html",
+      "css": "assets/css/articles/kak-obezopasit-meropriyatie.css",
+      "repairs": [],
       "reasons": [
         "canvas"
       ],
-      "repairs": []
+      "script": "assets/js/articles/kak-obezopasit-meropriyatie.js"
     },
     {
       "file": "stoimost-bezopasnosti.html",
       "source": "stoimost-bezopasnosti.source.html",
+      "css": "assets/css/articles/stoimost-bezopasnosti.css",
+      "repairs": [],
       "reasons": [
-        "canvas",
-        "calculator"
+        "canvas"
       ],
-      "repairs": []
+      "script": "assets/js/articles/stoimost-bezopasnosti.js"
     }
   ],
+  "deferred": [],
   "total": 33
 }
