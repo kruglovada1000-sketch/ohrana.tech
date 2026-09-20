@@ -28,3 +28,4 @@ jobs:
           git add assets/css/site-shell.css site-src/assets/site-shell.css
           git commit -m 'Match header shield size to homepage'
           git push origin HEAD:main
+# retry after formatting check fix
