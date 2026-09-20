@@ -1,0 +1,32 @@
+name: Finalize visual batch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/finalize-visual-batch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply final visual alignment
+        run: python scripts/finalize_visual_batch_once.py
+      - name: Validate and commit
+        run: |
+          git diff --check
+          grep -F 'personal-radar-reference-shell-v1' assets/css/ohrana-fizicheskih-lic.css
+          grep -F 'home-light-fix.css?v=20260921-3' index.html
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/css/ohrana-fizicheskih-lic.css index.html
+          git commit -m 'Align personal radar shell and bust homepage visual cache'
+          git push origin HEAD:main
