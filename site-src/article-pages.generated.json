@@ -1,0 +1,212 @@
+{
+  "regular": [
+    {
+      "file": "5-priznakov-nenadyozhnoj-ohrannoj-firmy.html",
+      "source": "5-priznakov-nenadyozhnoj-ohrannoj-firmy.source.html",
+      "css": "assets/css/articles/5-priznakov-nenadyozhnoj-ohrannoj-firmy.css",
+      "repairs": []
+    },
+    {
+      "file": "chop-ruscorporation.html",
+      "source": "chop-ruscorporation.source.html",
+      "css": "assets/css/articles/chop-ruscorporation.css",
+      "repairs": []
+    },
+    {
+      "file": "drony-v-ohrane.html",
+      "source": "drony-v-ohrane.source.html",
+      "css": "assets/css/articles/drony-v-ohrane.css",
+      "repairs": []
+    },
+    {
+      "file": "ekonomiya-na-ohrane.html",
+      "source": "ekonomiya-na-ohrane.source.html",
+      "css": "assets/css/articles/ekonomiya-na-ohrane.css",
+      "repairs": []
+    },
+    {
+      "file": "fizicheskaya-ohrana-obektov.html",
+      "source": "fizicheskaya-ohrana-obektov.source.html",
+      "css": "assets/css/articles/fizicheskaya-ohrana-obektov.css",
+      "repairs": []
+    },
+    {
+      "file": "iskusstvennyj-intellekt-v-ohrane.html",
+      "source": "iskusstvennyj-intellekt-v-ohrane.source.html",
+      "css": "assets/css/articles/iskusstvennyj-intellekt-v-ohrane.css",
+      "repairs": []
+    },
+    {
+      "file": "kak-my-vychislili-vnutrennego-vora.html",
+      "source": "kak-my-vychislili-vnutrennego-vora.source.html",
+      "css": "assets/css/articles/kak-my-vychislili-vnutrennego-vora.css",
+      "repairs": []
+    },
+    {
+      "file": "kak-vybrat-chop-dlya-ohrany-obekta.html",
+      "source": "kak-vybrat-chop-dlya-ohrany-obekta.source.html",
+      "css": "assets/css/articles/kak-vybrat-chop-dlya-ohrany-obekta.css",
+      "repairs": []
+    },
+    {
+      "file": "kak-vybrat-chop-dlya-ohrany-strojki.html",
+      "source": "kak-vybrat-chop-dlya-ohrany-strojki.source.html",
+      "css": "assets/css/articles/kak-vybrat-chop-dlya-ohrany-strojki.css",
+      "repairs": []
+    },
+    {
+      "file": "kompleksnaya-ohrana.html",
+      "source": "kompleksnaya-ohrana.source.html",
+      "css": "assets/css/articles/kompleksnaya-ohrana.css",
+      "repairs": []
+    },
+    {
+      "file": "lichnaya-ohrana-vip.html",
+      "source": "lichnaya-ohrana-vip.source.html",
+      "css": "assets/css/articles/lichnaya-ohrana-vip.css",
+      "repairs": []
+    },
+    {
+      "file": "nochnaya-ohrana-obektov.html",
+      "source": "nochnaya-ohrana-obektov.source.html",
+      "css": "assets/css/articles/nochnaya-ohrana-obektov.css",
+      "repairs": []
+    },
+    {
+      "file": "nochnaya-ohrana.html",
+      "source": "nochnaya-ohrana.source.html",
+      "css": "assets/css/articles/nochnaya-ohrana.css",
+      "repairs": []
+    },
+    {
+      "file": "obyazannosti-ohrannika-na-obekte.html",
+      "source": "obyazannosti-ohrannika-na-obekte.source.html",
+      "css": "assets/css/articles/obyazannosti-ohrannika-na-obekte.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-biznes-centrov.html",
+      "source": "ohrana-biznes-centrov.source.html",
+      "css": "assets/css/articles/ohrana-biznes-centrov.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-fizicheskih-lic.html",
+      "source": "ohrana-fizicheskih-lic.source.html",
+      "css": "assets/css/articles/ohrana-fizicheskih-lic.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-meropriyatij.html",
+      "source": "ohrana-meropriyatij.source.html",
+      "css": "assets/css/articles/ohrana-meropriyatij.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-meropriyatiy-v-moskve.html",
+      "source": "ohrana-meropriyatiy-v-moskve.source.html",
+      "css": "assets/css/articles/ohrana-meropriyatiy-v-moskve.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-restoranov.html",
+      "source": "ohrana-restoranov.source.html",
+      "css": "assets/css/articles/ohrana-restoranov.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-spasaet-biznes.html",
+      "source": "ohrana-spasaet-biznes.source.html",
+      "css": "assets/css/articles/ohrana-spasaet-biznes.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-stroitelnoj-ploshadki.html",
+      "source": "ohrana-stroitelnoj-ploshadki.source.html",
+      "css": "assets/css/articles/ohrana-stroitelnoj-ploshadki.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-stroitelnyh-obektov.html",
+      "source": "ohrana-stroitelnyh-obektov.source.html",
+      "css": "assets/css/articles/ohrana-stroitelnyh-obektov.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-uvelirnyh-magazinov.html",
+      "source": "ohrana-uvelirnyh-magazinov.source.html",
+      "css": "assets/css/articles/ohrana-uvelirnyh-magazinov.css",
+      "repairs": []
+    },
+    {
+      "file": "ohrana-zhilyh-kompleksov.html",
+      "source": "ohrana-zhilyh-kompleksov.source.html",
+      "css": "assets/css/articles/ohrana-zhilyh-kompleksov.css",
+      "repairs": []
+    },
+    {
+      "file": "pochemu-luchshe-nanyat-chop.html",
+      "source": "pochemu-luchshe-nanyat-chop.source.html",
+      "css": "assets/css/articles/pochemu-luchshe-nanyat-chop.css",
+      "repairs": []
+    },
+    {
+      "file": "pultovaya-ohrana-kak-rabotaet.html",
+      "source": "pultovaya-ohrana-kak-rabotaet.source.html",
+      "css": "assets/css/articles/pultovaya-ohrana-kak-rabotaet.css",
+      "repairs": [
+        "removed-stray-closing-li"
+      ]
+    },
+    {
+      "file": "pultovaya-ohrana.html",
+      "source": "pultovaya-ohrana.source.html",
+      "css": "assets/css/articles/pultovaya-ohrana.css",
+      "repairs": []
+    },
+    {
+      "file": "soprovozhdenie-gruzov.html",
+      "source": "soprovozhdenie-gruzov.source.html",
+      "css": "assets/css/articles/soprovozhdenie-gruzov.css",
+      "repairs": []
+    },
+    {
+      "file": "uslugi-chop-v-moskve.html",
+      "source": "uslugi-chop-v-moskve.source.html",
+      "css": "assets/css/articles/uslugi-chop-v-moskve.css",
+      "repairs": []
+    },
+    {
+      "file": "zachem-soprovozhdenie-gruzov.html",
+      "source": "zachem-soprovozhdenie-gruzov.source.html",
+      "css": "assets/css/articles/zachem-soprovozhdenie-gruzov.css",
+      "repairs": []
+    },
+    {
+      "file": "zashchita-dachi-ot-zverej.html",
+      "source": "zashchita-dachi-ot-zverej.source.html",
+      "css": "assets/css/articles/zashchita-dachi-ot-zverej.css",
+      "repairs": []
+    }
+  ],
+  "deferred": [
+    {
+      "file": "kak-obezopasit-meropriyatie.html",
+      "source": "kak-obezopasit-meropriyatie.source.html",
+      "reasons": [
+        "canvas"
+      ],
+      "repairs": []
+    },
+    {
+      "file": "stoimost-bezopasnosti.html",
+      "source": "stoimost-bezopasnosti.source.html",
+      "reasons": [
+        "canvas",
+        "calculator"
+      ],
+      "repairs": []
+    }
+  ],
+  "total": 33
+}
