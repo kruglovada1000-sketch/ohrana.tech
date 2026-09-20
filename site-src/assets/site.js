@@ -15,6 +15,11 @@ var chatBtn=document.getElementById('chatBtn'),chatPanel=document.getElementById
 var filter=document.getElementById('priceFilter');if(filter){filter.addEventListener('input',function(){var q=(filter.value||'').trim().toLowerCase();document.querySelectorAll('[data-price-row]').forEach(function(row){var text=(row.textContent||'').toLowerCase();row.hidden=!!q&&text.indexOf(q)===-1;});});}
 var typeSelect=document.getElementById('priceType');if(typeSelect){typeSelect.addEventListener('change',function(){var v=typeSelect.value;document.querySelectorAll('[data-price-row]').forEach(function(row){row.hidden=!!v&&row.dataset.kind!==v;});});}
 
+var counters=document.querySelectorAll('[data-value]');
+function setCounterValue(el,value){var suffix=el.getAttribute('data-suffix')||'';var decimals=(String(el.getAttribute('data-value')||'').split('.')[1]||'').length;var text=decimals?Number(value).toFixed(decimals):Math.round(Number(value)).toLocaleString('ru-RU');el.textContent=text+suffix;}
+function runCounter(el){if(el.dataset.counterDone==='1')return;el.dataset.counterDone='1';var target=Number(el.getAttribute('data-value'));if(!Number.isFinite(target)){return;}if(rm){setCounterValue(el,target);return;}var start=performance.now(),duration=1100;function tick(now){var p=Math.min(1,(now-start)/duration);var eased=1-Math.pow(1-p,3);setCounterValue(el,target*eased);if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);}
+if(counters.length){if('IntersectionObserver'in window&&!rm){var counterIo=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){runCounter(entry.target);counterIo.unobserve(entry.target);}});},{threshold:.35});counters.forEach(function(el){counterIo.observe(el);});}else{counters.forEach(runCounter);}}
+
 document.querySelectorAll('form[action*="formspree.io"]').forEach(function(form){
   if(form.dataset.sharedFormBound==='1')return;
   form.dataset.sharedFormBound='1';
