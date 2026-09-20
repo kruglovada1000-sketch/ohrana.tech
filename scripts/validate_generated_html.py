@@ -8,9 +8,14 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES = [ROOT / "ohrana-skladov" / "index.html", ROOT / "ceny" / "index.html"]
+PAGES = [
+    ROOT / "ohrana-skladov" / "index.html",
+    ROOT / "ohrana-ofisov" / "index.html",
+    ROOT / "ceny" / "index.html",
+]
 VOID = {"area","base","br","col","embed","hr","img","input","link","meta","param","source","track","wbr"}
 BALANCED = {"html","head","body","header","nav","main","footer","section","div","table","thead","tbody","tr","th","td","article","figure","figcaption","ul","ol","li","button","a","script"}
+ORGANIZATION_ID = "https://ohrana.tech/#organization"
 
 
 def local_target(href: str) -> Path | None:
@@ -23,6 +28,19 @@ def local_target(href: str) -> Path | None:
     if path.endswith("/"):
         target = target / "index.html"
     return target
+
+
+def organization_declarations(value: object) -> int:
+    if isinstance(value, dict):
+        own = 0
+        node_type = value.get("@type")
+        types = node_type if isinstance(node_type, list) else [node_type]
+        if value.get("@id") == ORGANIZATION_ID and "Organization" in types:
+            own = 1
+        return own + sum(organization_declarations(child) for child in value.values())
+    if isinstance(value, list):
+        return sum(organization_declarations(child) for child in value)
+    return 0
 
 
 class Inspector(HTMLParser):
@@ -82,11 +100,17 @@ def inspect(path: Path) -> None:
 
     if not parser.jsonld_chunks:
         errors.append("no JSON-LD")
+
+    organization_count = 0
     for index, raw in enumerate(parser.jsonld_chunks, 1):
         try:
-            json.loads(raw)
+            parsed = json.loads(raw)
+            organization_count += organization_declarations(parsed)
         except json.JSONDecodeError as exc:
             errors.append(f"JSON-LD #{index}: {exc}")
+
+    if organization_count != 1:
+        errors.append(f"expected exactly one Organization declaration for {ORGANIZATION_ID}, got {organization_count}")
 
     missing_links: list[str] = []
     for href in parser.links:
@@ -102,7 +126,11 @@ def inspect(path: Path) -> None:
         errors.append("expected exactly one H1")
     if errors:
         raise SystemExit(f"{path.relative_to(ROOT)} failed integrity check:\n - " + "\n - ".join(errors))
-    print(f"HTML integrity OK: {path.relative_to(ROOT)}; {len(parser.links)} links, {len(parser.ids)} ids, {len(parser.jsonld_chunks)} JSON-LD blocks")
+    print(
+        f"HTML integrity OK: {path.relative_to(ROOT)}; "
+        f"{len(parser.links)} links, {len(parser.ids)} ids, {len(parser.jsonld_chunks)} JSON-LD blocks, "
+        f"Organization declarations={organization_count}"
+    )
 
 
 def main() -> None:
