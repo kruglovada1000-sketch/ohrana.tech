@@ -52,10 +52,13 @@ def body_inline_scripts(text: str) -> int:
     )
 
 
-def main() -> None:
+def page_risks(text: str) -> list[str]:
+    return [name for name, pattern in RISK_MARKERS.items() if re.search(pattern, text, re.I)]
+
+
+def audit_indexes() -> list[tuple[str, str, int, int, str]]:
     migrated = manifest_slugs()
     rows: list[tuple[str, str, int, int, str]] = []
-
     for path in sorted(ROOT.rglob("index.html")):
         rel = path.relative_to(ROOT)
         if rel == Path("index.html"):
@@ -64,24 +67,60 @@ def main() -> None:
             continue
         if len(rel.parts) == 2 and rel.parts[0] in migrated:
             continue
-
         text = path.read_text(encoding="utf-8", errors="replace")
         forms = len(re.findall(r"<form\b", text, re.I))
         body_js = body_inline_scripts(text)
-        risks = [name for name, pattern in RISK_MARKERS.items() if re.search(pattern, text, re.I)]
+        risks = page_risks(text)
         if not re.search(r"<main\b[^>]*>.*?</main>", text, re.I | re.S):
             risks.append("no-main")
         if not re.search(r"<style\b[^>]*>.*?</style>", text, re.I | re.S):
             risks.append("no-style")
         status = "SIMPLE" if not risks else "CUSTOM"
         rows.append((str(rel), status, forms, body_js, ",".join(risks) or "-"))
+    return rows
 
+
+def audit_articles() -> list[tuple[str, str, int, int, str]]:
+    rows: list[tuple[str, str, int, int, str]] = []
+    articles_dir = ROOT / "stati"
+    if not articles_dir.exists():
+        return rows
+    for path in sorted(articles_dir.glob("*.html")):
+        if path.name == "index.html":
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        main = re.search(r"<main\b[^>]*>(.*?)</main>", text, re.I | re.S)
+        forms = len(re.findall(r"<form\b", text, re.I))
+        body_js = body_inline_scripts(text)
+        risks = page_risks(text)
+        if not main:
+            risks.append("no-main")
+            structure = "NO_MAIN"
+        elif re.search(r"<h1\b", main.group(1), re.I):
+            structure = "H1_IN_MAIN"
+        elif re.search(r"<h1\b", text[:main.start()], re.I):
+            structure = "H1_BEFORE_MAIN"
+        else:
+            structure = "NO_H1"
+            risks.append("no-h1")
+        rows.append((path.name, structure, forms, body_js, ",".join(risks) or "-"))
+    return rows
+
+
+def main() -> None:
+    rows = audit_indexes()
     print("path\tstatus\tforms\tbody_js\trisks")
     for row in rows:
         print("\t".join(map(str, row)))
     print(f"Remaining standalone index pages: {len(rows)}")
     if rows:
-        raise SystemExit("Unmanaged standalone pages remain")
+        raise SystemExit("Unmanaged standalone index pages remain")
+
+    articles = audit_articles()
+    print("\narticle\tstructure\tforms\tbody_js\trisks")
+    for row in articles:
+        print("\t".join(map(str, row)))
+    print(f"Standalone article HTML files to classify: {len(articles)}")
 
 
 if __name__ == "__main__":
