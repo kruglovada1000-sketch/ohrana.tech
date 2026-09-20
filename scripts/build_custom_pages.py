@@ -22,28 +22,21 @@ def load_manifest() -> list[dict[str, object]]:
     pages = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(pages, list) or not pages:
         raise RuntimeError("custom-pages.json must contain a non-empty list")
+    seen: set[str] = set()
+    for page in pages:
+        slug = str(page.get("slug", ""))
+        source = str(page.get("source", ""))
+        script_source = str(page.get("script_source", ""))
+        if not slug or not source or not script_source:
+            raise RuntimeError(f"Invalid custom page entry: {page}")
+        if slug in seen:
+            raise RuntimeError(f"Duplicate custom page slug: {slug}")
+        seen.add(slug)
+        if not (SRC / "pages" / source).exists():
+            raise RuntimeError(f"Missing custom page source: {source}")
+        if not (SRC / "custom-js" / script_source).exists():
+            raise RuntimeError(f"Missing custom JS source: {script_source}")
     return pages
-
-
-def extract_body_inline_scripts(legacy: str, source_path: Path) -> str:
-    body = inner(r"<body\b[^>]*>(.*?)</body>", legacy)
-    if not body:
-        raise RuntimeError(f"No <body> in {source_path}")
-
-    chunks: list[str] = []
-    for match in re.finditer(r"<script(?P<attrs>[^>]*)>(?P<code>.*?)</script>", body, re.I | re.S):
-        attrs = match.group("attrs") or ""
-        code = (match.group("code") or "").strip()
-        if re.search(r"\bsrc\s*=", attrs, re.I):
-            raise RuntimeError(f"External body script requires explicit migration in {source_path}: {attrs.strip()}")
-        if re.search(r"type\s*=\s*[\"']application/ld\+json[\"']", attrs, re.I):
-            continue
-        if code:
-            chunks.append(code)
-
-    if not chunks:
-        raise RuntimeError(f"No inline body scripts found in {source_path}")
-    return "\n\n/* ---- preserved legacy body script ---- */\n\n".join(chunks) + "\n"
 
 
 def validate_custom_output(path: Path, slug: str, marker: str) -> None:
@@ -54,6 +47,7 @@ def validate_custom_output(path: Path, slug: str, marker: str) -> None:
         "<h1",
         "application/ld+json",
         'href="/ceny/"',
+        '/assets/js/site.js',
         f'/assets/js/{slug}.js',
         f'/assets/css/{slug}.css',
         '/assets/css/site-shell.css',
@@ -61,16 +55,15 @@ def validate_custom_output(path: Path, slug: str, marker: str) -> None:
     missing = [token for token in required if token not in page]
     if missing:
         raise RuntimeError(f"{path}: missing {missing}")
-    if len(re.findall(r"<header\b", page, re.I)) != 1:
-        raise RuntimeError(f"{path}: expected exactly one header")
-    if len(re.findall(r"<main\b", page, re.I)) != 1:
-        raise RuntimeError(f"{path}: expected exactly one main")
-    if len(re.findall(r"<footer\b", page, re.I)) != 1:
-        raise RuntimeError(f"{path}: expected exactly one footer")
+    for tag in ("header", "main", "footer"):
+        if len(re.findall(fr"<{tag}\b", page, re.I)) != 1:
+            raise RuntimeError(f"{path}: expected exactly one {tag}")
     if re.search(r"<style\b", page, re.I):
         raise RuntimeError(f"{path}: inline style remained")
     if "{{site." in page:
         raise RuntimeError(f"{path}: unresolved template variable")
+    if page.index('/assets/js/site.js') > page.index(f'/assets/js/{slug}.js'):
+        raise RuntimeError(f"{path}: shared site.js must load before custom module")
     js = (ROOT / "assets" / "js" / f"{slug}.js").read_text(encoding="utf-8")
     if marker and marker not in js:
         raise RuntimeError(f"{path}: custom JS marker {marker!r} missing")
@@ -79,6 +72,7 @@ def validate_custom_output(path: Path, slug: str, marker: str) -> None:
 def build_custom_page(config: dict[str, object]) -> None:
     slug = str(config["slug"])
     source_name = str(config["source"])
+    script_source = str(config["script_source"])
     source_path = SRC / "pages" / source_name
     legacy = source_path.read_text(encoding="utf-8")
 
@@ -96,12 +90,15 @@ def build_custom_page(config: dict[str, object]) -> None:
         raise RuntimeError(f"url_replacements must be an object for {slug}")
     for old, new in replacements.items():
         page_head = page_head.replace(str(old), str(new))
+        main = main.replace(str(old), str(new))
 
     organization_jsonld = "" if legacy_defines_organization(page_head) else read_partial("organization-jsonld.html")
-    body_script = extract_body_inline_scripts(legacy, source_path)
     marker = str(config.get("script_marker", ""))
-    if marker and marker not in body_script:
-        raise RuntimeError(f"Custom script marker {marker!r} missing in {source_path}")
+    custom_js = (SRC / "custom-js" / script_source).read_text(encoding="utf-8")
+    if marker and marker not in custom_js:
+        raise RuntimeError(f"Custom script marker {marker!r} missing in {script_source}")
+    if marker and marker not in main:
+        raise RuntimeError(f"Custom HTML marker {marker!r} missing in {source_path}")
 
     css_path = ROOT / "assets" / "css" / f"{slug}.css"
     css_path.parent.mkdir(parents=True, exist_ok=True)
@@ -109,7 +106,7 @@ def build_custom_page(config: dict[str, object]) -> None:
 
     js_path = ROOT / "assets" / "js" / f"{slug}.js"
     js_path.parent.mkdir(parents=True, exist_ok=True)
-    js_path.write_text(body_script, encoding="utf-8")
+    js_path.write_text(custom_js.rstrip() + "\n", encoding="utf-8")
 
     out = f'''<!DOCTYPE html>
 <html lang="ru" class="no-js">
@@ -129,6 +126,7 @@ def build_custom_page(config: dict[str, object]) -> None:
 {read_partial("footer.html")}
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
+<script src="/assets/js/site.js" defer></script>
 <script src="/assets/js/{slug}.js" defer></script>
 </body>
 </html>
@@ -137,7 +135,7 @@ def build_custom_page(config: dict[str, object]) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(out, encoding="utf-8")
     validate_custom_output(out_path, slug, marker)
-    print(f"Built custom page: /{slug}/; preserved script -> {js_path.relative_to(ROOT)}")
+    print(f"Built custom page: /{slug}/; module -> {js_path.relative_to(ROOT)}")
 
 
 def main() -> None:
