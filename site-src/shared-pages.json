@@ -11,5 +11,6 @@
   {"slug":"ohrana-meropriyatiy-v-moskve","source":"ohrana-meropriyatiy-v-moskve.source.html","body_between_header_footer":true},
   {"slug":"ohrana-meropriyatiy-v-permi","source":"ohrana-meropriyatiy-v-permi.source.html","pre_main_header_class":"article-header"},
   {"slug":"ohrana-meropriyatiy-v-sankt-peterburge","source":"ohrana-meropriyatiy-v-sankt-peterburge.source.html","pre_main_header_class":"article-header"},
-  {"slug":"ohrana-meropriyatiy-v-sochi","source":"ohrana-meropriyatiy-v-sochi.source.html","pre_main_header_class":"article-header"}
+  {"slug":"ohrana-meropriyatiy-v-sochi","source":"ohrana-meropriyatiy-v-sochi.source.html","pre_main_header_class":"article-header"},
+  {"slug":"soprovozhdenie-gruzov","source":"soprovozhdenie-gruzov.source.html","gilded_legacy_aliases":true}
 ]

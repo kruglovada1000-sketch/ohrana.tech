@@ -32,6 +32,21 @@ def load_manifest(name: str) -> list[dict[str, object]]:
     return pages
 
 
+def append_gilded_legacy_aliases(slug: str) -> None:
+    css_path = ROOT / "assets" / "css" / f"{slug}.css"
+    css = css_path.read_text(encoding="utf-8")
+    css += """
+/* Shared Gilded Noir compatibility for legacy amber templates. */
+:root{
+  --amber:var(--gold);--amber2:var(--gold2);--amber-deep:var(--gold-deep);
+  --disp:var(--serif);--body:var(--sans);--steel:var(--mut);
+}
+body{font-family:var(--sans)}
+h1,h2,h3{font-family:var(--serif)}
+"""
+    css_path.write_text(css, encoding="utf-8")
+
+
 def build_regular_variant(page: dict[str, object]) -> None:
     slug = str(page["slug"])
     source = str(page["source"])
@@ -45,9 +60,7 @@ def build_regular_variant(page: dict[str, object]) -> None:
         raise RuntimeError(f"Conflicting page transform modes: {slug}")
     if not hero_class and not body_between:
         build_legacy_page(slug, source)
-        return
-
-    if hero_class:
+    elif hero_class:
         hero_pattern = re.compile(
             rf'<header\b[^>]*class=["\'][^"\']*\b{re.escape(hero_class)}\b[^"\']*["\'][^>]*>.*?</header>',
             re.I | re.S,
@@ -66,6 +79,14 @@ def build_regular_variant(page: dict[str, object]) -> None:
         main_inner = main_match.group(1).strip()
         without_hero = legacy[:hero_match.start()] + legacy[hero_match.end():]
         transformed = main_pattern.sub(f"<main>\n{hero}\n{main_inner}\n</main>", without_hero, count=1)
+
+        temp_name = f".__build-{slug}.source.html"
+        temp_path = SRC / "pages" / temp_name
+        temp_path.write_text(transformed, encoding="utf-8")
+        try:
+            build_legacy_page(slug, temp_name)
+        finally:
+            temp_path.unlink(missing_ok=True)
     else:
         head_match = re.search(r'<!DOCTYPE html>.*?</head>', legacy, re.I | re.S)
         body_match = re.search(r'<body\b[^>]*>(.*?)</body>', legacy, re.I | re.S)
@@ -80,14 +101,16 @@ def build_regular_variant(page: dict[str, object]) -> None:
         if '<h1' not in unique.lower():
             raise RuntimeError(f"Body slice lost H1: {source_path}")
         transformed = f"{head_match.group(0)}\n<body>\n<main>\n{unique}\n</main>\n</body>\n</html>\n"
+        temp_name = f".__build-{slug}.source.html"
+        temp_path = SRC / "pages" / temp_name
+        temp_path.write_text(transformed, encoding="utf-8")
+        try:
+            build_legacy_page(slug, temp_name)
+        finally:
+            temp_path.unlink(missing_ok=True)
 
-    temp_name = f".__build-{slug}.source.html"
-    temp_path = SRC / "pages" / temp_name
-    temp_path.write_text(transformed, encoding="utf-8")
-    try:
-        build_legacy_page(slug, temp_name)
-    finally:
-        temp_path.unlink(missing_ok=True)
+    if page.get("gilded_legacy_aliases"):
+        append_gilded_legacy_aliases(slug)
 
 
 def main() -> None:
