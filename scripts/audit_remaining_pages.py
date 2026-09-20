@@ -41,7 +41,11 @@ LEGACY_REDIRECTS = {
     Path("css/index.html"): {
         "canonical": "https://ohrana.tech/ohrana-ofisov/",
         "target": "/ohrana-ofisov/",
-    }
+    },
+    Path("ohrana-skladov/ohrana-skladov index.html"): {
+        "canonical": "https://ohrana.tech/ohrana-skladov/",
+        "target": "/ohrana-skladov/",
+    },
 }
 
 
