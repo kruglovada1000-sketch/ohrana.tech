@@ -42,11 +42,12 @@ jobs:
           python scripts/build_site.py
           python scripts/build_object_pages.py
           python scripts/normalize_generated_links.py
+          python scripts/normalize_jsonld_entities.py
           python scripts/normalize_sitemap.py
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/audit_migration_candidates.py scripts/normalize_generated_links.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
+          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/audit_migration_candidates.py scripts/normalize_generated_links.py scripts/normalize_jsonld_entities.py scripts/normalize_sitemap.py scripts/validate_shared_shell.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           python - <<'PY'
           from pathlib import Path
@@ -84,6 +85,9 @@ jobs:
           print(f'Generated structure OK: {len(slugs)} object pages + prices')
           PY
 
+      - name: Validate shared design shell
+        run: python scripts/validate_shared_shell.py
+
       - name: Validate warehouse content markers
         run: |
           python - <<'PY'
@@ -94,7 +98,7 @@ jobs:
           print('Warehouse unique content markers OK')
           PY
 
-      - name: Validate HTML integrity and internal links
+      - name: Validate HTML integrity, JSON-LD and internal links
         run: python scripts/validate_generated_html.py
 
       - name: Validate sitemap targets
