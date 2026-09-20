@@ -10,6 +10,10 @@ ALIASES = {
     '/ohrana-stroyaploshchadok/': '/ohrana-stroitelnyh-obektov/',
     '/ohrana-uvelirnyh-magazinov/': '/ohrana-yuvelirnyh-magazinov/',
 }
+RESOURCE_REPLACEMENTS = {
+    'src="schit.jpg"': 'src="/images/schit.jpg"',
+    "src='schit.jpg'": "src='/images/schit.jpg'",
+}
 
 
 def load_manifest(name: str) -> list[dict[str, object]]:
@@ -41,14 +45,19 @@ def generated_pages() -> list[Path]:
 
 def main() -> None:
     total=0
+    resources=0
     for path in generated_pages():
         if not path.exists(): raise RuntimeError(f'Generated page missing before link normalization: {path}')
         text=path.read_text(encoding='utf-8');original=text
         for old,new in ALIASES.items():
             count=text.count(old)
             if count: text=text.replace(old,new);total+=count
+        for old,new in RESOURCE_REPLACEMENTS.items():
+            count=text.count(old)
+            if count: text=text.replace(old,new);resources+=count
         if text!=original:
-            path.write_text(text,encoding='utf-8');print(f'Normalized legacy links: {path.relative_to(ROOT)}')
+            path.write_text(text,encoding='utf-8');print(f'Normalized generated links/resources: {path.relative_to(ROOT)}')
     print(f'Legacy link replacements: {total}')
+    print(f'Legacy resource replacements: {resources}')
 
 if __name__=='__main__': main()
