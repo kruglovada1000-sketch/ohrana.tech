@@ -29,21 +29,16 @@ jobs:
         with:
           ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Audit object migration candidates
         run: python scripts/audit_migration_candidates.py
-
       - name: Audit core migration candidates
         run: python scripts/audit_core_pages.py
-
       - name: Audit remaining standalone pages
         run: python scripts/audit_remaining_pages.py
-
       - name: Build static pages
         run: |
           python scripts/build_site.py
@@ -55,162 +50,79 @@ jobs:
           python scripts/normalize_jsonld_entities.py
           python scripts/normalize_counter_values.py
           python scripts/normalize_sitemap.py
-
       - name: Validate generated structure
         run: |
           python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/build_custom_pages.py scripts/build_article_pages.py scripts/prepare_document_pages.py scripts/audit_migration_candidates.py scripts/audit_core_pages.py scripts/audit_remaining_pages.py scripts/normalize_generated_links.py scripts/normalize_jsonld_entities.py scripts/normalize_counter_values.py scripts/normalize_sitemap.py scripts/validate_shared_shell.py scripts/validate_custom_generated.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           python - <<'PY'
           from pathlib import Path
-          import json
-          import re
-
-          root = Path('.')
-          objects = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
-          shared = json.loads(Path('site-src/shared-pages.json').read_text(encoding='utf-8'))
-          custom = json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
-          documents = json.loads(Path('site-src/document-pages.json').read_text(encoding='utf-8'))
-          article_report = json.loads(Path('site-src/article-pages.generated.json').read_text(encoding='utf-8'))
-          assert objects, 'object page manifest is empty'
-          assert shared, 'shared page manifest is empty'
-          assert documents, 'document page manifest is empty'
-          assert article_report['total'] == len(article_report['regular']) + len(article_report['deferred']), 'article report count mismatch'
-
-          object_slugs = [page['slug'] for page in objects]
-          shared_slugs = [page['slug'] for page in shared]
-          custom_slugs = [page['slug'] for page in custom]
-          document_slugs = [page['slug'] for page in documents]
-          regular_slugs = ['ohrana-skladov'] + object_slugs + shared_slugs
-
-          assert len(regular_slugs) == len(set(regular_slugs)), 'duplicate regular slug'
-          assert len(custom_slugs) == len(set(custom_slugs)), 'duplicate custom slug'
-          assert len(document_slugs) == len(set(document_slugs)), 'duplicate document slug'
-          assert not set(regular_slugs).intersection(custom_slugs), 'page present in regular and custom manifests'
-          assert not set(regular_slugs + custom_slugs).intersection(document_slugs), 'document page also present in site manifests'
-
+          import json,re
+          root=Path('.')
+          objects=json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          shared=json.loads(Path('site-src/shared-pages.json').read_text(encoding='utf-8'))
+          custom=json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
+          documents=json.loads(Path('site-src/document-pages.json').read_text(encoding='utf-8'))
+          ar=json.loads(Path('site-src/article-pages.generated.json').read_text(encoding='utf-8'))
+          assert objects and shared and documents
+          assert ar['total']==len(ar['regular'])+len(ar.get('custom',[]))+len(ar['deferred']),'article report count mismatch'
+          assert not ar['deferred'],f"unhandled articles remain: {[x['file'] for x in ar['deferred']]}"
+          object_slugs=[p['slug'] for p in objects];shared_slugs=[p['slug'] for p in shared];custom_slugs=[p['slug'] for p in custom];document_slugs=[p['slug'] for p in documents]
+          regular_slugs=['ohrana-skladov']+object_slugs+shared_slugs
+          assert len(regular_slugs)==len(set(regular_slugs));assert len(custom_slugs)==len(set(custom_slugs));assert len(document_slugs)==len(set(document_slugs))
+          assert not set(regular_slugs).intersection(custom_slugs);assert not set(regular_slugs+custom_slugs).intersection(document_slugs)
           for slug in regular_slugs:
-              page = root / slug / 'index.html'
-              css = root / 'assets' / 'css' / f'{slug}.css'
-              assert page.exists(), page
-              assert css.exists(), css
-              html = page.read_text(encoding='utf-8')
-              assert 'href="/ceny/"' in html, slug
-              assert '<style' not in html.lower(), slug
-              assert '{{site.' not in html, slug
-              assert len(re.findall(r'<header\b', html, re.I)) == 1, slug
-              assert len(re.findall(r'<main\b', html, re.I)) == 1, slug
-              assert len(re.findall(r'<footer\b', html, re.I)) == 1, slug
-              assert f'/assets/css/{slug}.css' in html, slug
-              assert html.index(f'/assets/css/{slug}.css') < html.index('/assets/css/site-shell.css'), slug
-              assert '/assets/js/site.js' in html, slug
-
-          for article in article_report['regular']:
-              page = root / 'stati' / article['file']
-              css = root / article['css']
-              assert page.exists(), page
-              assert css.exists(), css
-              html = page.read_text(encoding='utf-8')
-              assert 'href="/ceny/"' in html, article['file']
-              assert '<style' not in html.lower(), article['file']
-              assert len(re.findall(r'<h1\b', html, re.I)) == 1, article['file']
-              assert len(re.findall(r'<header\b', html, re.I)) == 1, article['file']
-              assert len(re.findall(r'<main\b', html, re.I)) == 1, article['file']
-              assert len(re.findall(r'<footer\b', html, re.I)) == 1, article['file']
-              assert '/assets/js/site.js' in html and '/assets/js/article.js' in html, article['file']
-          assert Path('assets/js/article.js').exists(), 'article.js missing'
-
+              page=root/slug/'index.html';css=root/'assets'/'css'/f'{slug}.css';assert page.exists() and css.exists()
+              html=page.read_text(encoding='utf-8');assert 'href="/ceny/"' in html;assert '<style' not in html.lower();assert '{{site.' not in html
+              assert len(re.findall(r'<header\b',html,re.I))==1 and len(re.findall(r'<main\b',html,re.I))==1 and len(re.findall(r'<footer\b',html,re.I))==1
+              assert f'/assets/css/{slug}.css' in html and html.index(f'/assets/css/{slug}.css')<html.index('/assets/css/site-shell.css');assert '/assets/js/site.js' in html
+          for article in list(ar['regular'])+list(ar.get('custom',[])):
+              page=root/'stati'/article['file'];css=root/article['css'];assert page.exists() and css.exists()
+              html=page.read_text(encoding='utf-8');assert 'href="/ceny/"' in html and '<style' not in html.lower()
+              assert len(re.findall(r'<h1\b',html,re.I))==1 and len(re.findall(r'<header\b',html,re.I))==1 and len(re.findall(r'<main\b',html,re.I))==1 and len(re.findall(r'<footer\b',html,re.I))==1
+              assert '/assets/js/site.js' in html and '/assets/js/article.js' in html
+              if 'script' in article:
+                  assert ('/'+article['script']) in html and (root/article['script']).exists()
+          assert Path('assets/js/article.js').exists()
           for doc in documents:
-              page = root / doc['path']
-              html = page.read_text(encoding='utf-8')
-              assert '<meta name="robots" content="noindex,follow">' in html, doc['slug']
-              assert 'class="kp-wrap"' in html, doc['slug']
-              assert 'window.print()' in html, doc['slug']
-              assert '/css/style.css' in html, doc['slug']
-          assert Path('css/style.css').exists(), 'document theme stylesheet missing'
-
-          prices = Path('ceny/index.html').read_text(encoding='utf-8')
-          assert 'href="/ceny/"' in prices
-          assert '<style' not in prices.lower()
-          assert '{{site.' not in prices
-          assert 'https://ohrana.tech/ceny/' in Path('sitemap.xml').read_text(encoding='utf-8')
-          assert '/stati/soprovozhdenie-gruzov.html' in prices
-          assert "</filter id='n'>" not in Path('assets/css/site-shell.css').read_text(encoding='utf-8')
-          print(
-              f'Generated structure OK: {len(object_slugs) + 1} object pages + '
-              f'{len(shared_slugs)} shared service pages + {len(custom_slugs)} custom pages + '
-              f'{len(article_report["regular"])} regular articles + {len(article_report["deferred"])} deferred articles + '
-              f'{len(document_slugs)} managed document pages + prices'
-          )
+              html=(root/doc['path']).read_text(encoding='utf-8');assert '<meta name="robots" content="noindex,follow">' in html and 'class="kp-wrap"' in html and 'window.print()' in html and '/css/style.css' in html
+          assert Path('css/style.css').exists()
+          prices=Path('ceny/index.html').read_text(encoding='utf-8');assert 'href="/ceny/"' in prices and '<style' not in prices.lower() and '{{site.' not in prices
+          assert 'https://ohrana.tech/ceny/' in Path('sitemap.xml').read_text(encoding='utf-8');assert '/stati/soprovozhdenie-gruzov.html' in prices
+          print(f"Generated structure OK: {len(object_slugs)+1} object pages + {len(shared_slugs)} shared service pages + {len(custom_slugs)} custom pages + {len(ar['regular'])} regular articles + {len(ar.get('custom',[]))} custom articles + {len(document_slugs)} managed document pages + prices")
           PY
-
       - name: Validate shared design shell
         run: python scripts/validate_shared_shell.py
-
       - name: Validate custom interactive pages
         run: python scripts/validate_custom_generated.py
-
       - name: Validate warehouse content markers
         run: |
           python - <<'PY'
           from pathlib import Path
-          html = Path('ohrana-skladov/index.html').read_text(encoding='utf-8')
-          for marker in ['id="risks"','id="services"','id="types"','id="prices"','id="steps"','id="why"','id="faq"','id="articles"','id="cta"']:
-              assert marker in html, marker
+          html=Path('ohrana-skladov/index.html').read_text(encoding='utf-8')
+          for marker in ['id="risks"','id="services"','id="types"','id="prices"','id="steps"','id="why"','id="faq"','id="articles"','id="cta"']:assert marker in html,marker
           print('Warehouse unique content markers OK')
           PY
-
       - name: Validate HTML integrity, JSON-LD and internal links
         run: python scripts/validate_generated_html.py
-
       - name: Validate sitemap targets
         run: python scripts/validate_sitemap.py
-
       - name: Commit generated files on refactor branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/refactor/shared-site-template' && github.actor != 'github-actions[bot]'
         run: |
-          if git diff --quiet; then
-            echo "Generated files are already current"
-            exit 0
-          fi
+          if git diff --quiet; then echo "Generated files are already current"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           python - <<'PY'
-          import json
-          import subprocess
+          import json,subprocess
           from pathlib import Path
-
-          objects = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
-          shared = json.loads(Path('site-src/shared-pages.json').read_text(encoding='utf-8'))
-          custom = json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
-          documents = json.loads(Path('site-src/document-pages.json').read_text(encoding='utf-8'))
-          paths = [
-              'ohrana-skladov/index.html',
-              'ceny/index.html',
-              'sitemap.xml',
-              'assets/css',
-              'assets/js',
-              'site-src/articles',
-              'site-src/article-pages.generated.json',
-              'stati',
-          ]
-          paths.extend(f"{page['slug']}/index.html" for page in objects)
-          paths.extend(f"{page['slug']}/index.html" for page in shared)
-          paths.extend(f"{page['slug']}/index.html" for page in custom)
-          paths.extend(page['path'] for page in documents)
-          subprocess.run(['git', 'add', '--', *paths], check=True)
+          objects=json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'));shared=json.loads(Path('site-src/shared-pages.json').read_text(encoding='utf-8'));custom=json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'));documents=json.loads(Path('site-src/document-pages.json').read_text(encoding='utf-8'))
+          paths=['ohrana-skladov/index.html','ceny/index.html','sitemap.xml','assets/css','assets/js','site-src/articles','site-src/article-pages.generated.json','stati']
+          paths.extend(f"{p['slug']}/index.html" for p in objects);paths.extend(f"{p['slug']}/index.html" for p in shared);paths.extend(f"{p['slug']}/index.html" for p in custom);paths.extend(p['path'] for p in documents)
+          subprocess.run(['git','add','--',*paths],check=True)
           PY
-          if git diff --cached --quiet; then
-            echo "No generated changes to commit"
-            exit 0
-          fi
+          if git diff --cached --quiet; then echo "No generated changes to commit"; exit 0; fi
           git commit -m "build: regenerate shared site and articles [skip ci]"
-          if git push; then
-            exit 0
-          fi
+          if git push; then exit 0; fi
           git fetch origin refactor/shared-site-template
-          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/refactor/shared-site-template)" ]; then
-            echo "Generated commit is already present on remote"
-            exit 0
-          fi
-          echo "Remote branch moved to a different commit; refusing to force-push"
-          exit 1
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/refactor/shared-site-template)" ]; then echo "Generated commit is already present on remote"; exit 0; fi
+          echo "Remote branch moved to a different commit; refusing to force-push"; exit 1

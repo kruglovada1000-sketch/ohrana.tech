@@ -14,10 +14,11 @@ REPORT = SRC / 'article-pages.generated.json'
 ARTICLE_JS_SOURCE = SRC / 'assets' / 'article.js'
 ARTICLE_JS_PUBLIC = ROOT / 'assets' / 'js' / 'article.js'
 ARTICLE_CSS_DIR = ROOT / 'assets' / 'css' / 'articles'
+ARTICLE_CUSTOM_JS_DIR = ROOT / 'assets' / 'js' / 'articles'
 
 CUSTOM_PATTERNS = {
     'canvas': re.compile(r'<canvas\b|getContext\s*\(', re.I),
-    'calculator': re.compile(r'калькулятор|calculator|total-price|total_price|calc-btn|data-price|rates\s*=|rate\s*=', re.I),
+    'calculator': re.compile(r'total-price|total_price|guards-count|hours-count|calc-btn|rates\s*=|function\s+updatePrice|data-target=["\'](?:guards|hours)["\']', re.I),
     'ymaps': re.compile(r'\bymaps\b', re.I),
 }
 
@@ -57,7 +58,6 @@ def repair_extra_closing_li(text: str, source: Path) -> tuple[str, bool]:
     closes = len(re.findall(r'</li\s*>', text, re.I))
     if closes != opens + 1:
         return text, False
-
     depth = 0
     for match in re.finditer(r'<li\b[^>]*>|</li\s*>', text, re.I):
         token = match.group(0)
@@ -66,9 +66,7 @@ def repair_extra_closing_li(text: str, source: Path) -> tuple[str, bool]:
             continue
         if depth == 0:
             repaired = text[:match.start()] + text[match.end():]
-            new_opens = len(re.findall(r'<li\b[^>]*>', repaired, re.I))
-            new_closes = len(re.findall(r'</li\s*>', repaired, re.I))
-            if new_opens != new_closes:
+            if len(re.findall(r'<li\b[^>]*>', repaired, re.I)) != len(re.findall(r'</li\s*>', repaired, re.I)):
                 raise RuntimeError(f'LI repair failed for {source}')
             print(f'Repaired one stray </li>: {source.name}')
             return repaired, True
@@ -103,7 +101,6 @@ def extract_main(text: str, source: Path) -> str:
         if not re.search(r'<h1\b', main, re.I):
             raise RuntimeError(f'Article main has no H1: {source}')
         return main
-
     body_match = re.search(r'<body\b[^>]*>(.*?)</body>', text, re.I | re.S)
     if not body_match:
         raise RuntimeError(f'Article has no body: {source}')
@@ -118,7 +115,32 @@ def extract_main(text: str, source: Path) -> str:
     return '<main>\n' + unique + '\n</main>'
 
 
-def build_regular(source: Path, text: str, repairs: list[str]) -> dict[str, object]:
+def inline_script_codes(text: str) -> list[str]:
+    result: list[str] = []
+    for match in re.finditer(r'<script(?P<attrs>[^>]*)>(?P<code>.*?)</script>', text, re.I | re.S):
+        attrs = match.group('attrs') or ''
+        code = (match.group('code') or '').strip()
+        if not code or re.search(r'\bsrc\s*=', attrs, re.I) or 'application/ld+json' in attrs.lower():
+            continue
+        result.append(code)
+    return result
+
+
+def extract_custom_module(text: str, reasons: list[str], source: Path) -> str:
+    selected: list[str] = []
+    for code in inline_script_codes(text):
+        use = False
+        if 'canvas' in reasons and re.search(r'getContext\s*\(|radarCanvas', code, re.I): use = True
+        if 'calculator' in reasons and re.search(r'total-price|total_price|guards-count|hours-count|rates\s*=|updatePrice', code, re.I): use = True
+        if 'ymaps' in reasons and re.search(r'\bymaps\b', code, re.I): use = True
+        if use and code not in selected:
+            selected.append(code)
+    if reasons and not selected:
+        raise RuntimeError(f'Custom article markers found but no isolated module could be extracted: {source} ({reasons})')
+    return '\n\n'.join(selected)
+
+
+def build_article(source: Path, text: str, repairs: list[str], reasons: list[str]) -> dict[str, object]:
     public_name = source.name.replace('.source.html', '.html')
     stem = public_name[:-5]
     public = ARTICLES / public_name
@@ -128,6 +150,15 @@ def build_regular(source: Path, text: str, repairs: list[str]) -> dict[str, obje
     ARTICLE_CSS_DIR.mkdir(parents=True, exist_ok=True)
     css_path = ARTICLE_CSS_DIR / f'{stem}.css'
     css_path.write_text(css + '\n', encoding='utf-8')
+
+    custom_script = ''
+    custom_src = ''
+    if reasons:
+        custom_script = extract_custom_module(text, reasons, source)
+        ARTICLE_CUSTOM_JS_DIR.mkdir(parents=True, exist_ok=True)
+        module_path = ARTICLE_CUSTOM_JS_DIR / f'{stem}.js'
+        module_path.write_text(custom_script + '\n', encoding='utf-8')
+        custom_src = f'<script src="/assets/js/articles/{stem}.js" defer></script>'
 
     head = page_head_from_legacy(text)
     org = '' if legacy_defines_organization(head) else read_partial('organization-jsonld.html')
@@ -151,54 +182,68 @@ def build_regular(source: Path, text: str, repairs: list[str]) -> dict[str, obje
 {read_partial('chat.html')}
 <script src="/assets/js/site.js" defer></script>
 <script src="/assets/js/article.js" defer></script>
+{custom_src}
 </body>
 </html>
 '''
     public.write_text(out, encoding='utf-8')
-    return {'file': public_name, 'source': source.name, 'css': f'assets/css/articles/{stem}.css', 'repairs': repairs}
+    entry: dict[str, object] = {'file': public_name, 'source': source.name, 'css': f'assets/css/articles/{stem}.css', 'repairs': repairs}
+    if reasons:
+        entry['reasons'] = reasons
+        entry['script'] = f'assets/js/articles/{stem}.js'
+    return entry
 
 
-def validate_regular(entry: dict[str, object]) -> None:
+def validate_article(entry: dict[str, object], custom: bool) -> None:
     path = ARTICLES / str(entry['file'])
     html = path.read_text(encoding='utf-8')
     errors: list[str] = []
     for tag in ('h1', 'header', 'main', 'footer'):
-        if len(re.findall(rf'<{tag}\b', html, re.I)) != 1:
-            errors.append(f'exactly one <{tag}> required')
+        if len(re.findall(rf'<{tag}\b', html, re.I)) != 1: errors.append(f'exactly one <{tag}> required')
     if re.search(r'<style\b', html, re.I): errors.append('inline style remained')
     if 'href="/ceny/"' not in html: errors.append('prices nav missing')
     if '/assets/js/site.js' not in html: errors.append('site.js missing')
     if '/assets/js/article.js' not in html: errors.append('article.js missing')
     if f'/assets/css/articles/{Path(str(entry["file"])).stem}.css' not in html: errors.append('article css missing')
+    if custom:
+        expected = '/' + str(entry['script'])
+        if expected not in html: errors.append('custom article module missing')
+        module = ROOT / str(entry['script'])
+        if not module.exists() or not module.read_text(encoding='utf-8').strip(): errors.append('custom article module empty')
     if errors:
         raise RuntimeError(f"{entry['file']}: " + '; '.join(errors))
 
 
 def main() -> None:
-    if not ARTICLES.exists():
-        raise RuntimeError('Missing /stati directory')
+    if not ARTICLES.exists(): raise RuntimeError('Missing /stati directory')
     sources = ensure_snapshots()
     ARTICLE_JS_PUBLIC.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ARTICLE_JS_SOURCE, ARTICLE_JS_PUBLIC)
 
     regular: list[dict[str, object]] = []
+    custom: list[dict[str, object]] = []
     deferred: list[dict[str, object]] = []
     for source in sources:
         text, repairs = source_text(source)
         reasons = custom_reasons(text)
         public_name = source.name.replace('.source.html', '.html')
+        try:
+            entry = build_article(source, text, repairs, reasons)
+        except RuntimeError as exc:
+            if reasons:
+                deferred.append({'file': public_name, 'source': source.name, 'reasons': reasons, 'repairs': repairs, 'error': str(exc)})
+                print(f'Deferred custom article: {public_name} ({exc})')
+                continue
+            raise
+        validate_article(entry, bool(reasons))
         if reasons:
-            deferred.append({'file': public_name, 'source': source.name, 'reasons': reasons, 'repairs': repairs})
-            print(f'Deferred custom article: {public_name} ({", ".join(reasons)})')
-            continue
-        entry = build_regular(source, text, repairs)
-        validate_regular(entry)
-        regular.append(entry)
-        print(f'Built article: /stati/{public_name}')
+            custom.append(entry); print(f'Built custom article: /stati/{public_name} ({", ".join(reasons)})')
+        else:
+            regular.append(entry); print(f'Built article: /stati/{public_name}')
 
-    report = {'regular': regular, 'deferred': deferred, 'total': len(sources)}
+    report = {'regular': regular, 'custom': custom, 'deferred': deferred, 'total': len(sources)}
     REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    print(f'Article batch: {len(regular)} regular, {len(deferred)} deferred custom, {len(sources)} total')
+    print(f'Article batch: {len(regular)} regular, {len(custom)} custom, {len(deferred)} deferred, {len(sources)} total')
 
 
 if __name__ == '__main__':
