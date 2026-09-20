@@ -1,0 +1,10 @@
+[
+  {
+    "slug": "ohrana-stroitelnyh-obektov",
+    "source": "ohrana-stroitelnyh-obektov.source.html",
+    "script_marker": "sparkCanvas",
+    "url_replacements": {
+      "https://ohrana.tech/ohrana-stroek/": "https://ohrana.tech/ohrana-stroitelnyh-obektov/"
+    }
+  }
+]
