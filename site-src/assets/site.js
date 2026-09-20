@@ -2,6 +2,25 @@
 'use strict';
 var root=document.documentElement;
 var body=document.body;
+/* site-theme-toggle-js-v1 */
+function applySiteTheme(theme){
+  var next=theme==='light'?'light':'dark';
+  root.dataset.theme=next;
+  try{localStorage.setItem('ohrana-theme',next);}catch(e){}
+  var meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',next==='light'?'#F7F3EC':'#07090D');
+  var btn=document.getElementById('themeToggle');if(btn)btn.setAttribute('aria-label',next==='light'?'Переключить на тёмную тему':'Переключить на светлую тему');
+}
+(function(){try{var saved=localStorage.getItem('ohrana-theme');if(saved==='light'||saved==='dark')root.dataset.theme=saved;}catch(e){}})();
+function ensureThemeToggle(){
+  var btn=document.getElementById('themeToggle');
+  if(!btn){var wrap=document.querySelector('#siteNav .wrap');if(wrap){btn=document.createElement('button');btn.type='button';btn.id='themeToggle';btn.className='theme-toggle';btn.title='Светлая / тёмная тема';btn.innerHTML='<span class="theme-icon theme-icon-sun" aria-hidden="true">☀</span><span class="theme-icon theme-icon-moon" aria-hidden="true">☾</span>';wrap.appendChild(btn);}}
+  if(!btn||btn.dataset.themeBound==='1')return;
+  btn.dataset.themeBound='1';
+  btn.addEventListener('click',function(){applySiteTheme(root.dataset.theme==='light'?'dark':'light');});
+  applySiteTheme(root.dataset.theme==='light'?'light':'dark');
+}
+ensureThemeToggle();
+
 var metrikaId=Number(body&&body.dataset?body.dataset.metrikaId:0)||111882478;
 function goal(name){try{if(typeof ym==='function')ym(metrikaId,'reachGoal',name);}catch(e){}}
 document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var href=a.getAttribute('href')||'';if(href.indexOf('tel:')===0)goal('click_phone');if(href.indexOf('wa.me')>-1)goal('click_whatsapp');if(href.indexOf('t.me')>-1)goal('click_telegram');});
