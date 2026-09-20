@@ -12,6 +12,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: shared-site-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -126,4 +130,13 @@ jobs:
             exit 0
           fi
           git commit -m "build: regenerate shared object batch [skip ci]"
-          git push
+          if git push; then
+            exit 0
+          fi
+          git fetch origin refactor/shared-site-template
+          if [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/refactor/shared-site-template)" ]; then
+            echo "Generated commit is already present on remote"
+            exit 0
+          fi
+          echo "Remote branch moved to a different commit; refusing to force-push"
+          exit 1
