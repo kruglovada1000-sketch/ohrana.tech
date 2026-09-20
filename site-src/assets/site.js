@@ -37,10 +37,13 @@ function ensureThemeToggle(){
 }
 ensureThemeToggle();
 
-/* contacts-visual-restore-v1 */
-var contactStyle=document.createElement('style');
-contactStyle.textContent='.qi-msgr{display:flex;gap:8px;align-items:center}.qi-msgr a{width:34px!important;height:34px!important;flex:0 0 34px!important;display:flex!important;align-items:center!important;justify-content:center!important;border-radius:50%!important}.qi-msgr a svg{width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important}.hero-video-frame>.fig-chip{display:none!important}';
-document.head.appendChild(contactStyle);
+/* contacts-visual-restore-v2: scope emergency contact fixes to the Contacts page only. */
+var cleanPath=location.pathname.replace(/\/+$/,'')||'/';
+if(cleanPath==='/kontakty'){
+  var contactStyle=document.createElement('style');
+  contactStyle.textContent='.qi-msgr{display:flex;gap:8px;align-items:center}.qi-msgr a{width:34px!important;height:34px!important;flex:0 0 34px!important;display:flex!important;align-items:center!important;justify-content:center!important;border-radius:50%!important}.qi-msgr a svg{width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important}.hero-video-frame>.fig-chip{display:none!important}';
+  document.head.appendChild(contactStyle);
+}
 
 var metrikaId=Number(body&&body.dataset?body.dataset.metrikaId:0)||111882478;
 function goal(name){try{if(typeof ym==='function')ym(metrikaId,'reachGoal',name);}catch(e){}}
