@@ -40,6 +40,9 @@ jobs:
       - name: Audit core migration candidates
         run: python scripts/audit_core_pages.py
 
+      - name: Audit remaining standalone pages
+        run: python scripts/audit_remaining_pages.py
+
       - name: Build static pages
         run: |
           python scripts/build_site.py
@@ -52,7 +55,7 @@ jobs:
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/build_custom_pages.py scripts/audit_migration_candidates.py scripts/audit_core_pages.py scripts/normalize_generated_links.py scripts/normalize_jsonld_entities.py scripts/normalize_counter_values.py scripts/normalize_sitemap.py scripts/validate_shared_shell.py scripts/validate_custom_generated.py scripts/validate_sitemap.py scripts/validate_generated_html.py
+          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/build_custom_pages.py scripts/audit_migration_candidates.py scripts/audit_core_pages.py scripts/audit_remaining_pages.py scripts/normalize_generated_links.py scripts/normalize_jsonld_entities.py scripts/normalize_counter_values.py scripts/normalize_sitemap.py scripts/validate_shared_shell.py scripts/validate_custom_generated.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           python - <<'PY'
           from pathlib import Path
