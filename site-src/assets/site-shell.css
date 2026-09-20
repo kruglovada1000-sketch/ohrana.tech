@@ -8,3 +8,53 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}.ft-
 .chat-btn{position:fixed;right:24px;bottom:24px;z-index:2200;width:60px;height:60px;border-radius:50%;background:var(--gold-grad);display:grid;place-items:center;color:#171003;box-shadow:0 16px 44px rgba(232,200,122,.4);transition:transform .4s var(--ease)}.chat-btn:hover{transform:scale(1.1) rotate(-6deg)}.chat-panel{position:fixed;right:24px;bottom:100px;z-index:2200;width:330px;background:var(--panel2);border:1px solid rgba(232,200,122,.45);border-radius:18px;padding:28px;box-shadow:0 28px 70px rgba(0,0,0,.65);opacity:0;transform:translateY(18px) scale(.97);pointer-events:none;transition:all .45s var(--ease)}.chat-panel.open{opacity:1;transform:none;pointer-events:auto}.chat-panel h4{font-family:var(--serif);font-weight:500;font-size:1.4rem;margin-bottom:8px}.chat-panel p{font-size:.85rem;color:var(--mut);margin-bottom:18px;line-height:1.65}.chat-panel .btn{width:100%;margin-bottom:10px;padding:13px;font-size:.82rem}.chat-panel .btn:last-child{margin-bottom:0}.mbar{position:fixed;left:0;right:0;bottom:0;z-index:3200;display:none;gap:9px;background:rgba(7,9,13,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom))}.mbar a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:50px;border-radius:12px;font-weight:800;font-size:.84rem}.mbar .m-call{background:var(--gold-grad);color:#171003}.mbar .m-wa{border:1px solid rgba(127,214,164,.5);color:var(--ok)}.mbar .m-tg{border:1px solid rgba(242,238,228,.25);color:var(--ink)}
 .cursor-dot,.cursor-ring{position:fixed;top:0;left:0;z-index:5000;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%)}.cursor-dot{width:6px;height:6px;background:var(--gold2)}.cursor-ring{width:38px;height:38px;border:1px solid rgba(232,200,122,.5);transition:width .35s var(--ease),height .35s var(--ease),border-color .35s,background .35s}.cursor-ring.hov{width:64px;height:64px;border-color:rgba(232,200,122,.9);background:rgba(232,200,122,.06)}.js [data-reveal]{opacity:0;transform:translateY(34px);transition:opacity 1s var(--ease),transform 1s var(--ease)}.js [data-reveal].in{opacity:1;transform:none}
 @media(max-width:1100px){nav.nav{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--line);box-shadow:0 24px 48px rgba(0,0,0,.6)}nav.nav.open{display:block}nav.nav .wrap{flex-direction:column;padding:10px 24px 18px}nav.nav a{border-bottom:1px solid var(--line);padding:15px 4px;font-size:1rem}nav.nav a:first-child{padding-left:4px}nav.nav a::after{display:none}.burger{display:flex}.ft-grid{grid-template-columns:repeat(2,1fr)}.sec-num{display:none}}@media(max-width:960px){section{padding:76px 0}.ft-legal{grid-template-columns:1fr}.hd-contact,.hd-cta{display:none}.mbar{display:flex}body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}.chat-btn{bottom:calc(84px + env(safe-area-inset-bottom));right:16px}.chat-panel{bottom:calc(156px + env(safe-area-inset-bottom));right:14px;left:14px;width:auto}}@media(max-width:768px){.breadcrumbs{font-size:.72rem;gap:4px 6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.breadcrumbs::-webkit-scrollbar{display:none}.ft-grid{grid-template-columns:1fr}}@media(max-width:420px){.brand-name{font-size:.92rem}}@media(hover:none),(max-width:960px){.cursor-dot,.cursor-ring{display:none}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}.js [data-reveal]{opacity:1;transform:none}}
+
+/* responsive-polish-v1 */
+/* Cross-site responsive guards: keep the existing visual language while
+   tightening the shell for small phones, phones and tablets. */
+@media(max-width:1100px){
+  .wrap{padding-left:22px;padding-right:22px}
+  .hd-in{gap:14px}
+  .brand{min-width:0;max-width:calc(100% - 62px)}
+  .brand>span:last-child{min-width:0}
+  .burger{flex:0 0 auto}
+  nav.nav{max-height:calc(100dvh - 74px);overflow-y:auto;overscroll-behavior:contain}
+  nav.nav .wrap{gap:0}
+  main :where(.hero-copy,.hero-media,.price-hero-copy,.price-hero-visual,.contact-left,.contact-right,.card,.service-card,.sign-card){min-width:0}
+}
+@media(max-width:768px){
+  .wrap{padding-left:18px;padding-right:18px}
+  section{padding-top:64px;padding-bottom:64px}
+  .sec-head{margin-bottom:38px}
+  main h1{font-size:clamp(2.15rem,10vw,3.2rem);line-height:1.03;overflow-wrap:break-word}
+  main h2{font-size:clamp(2rem,8vw,3rem);line-height:1.06;overflow-wrap:break-word}
+  main :where(h3,h4,p,li){overflow-wrap:break-word}
+  .eyebrow{gap:10px;letter-spacing:.2em}
+  .btn{min-height:48px;padding:14px 22px;white-space:normal;text-align:center}
+  :where(.hero-btns,.cta-btns,.price-actions,.form-actions){width:100%}
+  :where(.hero-btns,.cta-btns,.price-actions,.form-actions) .btn{width:100%;max-width:100%}
+  input,select,textarea{font-size:16px;max-width:100%}
+  main img,main video,main iframe,main canvas{max-width:100%;height:auto}
+  main :where(.price-table,.table-wrap,[class*="table-wrap"]){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .chat-btn{width:54px;height:54px}
+  .chat-panel{max-height:calc(100dvh - 180px);overflow-y:auto}
+}
+@media(max-width:420px){
+  .wrap{padding-left:14px;padding-right:14px}
+  .hd-in{gap:10px;padding-top:10px;padding-bottom:10px}
+  .brand{gap:9px;max-width:calc(100% - 52px)}
+  .brand-ic{width:40px;height:40px}
+  .site-header .brand-ic::after{width:21px;height:21px}
+  .brand-name{font-size:.86rem;letter-spacing:.07em}
+  .brand-sub{font-size:.68rem;letter-spacing:.06em}
+  .burger{width:42px;height:42px}
+  nav.nav .wrap{padding-left:14px;padding-right:14px}
+  nav.nav a{font-size:.95rem;padding:13px 4px}
+  .mbar{gap:6px;padding-left:8px;padding-right:8px}
+  .mbar a{height:48px;gap:5px;font-size:.76rem;padding:0 4px}
+}
+@media(max-width:360px){
+  .brand-name{font-size:.82rem;letter-spacing:.055em}
+  .brand-sub{font-size:.64rem;letter-spacing:.045em}
+  .mbar a{font-size:.72rem}
+}

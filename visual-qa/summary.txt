@@ -1,0 +1,7 @@
+Visual QA pages: 71
+Viewports: 4
+Checks: 284
+Failures: 0
+Warnings: 0
+
+

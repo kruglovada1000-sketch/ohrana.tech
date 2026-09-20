@@ -857,6 +857,61 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
   .st-on{opacity:1}
   .st-off{opacity:0}
 }
+
+
+/* homepage-responsive-polish-v1 */
+@media(max-width:1100px){
+  .wrap{padding-left:22px;padding-right:22px}
+  .hd-in{gap:14px}
+  .brand{min-width:0;max-width:calc(100% - 62px)}
+  .brand>span:last-child{min-width:0}
+  .burger{flex:0 0 auto}
+  nav.nav{max-height:calc(100dvh - 74px);overflow-y:auto;overscroll-behavior:contain}
+  nav.nav .wrap{gap:0}
+}
+@media(max-width:768px){
+  .wrap{padding-left:18px;padding-right:18px}
+  section{padding-top:64px;padding-bottom:64px}
+  .sec-head{margin-bottom:38px}
+  main h1{font-size:clamp(2.15rem,10vw,3.2rem);line-height:1.03;overflow-wrap:break-word}
+  main h2{font-size:clamp(2rem,8vw,3rem);line-height:1.06;overflow-wrap:break-word}
+  main :where(h3,h4,p,li){overflow-wrap:break-word}
+  .eyebrow{gap:10px;letter-spacing:.2em}
+  .btn{min-height:48px;padding:14px 22px;white-space:normal;text-align:center}
+  :where(.hero-btns,.cta-btns,.form-actions){width:100%}
+  :where(.hero-btns,.cta-btns,.form-actions) .btn{width:100%;max-width:100%}
+  input,select,textarea{font-size:16px;max-width:100%}
+  main img,main video,main iframe,main canvas{max-width:100%;height:auto}
+  .marquee{overflow:hidden!important}
+  .marquee-track{position:static;width:100%;max-width:100%;justify-content:center;gap:18px;animation:none;overflow:hidden}
+  .marquee-track>*{display:none}
+  .marquee-track>.mq-item:nth-child(5),
+  .marquee-track>.mq-star:nth-child(6),
+  .marquee-track>.mq-item:nth-child(9){display:inline-flex}
+  .rev-big-btn-shine{display:none}
+  .calc-shell::before{display:none}
+  .chat-btn{width:54px;height:54px}
+  .chat-panel{max-height:calc(100dvh - 180px);overflow-y:auto}
+}
+@media(max-width:420px){
+  .wrap{padding-left:14px;padding-right:14px}
+  .hd-in{gap:10px;padding-top:10px;padding-bottom:10px}
+  .brand{gap:9px;max-width:calc(100% - 52px)}
+  .brand-ic{width:40px;height:40px}
+  .site-header .brand-ic::after{width:21px;height:21px}
+  .brand-name{font-size:.86rem;letter-spacing:.07em}
+  .brand-sub{font-size:.68rem;letter-spacing:.06em}
+  .burger{width:42px;height:42px}
+  nav.nav .wrap{padding-left:14px;padding-right:14px}
+  nav.nav a{font-size:.95rem;padding:13px 4px}
+  .mbar{gap:6px;padding-left:8px;padding-right:8px}
+  .mbar a{height:48px;gap:5px;font-size:.76rem;padding:0 4px}
+}
+@media(max-width:360px){
+  .brand-name{font-size:.82rem;letter-spacing:.055em}
+  .brand-sub{font-size:.64rem;letter-spacing:.045em}
+  .mbar a{font-size:.72rem}
+}
 </style>
 </head>
 <body>

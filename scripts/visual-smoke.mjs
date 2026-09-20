@@ -34,7 +34,9 @@ for (const row of [...(articles.regular || []), ...(articles.custom || [])]) {
 
 const viewports = [
   { name: 'desktop', width: 1440, height: 1000 },
+  { name: 'tablet', width: 768, height: 1024 },
   { name: 'mobile', width: 390, height: 844 },
+  { name: 'small-mobile', width: 360, height: 800 },
 ];
 
 const screenshotUrls = new Set([
@@ -157,10 +159,7 @@ for (const vp of viewports) {
       const detail = (metrics.overflowElements || []).slice(0, 4)
         .map(x => `${x.selector}[${x.left}..${x.right},w=${x.width},min=${x.minWidth},ws=${x.whiteSpace}]`).join(' | ');
       const message = `horizontal overflow ${metrics.overflowPx}px${detail ? `; offenders: ${detail}` : ''}`;
-      // The root home page is deliberately byte-identical to main. Record its existing 10px mobile
-      // baseline, but do not make refactor QA fail for a page this PR intentionally does not change.
-      if (url === '/') pageWarnings.push(`baseline: ${message}`);
-      else problems.push(message);
+      problems.push(message);
     }
     if (metrics?.brokenLocalImages?.length) problems.push(`broken local images: ${metrics.brokenLocalImages.join(', ')}`);
     if (pageErrors.length) problems.push(`page errors: ${pageErrors.join(' | ')}`);
