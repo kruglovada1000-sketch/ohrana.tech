@@ -31,5 +31,11 @@
     "source": "ohrana-fizicheskih-lic.source.html",
     "script_source": "ohrana-fizicheskih-lic.js",
     "script_marker": "radarCanvas"
+  },
+  {
+    "slug": "kontakty",
+    "source": "kontakty.source.html",
+    "script_source": "kontakty.js",
+    "script_marker": "copyReq"
   }
 ]
