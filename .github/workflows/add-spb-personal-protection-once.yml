@@ -1,0 +1,32 @@
+name: One-time add Saint Petersburg to personal protection
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/add-spb-personal-protection-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Add Saint Petersburg
+        run: python scripts/add-spb-personal-protection-once.py
+      - name: Validate and commit
+        run: |
+          grep -F '<strong>Санкт-Петербург:</strong>' ohrana-fizicheskih-lic/index.html
+          grep -F '<strong>Санкт-Петербург:</strong>' site-src/pages/ohrana-fizicheskih-lic.source.html
+          grep -F '"name":"Санкт-Петербург"' ohrana-fizicheskih-lic/index.html
+          grep -F '"name": "Санкт-Петербург"' site-src/pages/ohrana-fizicheskih-lic.source.html
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ohrana-fizicheskih-lic/index.html site-src/pages/ohrana-fizicheskih-lic.source.html
+          git commit -m 'Add Saint Petersburg to personal protection regions'
+          git push origin HEAD:main
