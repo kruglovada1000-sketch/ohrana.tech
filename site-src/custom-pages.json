@@ -25,5 +25,11 @@
     "source": "ohrana-yuridicheskih-lic.source.html",
     "script_source": "ohrana-yuridicheskih-lic.js",
     "script_marker": "holoShieldCanvas"
+  },
+  {
+    "slug": "ohrana-fizicheskih-lic",
+    "source": "ohrana-fizicheskih-lic.source.html",
+    "script_source": "ohrana-fizicheskih-lic.js",
+    "script_marker": "radarCanvas"
   }
 ]
