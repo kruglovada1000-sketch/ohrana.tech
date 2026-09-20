@@ -49,6 +49,18 @@ RESPONSIVE_FIXES = '''
 }
 '''
 
+PRICING_VISUAL_MARKER = 'data-pricing-visual="1"'
+PRICING_CSS_MARKER = '/* pricing-hero-visual */'
+PRICING_OG_IMAGE = 'https://ohrana.tech/images/ceny-hero.svg'
+PRICING_HERO_OLD = '''<section class="price-hero"><div class="wrap" data-reveal><span class="price-kicker">Стоимость услуг</span><h1>Цены на <em>охранные услуги</em></h1><p class="price-lead">Единый каталог ориентировочных тарифов. Выберите тип объекта или услугу. Точный расчёт делаем после уточнения режима, количества постов, площади и задач.</p><div class="price-actions"><a class="btn btn-gold" href="#objects">Подобрать по объекту</a><a class="btn btn-line" href="/kontakty/">Получить точный расчёт</a></div></div></section>'''
+PRICING_HERO_NEW = '''<section class="price-hero"><div class="wrap price-hero-grid" data-reveal data-pricing-visual="1"><div class="price-hero-copy"><span class="price-kicker">Стоимость услуг</span><h1>Цены на <em>охранные услуги</em></h1><p class="price-lead">Единый каталог ориентировочных тарифов. Выберите тип объекта или услугу. Точный расчёт делаем после уточнения режима, количества постов, площади и задач.</p><div class="price-actions"><a class="btn btn-gold" href="#objects">Подобрать по объекту</a><a class="btn btn-line" href="/kontakty/">Получить точный расчёт</a></div></div><figure class="price-hero-visual"><img src="/images/ceny-hero.svg" alt="Защитный щит и аналитика стоимости охранных услуг" width="1600" height="900" fetchpriority="high" decoding="async"></figure></div></section>'''
+PRICING_CSS = '''
+/* pricing-hero-visual */
+.price-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);gap:48px;align-items:center}.price-hero-copy{min-width:0}.price-hero-visual{margin:0;position:relative;aspect-ratio:16/9;border-radius:24px;overflow:hidden;border:1px solid rgba(232,200,122,.28);background:#0d1118;box-shadow:0 30px 80px rgba(0,0,0,.48),0 0 0 1px rgba(255,255,255,.025) inset}.price-hero-visual::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(135deg,rgba(245,227,179,.06),transparent 35%,rgba(0,0,0,.08)),radial-gradient(480px 220px at 82% 0%,rgba(232,200,122,.13),transparent 62%)}.price-hero-visual img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.96) contrast(1.03)}
+@media(max-width:960px){.price-hero-grid{grid-template-columns:1fr;gap:34px}.price-hero-visual{width:min(100%,760px);margin:4px auto 0}.price-lead{max-width:820px}}
+@media(max-width:700px){.price-hero-grid{gap:28px}.price-hero-visual{border-radius:18px;aspect-ratio:16/10}.price-hero-visual img{object-fit:cover}}
+'''
+
 
 def load_manifest(name: str) -> list[dict[str, object]]:
     path=SRC/name
@@ -89,6 +101,44 @@ def normalize_shared_css() -> bool:
     return True
 
 
+def enhance_pricing_page() -> bool:
+    image=ROOT/'images'/'ceny-hero.svg'
+    if not image.exists():
+        raise RuntimeError(f'Pricing hero image missing: {image}')
+    path=ROOT/'ceny'/'index.html'
+    if not path.exists():
+        raise RuntimeError(f'Pricing page missing before visual enhancement: {path}')
+    text=path.read_text(encoding='utf-8')
+    original=text
+    if PRICING_VISUAL_MARKER not in text:
+        if PRICING_HERO_OLD not in text:
+            raise RuntimeError('Pricing hero markup changed; refusing blind replacement')
+        text=text.replace(PRICING_HERO_OLD,PRICING_HERO_NEW,1)
+    if PRICING_OG_IMAGE not in text:
+        anchor='<meta property="og:locale" content="ru_RU">'
+        og='''<meta property="og:image" content="https://ohrana.tech/images/ceny-hero.svg">\n<meta property="og:image:width" content="1600">\n<meta property="og:image:height" content="900">\n<meta name="twitter:card" content="summary_large_image">'''
+        if anchor not in text:
+            raise RuntimeError('Pricing OG locale anchor missing')
+        text=text.replace(anchor,anchor+'\n'+og,1)
+    if text!=original:
+        path.write_text(text,encoding='utf-8')
+        print('Enhanced pricing hero markup and social preview: ceny/index.html')
+        return True
+    return False
+
+
+def enhance_pricing_css() -> bool:
+    path=ROOT/'assets'/'css'/'pricing.css'
+    if not path.exists():
+        raise RuntimeError(f'Pricing CSS missing before visual enhancement: {path}')
+    text=path.read_text(encoding='utf-8')
+    if PRICING_CSS_MARKER in text:
+        return False
+    path.write_text(text.rstrip()+"\n"+PRICING_CSS,encoding='utf-8')
+    print('Applied pricing hero visual styles: assets/css/pricing.css')
+    return True
+
+
 def main() -> None:
     total=0
     resources=0
@@ -103,6 +153,8 @@ def main() -> None:
             if count: text=text.replace(old,new);resources+=count
         if text!=original:
             path.write_text(text,encoding='utf-8');print(f'Normalized generated links/resources: {path.relative_to(ROOT)}')
+    enhance_pricing_page()
+    enhance_pricing_css()
     normalize_shared_css()
     print(f'Legacy link replacements: {total}')
     print(f'Legacy resource replacements: {resources}')
