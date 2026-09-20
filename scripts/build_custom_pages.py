@@ -73,6 +73,8 @@ def build_custom_page(config: dict[str, object]) -> None:
     slug = str(config["slug"])
     source_name = str(config["source"])
     script_source = str(config["script_source"])
+    script_version = str(config.get("script_version", "")).strip()
+    custom_script_src = f"/assets/js/{slug}.js" + (f"?v={script_version}" if script_version else "")
     source_path = SRC / "pages" / source_name
     legacy = source_path.read_text(encoding="utf-8")
 
@@ -127,7 +129,7 @@ def build_custom_page(config: dict[str, object]) -> None:
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
 <script src="/assets/js/site.js" defer></script>
-<script src="/assets/js/{slug}.js" defer></script>
+<script src="{custom_script_src}" defer></script>
 </body>
 </html>
 '''
