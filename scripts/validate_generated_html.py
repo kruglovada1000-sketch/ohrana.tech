@@ -8,14 +8,18 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES = [
-    ROOT / "ohrana-skladov" / "index.html",
-    ROOT / "ohrana-ofisov" / "index.html",
-    ROOT / "ceny" / "index.html",
-]
+SRC = ROOT / "site-src"
 VOID = {"area","base","br","col","embed","hr","img","input","link","meta","param","source","track","wbr"}
 BALANCED = {"html","head","body","header","nav","main","footer","section","div","table","thead","tbody","tr","th","td","article","figure","figcaption","ul","ol","li","button","a","script"}
 ORGANIZATION_ID = "https://ohrana.tech/#organization"
+
+
+def pages_to_validate() -> list[Path]:
+    manifest = json.loads((SRC / "object-pages.json").read_text(encoding="utf-8"))
+    paths = [ROOT / "ohrana-skladov" / "index.html"]
+    paths.extend(ROOT / page["slug"] / "index.html" for page in manifest)
+    paths.append(ROOT / "ceny" / "index.html")
+    return paths
 
 
 def local_target(href: str) -> Path | None:
@@ -82,6 +86,9 @@ class Inspector(HTMLParser):
 
 
 def inspect(path: Path) -> None:
+    if not path.exists():
+        raise SystemExit(f"Missing generated page: {path.relative_to(ROOT)}")
+
     text = path.read_text(encoding="utf-8")
     parser = Inspector()
     parser.feed(text)
@@ -124,6 +131,19 @@ def inspect(path: Path) -> None:
 
     if len(re.findall(r"<h1\b", text, re.I)) != 1:
         errors.append("expected exactly one H1")
+    if len(re.findall(r"<header\b", text, re.I)) != 1:
+        errors.append("expected exactly one header")
+    if len(re.findall(r"<main\b", text, re.I)) != 1:
+        errors.append("expected exactly one main")
+    if len(re.findall(r"<footer\b", text, re.I)) != 1:
+        errors.append("expected exactly one footer")
+    if re.search(r"<style\b", text, re.I):
+        errors.append("inline style block remained in generated HTML")
+    if 'href="/ceny/"' not in text:
+        errors.append("shared Prices navigation link missing")
+    if "{{site." in text:
+        errors.append("unresolved shared template variable")
+
     if errors:
         raise SystemExit(f"{path.relative_to(ROOT)} failed integrity check:\n - " + "\n - ".join(errors))
     print(
@@ -134,8 +154,10 @@ def inspect(path: Path) -> None:
 
 
 def main() -> None:
-    for path in PAGES:
+    pages = pages_to_validate()
+    for path in pages:
         inspect(path)
+    print(f"Validated generated HTML batch: {len(pages)} pages")
 
 
 if __name__ == "__main__":
