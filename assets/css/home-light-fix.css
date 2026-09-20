@@ -1,0 +1,17 @@
+/* homepage light theme calculator contrast */
+html[data-theme="light"] .calc-card{background:#fff;color:var(--ink);border-color:rgba(18,15,10,.14)}
+html[data-theme="light"] .calc-card::before{opacity:.16}
+html[data-theme="light"] .calc-controls,
+html[data-theme="light"] .calc-result{color:var(--ink)}
+html[data-theme="light"] .calc-result{background:linear-gradient(165deg,rgba(169,127,47,.08),transparent 45%),var(--bg2)}
+html[data-theme="light"] .seg button,
+html[data-theme="light"] .chip{color:var(--ink)!important;background:#fff;border-color:rgba(18,15,10,.18)}
+html[data-theme="light"] .seg button:hover,
+html[data-theme="light"] .chip:hover{color:var(--gold2)!important;border-color:rgba(169,127,47,.55)}
+html[data-theme="light"] .seg button.on,
+html[data-theme="light"] .chip.on{color:#171003!important;background:var(--gold-grad);border-color:transparent}
+html[data-theme="light"] .switch-row{background:#fff;color:var(--ink);border-color:rgba(18,15,10,.14)}
+html[data-theme="light"] .switch-row .sw-txt b{color:var(--ink)!important}
+html[data-theme="light"] .stepper{background:#fff;border-color:rgba(18,15,10,.14)}
+html[data-theme="light"] .cr-range{color:var(--ink)!important}
+html[data-theme="light"] .cr-badges span{color:var(--gold2);background:rgba(169,127,47,.07);border-color:rgba(169,127,47,.32)}
