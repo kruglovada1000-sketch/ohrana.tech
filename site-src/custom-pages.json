@@ -2,9 +2,16 @@
   {
     "slug": "ohrana-stroitelnyh-obektov",
     "source": "ohrana-stroitelnyh-obektov.source.html",
+    "script_source": "ohrana-stroitelnyh-obektov.js",
     "script_marker": "sparkCanvas",
     "url_replacements": {
       "https://ohrana.tech/ohrana-stroek/": "https://ohrana.tech/ohrana-stroitelnyh-obektov/"
     }
+  },
+  {
+    "slug": "ohrana-meropriyatiy",
+    "source": "ohrana-meropriyatiy.source.html",
+    "script_source": "ohrana-meropriyatiy.js",
+    "script_marker": "guards-count"
   }
 ]
