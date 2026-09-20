@@ -1,5 +1,6 @@
 name: Patch homepage theme toggle and calculator
 
+# second push intentionally triggers this workflow after it exists on main
 on:
   push:
     branches:
@@ -28,16 +29,6 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          old_button = '''      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить на светлую тему" title="Светлая / тёмная тема">
-                <span class="theme-yinyang" aria-hidden="true">☯</span>
-              </button>
-          '''
-          if old_button not in s:
-              old_button = '''      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить на светлую тему" title="Светлая / тёмная тема">
-                <span class="theme-yinyang" aria-hidden="true">☯</span>
-              </button>
-          '''
-
           # Match the actual homepage indentation exactly.
           actual_button = '''      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить на светлую тему" title="Светлая / тёмная тема">
         <span class="theme-yinyang" aria-hidden="true">☯</span>
@@ -50,7 +41,7 @@ jobs:
           contact = '      <a href="/kontakty/">Контакты</a>\n'
           if contact not in s:
               raise SystemExit('Contacts nav link not found')
-          nav_button = '''      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить на светлую тему" title="Светлая / тёмная тема">
+          nav_button = '''      <button class="theme-toggle nav-theme-toggle" id="themeToggle" type="button" aria-label="Переключить на светлую тему" title="Светлая / тёмная тема">
         <span class="theme-yinyang" aria-hidden="true">☯</span>
       </button>
 '''
@@ -74,7 +65,7 @@ jobs:
           nav_start = s.index('<nav class="nav" id="siteNav">')
           nav_end = s.index('</nav>', nav_start)
           nav = s[nav_start:nav_end]
-          if '<a href="/kontakty/">Контакты</a>\n      <button class="theme-toggle" id="themeToggle"' not in nav:
+          if '<a href="/kontakty/">Контакты</a>\n      <button class="theme-toggle nav-theme-toggle" id="themeToggle"' not in nav:
               raise SystemExit('theme toggle is not immediately after Contacts')
           if fix_link not in s:
               raise SystemExit('calculator light-theme stylesheet was not linked')
