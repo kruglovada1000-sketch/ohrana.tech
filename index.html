@@ -859,6 +859,53 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 }
 
 
+
+
+/* home-about-visual-v1 */
+#about .about-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
+  gap:64px;
+  align-items:center;
+}
+#about .about-copy{max-width:none;margin-bottom:0}
+#about .about-visual{
+  position:relative;
+  margin:0;
+  min-width:0;
+  padding:26px;
+  border:1px solid rgba(232,200,122,.18);
+  border-radius:24px;
+  background:radial-gradient(circle at 50% 35%,rgba(232,200,122,.10),transparent 62%),var(--panel);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+#about .about-visual::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(245,227,179,.05),transparent 40%,rgba(0,0,0,.10));
+}
+#about .about-visual img{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:520px;
+  object-fit:contain;
+  object-position:center;
+}
+@media(max-width:960px){
+  #about .about-grid{grid-template-columns:1fr;gap:36px}
+  #about .about-visual{width:min(100%,720px);margin:0 auto;padding:22px}
+}
+@media(max-width:560px){
+  #about .about-grid{gap:28px}
+  #about .about-visual{padding:14px;border-radius:18px}
+}
+
 /* homepage-responsive-polish-v1 */
 @media(max-width:1100px){
   .wrap{padding-left:22px;padding-right:22px}
@@ -1038,9 +1085,9 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 </div>
 <!-- ============ О КОМПАНИИ (обычный текст для людей, роботов и ИИ-поиска) ============ -->
 <section id="about">
-  <div class="wrap">
-    <div class="sec-head" data-reveal>
-      <span class="sec-num">00</span>
+  <div class="wrap about-grid">
+    <div class="sec-head about-copy" data-reveal>
+      <span class="sec-num">01</span>
       <span class="eyebrow">О компании</span>
       <h2>ЧОО «Рускорпорация» — <em>охрана объектов и бизнеса</em></h2>
       <p>Частная охранная организация «Рускорпорация Охрана и Консалтинг» оказывает услуги физической и технической охраны, обеспечивает безопасность объектов, бизнеса и мероприятий.</p>
@@ -1053,6 +1100,9 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
       </div>
       <p class="seo-note">Бесплатно оценим текущую систему безопасности объекта и предложим решение с учётом ваших задач.</p>
     </div>
+    <figure class="about-visual" data-reveal>
+      <img src="/images/3-sektora.png" alt="Три сектора комплексной безопасности ЧОО «Рускорпорация»" loading="lazy" decoding="async">
+    </figure>
   </div>
 </section>
 
@@ -1060,7 +1110,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 <section id="objects">
   <div class="wrap">
     <div class="sec-head" data-reveal>
-      <span class="sec-num">01</span>
+      <span class="sec-num">02</span>
       <span class="eyebrow">Что охраняем</span>
       <h2>Что нужно <em>защитить?</em></h2>
       <p>Выберите тип объекта — покажем готовую схему охраны и цену «от».</p>
@@ -1073,7 +1123,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 <section id="services">
   <div class="wrap">
     <div class="sec-head" data-reveal>
-      <span class="sec-num">02</span>
+      <span class="sec-num">03</span>
       <span class="eyebrow">Услуги</span>
       <h2>Три уровня <em>безопасности</em></h2>
       <p>От разового сопровождения до круглосуточных постов с полной отчётностью.</p>
@@ -1114,7 +1164,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 <section id="why">
   <div class="wrap">
     <div class="sec-head" data-reveal>
-      <span class="sec-num">03</span>
+      <span class="sec-num">04</span>
       <span class="eyebrow">Гарантии</span>
       <h2>Почему нам <em>доверяют</em></h2>
       <p>Только проверяемые факты — каждый из них зафиксирован документально.</p>
@@ -1148,7 +1198,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 <section id="steps">
   <div class="wrap">
     <div class="sec-head" data-reveal>
-      <span class="sec-num">04</span>
+      <span class="sec-num">05</span>
       <span class="eyebrow">Порядок работы</span>
       <h2>Как работает <em>охрана</em></h2>
       <p>От заявки до полностью работающей охраны — несколько дней, всё берём на себя.</p>
@@ -1341,7 +1391,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 <section id="cases">
   <div class="wrap">
     <div class="sec-head" data-reveal>
-      <span class="sec-num">05</span>
+      <span class="sec-num">06</span>
       <span class="eyebrow">Кейсы</span>
       <h2>Работа на <em>реальных объектах</em></h2>
       <p>Тип объекта и район — открыты, название клиента — конфиденциально.</p>
@@ -1375,7 +1425,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 <section id="docs">
   <div class="wrap">
     <div class="sec-head" data-reveal>
-      <span class="sec-num">06</span>
+      <span class="sec-num">07</span>
       <span class="eyebrow">Документы</span>
       <h2>Проверьте нас <em>до звонка</em></h2>
       <p>Ничего не скрываем: лицензия, договор и реквизиты — в открытом доступе.</p>
@@ -1456,7 +1506,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 <section id="regions">
   <div class="wrap">
     <div class="sec-head" data-reveal>
-      <span class="sec-num">07</span>
+      <span class="sec-num">08</span>
       <span class="eyebrow">География</span>
       <h2>Где мы <em>работаем</em></h2>
       <p>Выезд специалиста на объект — бесплатно по всей зоне обслуживания.</p>
@@ -1490,7 +1540,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
 <section id="faq">
   <div class="wrap">
     <div class="sec-head" data-reveal>
-      <span class="sec-num">08</span>
+      <span class="sec-num">09</span>
       <span class="eyebrow">Вопросы</span>
       <h2>Частые <em>вопросы</em></h2>
     </div>
