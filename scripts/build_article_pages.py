@@ -52,6 +52,39 @@ def ensure_snapshots() -> list[Path]:
     return source_paths
 
 
+def repair_extra_closing_li(text: str, source: Path) -> tuple[str, bool]:
+    opens = len(re.findall(r'<li\b[^>]*>', text, re.I))
+    closes = len(re.findall(r'</li\s*>', text, re.I))
+    if closes != opens + 1:
+        return text, False
+
+    depth = 0
+    for match in re.finditer(r'<li\b[^>]*>|</li\s*>', text, re.I):
+        token = match.group(0)
+        if token.lower().startswith('<li'):
+            depth += 1
+            continue
+        if depth == 0:
+            repaired = text[:match.start()] + text[match.end():]
+            new_opens = len(re.findall(r'<li\b[^>]*>', repaired, re.I))
+            new_closes = len(re.findall(r'</li\s*>', repaired, re.I))
+            if new_opens != new_closes:
+                raise RuntimeError(f'LI repair failed for {source}')
+            print(f'Repaired one stray </li>: {source.name}')
+            return repaired, True
+        depth -= 1
+    raise RuntimeError(f'One extra </li> detected but no stray close found: {source}')
+
+
+def source_text(source: Path) -> tuple[str, list[str]]:
+    text = source.read_text(encoding='utf-8')
+    repairs: list[str] = []
+    text, repaired = repair_extra_closing_li(text, source)
+    if repaired:
+        repairs.append('removed-stray-closing-li')
+    return text, repairs
+
+
 def custom_reasons(text: str) -> list[str]:
     return [name for name, pattern in CUSTOM_PATTERNS.items() if pattern.search(text)]
 
@@ -85,11 +118,10 @@ def extract_main(text: str, source: Path) -> str:
     return '<main>\n' + unique + '\n</main>'
 
 
-def build_regular(source: Path) -> dict[str, str]:
+def build_regular(source: Path, text: str, repairs: list[str]) -> dict[str, object]:
     public_name = source.name.replace('.source.html', '.html')
     stem = public_name[:-5]
     public = ARTICLES / public_name
-    text = source.read_text(encoding='utf-8')
     main = extract_main(text, source)
     css = extract_styles(text, source) + '\n' + COMPAT_CSS
 
@@ -123,11 +155,11 @@ def build_regular(source: Path) -> dict[str, str]:
 </html>
 '''
     public.write_text(out, encoding='utf-8')
-    return {'file': public_name, 'source': source.name, 'css': f'assets/css/articles/{stem}.css'}
+    return {'file': public_name, 'source': source.name, 'css': f'assets/css/articles/{stem}.css', 'repairs': repairs}
 
 
-def validate_regular(entry: dict[str, str]) -> None:
-    path = ARTICLES / entry['file']
+def validate_regular(entry: dict[str, object]) -> None:
+    path = ARTICLES / str(entry['file'])
     html = path.read_text(encoding='utf-8')
     errors: list[str] = []
     for tag in ('h1', 'header', 'main', 'footer'):
@@ -137,7 +169,7 @@ def validate_regular(entry: dict[str, str]) -> None:
     if 'href="/ceny/"' not in html: errors.append('prices nav missing')
     if '/assets/js/site.js' not in html: errors.append('site.js missing')
     if '/assets/js/article.js' not in html: errors.append('article.js missing')
-    if f'/assets/css/articles/{Path(entry["file"]).stem}.css' not in html: errors.append('article css missing')
+    if f'/assets/css/articles/{Path(str(entry["file"])).stem}.css' not in html: errors.append('article css missing')
     if errors:
         raise RuntimeError(f"{entry['file']}: " + '; '.join(errors))
 
@@ -149,17 +181,17 @@ def main() -> None:
     ARTICLE_JS_PUBLIC.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ARTICLE_JS_SOURCE, ARTICLE_JS_PUBLIC)
 
-    regular: list[dict[str, str]] = []
+    regular: list[dict[str, object]] = []
     deferred: list[dict[str, object]] = []
     for source in sources:
-        text = source.read_text(encoding='utf-8')
+        text, repairs = source_text(source)
         reasons = custom_reasons(text)
         public_name = source.name.replace('.source.html', '.html')
         if reasons:
-            deferred.append({'file': public_name, 'source': source.name, 'reasons': reasons})
+            deferred.append({'file': public_name, 'source': source.name, 'reasons': reasons, 'repairs': repairs})
             print(f'Deferred custom article: {public_name} ({", ".join(reasons)})')
             continue
-        entry = build_regular(source)
+        entry = build_regular(source, text, repairs)
         validate_regular(entry)
         regular.append(entry)
         print(f'Built article: /stati/{public_name}')
