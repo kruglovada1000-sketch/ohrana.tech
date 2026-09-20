@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
 <title id="title">Стоимость охранных услуг</title>
-<desc id="desc">Абстрактная премиальная иллюстрация: золотой защитный щит, аналитические панели и графики на тёмном фоне.</desc>
+<desc id="desc">Премиальная аналитическая иллюстрация стоимости охранных услуг на тёмном фоне.</desc>
 <defs>
   <radialGradient id="bg" cx="72%" cy="43%" r="78%"><stop offset="0" stop-color="#171b22"/><stop offset=".45" stop-color="#0d1016"/><stop offset="1" stop-color="#07090d"/></radialGradient>
   <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5e3b3"/><stop offset=".48" stop-color="#e8c87a"/><stop offset="1" stop-color="#a97f2f"/></linearGradient>
@@ -20,12 +20,7 @@
     <path d="M1110 166v18M1110 676v18M846 430h18M1356 430h18M924 244l13 13M1283 603l13 13M924 616l13-13M1283 257l13-13"/>
   </g>
 </g>
-<g>
-  <path d="M1110 210 1270 275l-20 190c-10 91-60 151-140 185-80-34-130-94-140-185l-20-190 160-65Z" fill="url(#panel)" stroke="url(#gold)" stroke-width="4"/>
-  <path d="M1110 247 1230 296l-17 157c-8 73-45 121-103 149-58-28-95-76-103-149l-17-157 120-49Z" fill="none" stroke="#f5e3b3" stroke-opacity=".56" stroke-width="3"/>
-  <path d="m1038 431 56 57 102-121" fill="none" stroke="url(#gold)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="m1038 431 56 57 102-121" fill="none" stroke="#f5e3b3" stroke-opacity=".26" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" filter="url(#soft)"/>
-</g>
+
 <g>
   <rect x="165" y="190" width="535" height="205" rx="30" fill="url(#panel)" stroke="#e8c87a" stroke-opacity=".25" stroke-width="2"/>
   <path d="M248 257v86m-20-19h83m-63-35h49c38 0 38-50 0-50h-49" fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
