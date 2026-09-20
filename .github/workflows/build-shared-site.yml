@@ -37,7 +37,7 @@ jobs:
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/normalize_sitemap.py scripts/validate_sitemap.py
+          python -m py_compile scripts/build_site.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           test -f ohrana-skladov/index.html
           test -f ceny/index.html
@@ -69,6 +69,9 @@ jobs:
           assert html.index('/assets/css/ohrana-skladov.css') < html.index('/assets/css/site-shell.css')
           print('Warehouse content and shell markers OK')
           PY
+
+      - name: Validate HTML integrity and internal links
+        run: python scripts/validate_generated_html.py
 
       - name: Validate sitemap targets
         run: python scripts/validate_sitemap.py
