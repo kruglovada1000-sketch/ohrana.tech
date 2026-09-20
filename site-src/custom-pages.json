@@ -37,5 +37,11 @@
     "source": "kontakty.source.html",
     "script_source": "kontakty.js",
     "script_marker": "copyReq"
+  },
+  {
+    "slug": "stati",
+    "source": "stati.source.html",
+    "script_source": "stati.js",
+    "script_marker": "artSearch"
   }
 ]
