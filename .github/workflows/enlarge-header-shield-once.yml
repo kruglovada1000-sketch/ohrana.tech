@@ -1,0 +1,29 @@
+name: One-time exact homepage shield size
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/enlarge-header-shield-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Match internal shield to homepage
+        run: python scripts/enlarge-header-shield-once.py
+      - name: Validate and commit
+        run: |
+          grep -F 'width:42px!important;height:42px!important' assets/css/site-shell.css
+          grep -F 'width:36px!important;height:36px!important' assets/css/site-shell.css
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/css/site-shell.css site-src/assets/site-shell.css
+          git commit -m 'Match internal header shield to homepage'
+          git push origin HEAD:main
