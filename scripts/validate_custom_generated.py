@@ -31,10 +31,14 @@ def main() -> None:
                 raise SystemExit(f"{slug}: marker {marker!r} missing from HTML")
             if marker not in script:
                 raise SystemExit(f"{slug}: marker {marker!r} missing from custom JS")
-        if '/assets/js/site.js' in html:
-            raise SystemExit(f"{slug}: shared site.js must not be loaded alongside preserved legacy behavior")
+        if '/assets/js/site.js' not in html:
+            raise SystemExit(f"{slug}: shared site.js missing")
         if f'/assets/js/{slug}.js' not in html:
             raise SystemExit(f"{slug}: custom JS reference missing")
+        if html.index('/assets/js/site.js') > html.index(f'/assets/js/{slug}.js'):
+            raise SystemExit(f"{slug}: shared site.js must load before custom module")
+        if 'href="/ceny/"' not in html:
+            raise SystemExit(f"{slug}: prices navigation item missing")
 
         print(f"Custom integrity OK: /{slug}/; marker={marker or '-'}")
 
