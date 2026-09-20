@@ -59,12 +59,22 @@ jobs:
           import re
 
           root = Path('.')
-          manifest = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
-          assert manifest, 'object page manifest is empty'
-          slugs = ['ohrana-skladov'] + [page['slug'] for page in manifest]
-          assert len(slugs) == len(set(slugs)), 'duplicate migrated slug'
+          objects = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          shared = json.loads(Path('site-src/shared-pages.json').read_text(encoding='utf-8'))
+          custom = json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
+          assert objects, 'object page manifest is empty'
+          assert shared, 'shared page manifest is empty'
 
-          for slug in slugs:
+          object_slugs = [page['slug'] for page in objects]
+          shared_slugs = [page['slug'] for page in shared]
+          custom_slugs = [page['slug'] for page in custom]
+          regular_slugs = ['ohrana-skladov'] + object_slugs + shared_slugs
+
+          assert len(regular_slugs) == len(set(regular_slugs)), 'duplicate regular slug'
+          assert len(custom_slugs) == len(set(custom_slugs)), 'duplicate custom slug'
+          assert not set(regular_slugs).intersection(custom_slugs), 'page present in regular and custom manifests'
+
+          for slug in regular_slugs:
               page = root / slug / 'index.html'
               css = root / 'assets' / 'css' / f'{slug}.css'
               assert page.exists(), page
@@ -78,11 +88,7 @@ jobs:
               assert len(re.findall(r'<footer\b', html, re.I)) == 1, slug
               assert f'/assets/css/{slug}.css' in html, slug
               assert html.index(f'/assets/css/{slug}.css') < html.index('/assets/css/site-shell.css'), slug
-
-          custom = json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
-          custom_slugs = [page['slug'] for page in custom]
-          assert len(custom_slugs) == len(set(custom_slugs)), 'duplicate custom slug'
-          assert not set(slugs).intersection(custom_slugs), 'page present in regular and custom manifests'
+              assert '/assets/js/site.js' in html, slug
 
           prices = Path('ceny/index.html').read_text(encoding='utf-8')
           assert 'href="/ceny/"' in prices
@@ -91,7 +97,10 @@ jobs:
           assert 'https://ohrana.tech/ceny/' in Path('sitemap.xml').read_text(encoding='utf-8')
           assert '/stati/soprovozhdenie-gruzov.html' in prices
           assert "</filter id='n'>" not in Path('assets/css/site-shell.css').read_text(encoding='utf-8')
-          print(f'Generated structure OK: {len(slugs)} regular object pages + {len(custom_slugs)} custom pages + prices')
+          print(
+              f'Generated structure OK: {len(object_slugs) + 1} object pages + '
+              f'{len(shared_slugs)} shared service pages + {len(custom_slugs)} custom pages + prices'
+          )
           PY
 
       - name: Validate shared design shell
@@ -130,7 +139,8 @@ jobs:
           import subprocess
           from pathlib import Path
 
-          regular = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          objects = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          shared = json.loads(Path('site-src/shared-pages.json').read_text(encoding='utf-8'))
           custom = json.loads(Path('site-src/custom-pages.json').read_text(encoding='utf-8'))
           paths = [
               'ohrana-skladov/index.html',
@@ -139,7 +149,8 @@ jobs:
               'assets/css',
               'assets/js',
           ]
-          paths.extend(f"{page['slug']}/index.html" for page in regular)
+          paths.extend(f"{page['slug']}/index.html" for page in objects)
+          paths.extend(f"{page['slug']}/index.html" for page in shared)
           paths.extend(f"{page['slug']}/index.html" for page in custom)
           subprocess.run(['git', 'add', '--', *paths], check=True)
           PY
