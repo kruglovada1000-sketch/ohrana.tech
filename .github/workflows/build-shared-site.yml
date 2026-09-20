@@ -33,11 +33,12 @@ jobs:
       - name: Build static pages
         run: |
           python scripts/build_site.py
+          python scripts/normalize_generated_links.py
           python scripts/normalize_sitemap.py
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
+          python -m py_compile scripts/build_site.py scripts/normalize_generated_links.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           test -f ohrana-skladov/index.html
           test -f ceny/index.html
@@ -49,6 +50,8 @@ jobs:
           grep -q 'href="/ceny/"' ceny/index.html
           grep -q 'https://ohrana.tech/ceny/' sitemap.xml
           grep -q '/stati/soprovozhdenie-gruzov.html' ceny/index.html
+          ! grep -q '/ohrana-stroyaploshchadok/' ohrana-skladov/index.html
+          ! grep -q '/ohrana-uvelirnyh-magazinov/' ohrana-skladov/index.html
           ! grep -q '<style' ohrana-skladov/index.html
           ! grep -q '<style' ceny/index.html
           ! grep -q '{{site\.' ohrana-skladov/index.html
