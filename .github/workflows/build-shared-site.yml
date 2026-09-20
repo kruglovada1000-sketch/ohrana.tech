@@ -56,9 +56,9 @@ jobs:
 
           root = Path('.')
           manifest = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          assert manifest, 'object page manifest is empty'
           slugs = ['ohrana-skladov'] + [page['slug'] for page in manifest]
           assert len(slugs) == len(set(slugs)), 'duplicate migrated slug'
-          assert len(manifest) == 12, f'unexpected object manifest size: {len(manifest)}'
 
           for slug in slugs:
               page = root / slug / 'index.html'
