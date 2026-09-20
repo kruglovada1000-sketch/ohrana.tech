@@ -25,6 +25,9 @@ MARKERS = {
     "calculator": r"калькулятор|calculator|total-price|total_price|calc-btn|data-price|rate\s*=|rates\s*=",
     "search_filter": r"type=[\"']search[\"']|\.filter\s*\(|dataset\.category|data-category",
     "counter": r"data-value|data-suffix",
+    "flip_cards": r"class=[\"'][^\"']*\bflip\b|classList\.toggle\([\"']flipped",
+    "clipboard": r"navigator\.clipboard|execCommand\([\"']copy|id=[\"']copyReq[\"']",
+    "scroll_spy": r"tocLinks|\.toc\s+a|doc-body\s+h2\[id\]",
     "marquee": r"marquee|marquee-track",
     "map": r"ymaps|iframe[^>]+map|карта",
 }

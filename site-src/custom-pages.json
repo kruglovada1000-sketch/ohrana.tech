@@ -13,5 +13,11 @@
     "source": "ohrana-meropriyatiy.source.html",
     "script_source": "ohrana-meropriyatiy.js",
     "script_marker": "guards-count"
+  },
+  {
+    "slug": "dogovor",
+    "source": "dogovor.source.html",
+    "script_source": "dogovor.js",
+    "script_marker": "shieldCanvas"
   }
 ]
