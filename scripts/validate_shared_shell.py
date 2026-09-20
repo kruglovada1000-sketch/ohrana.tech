@@ -9,14 +9,28 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "site-src"
 
 
-def object_slugs() -> list[str]:
-    manifest = json.loads((SRC / "object-pages.json").read_text(encoding="utf-8"))
-    return ["ohrana-skladov"] + [page["slug"] for page in manifest]
+def load_manifest(name: str) -> list[dict[str, object]]:
+    path = SRC / name
+    if not path.exists():
+        return []
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, list):
+        raise RuntimeError(f"{name} must contain a list")
+    return value
+
+
+def regular_slugs() -> list[str]:
+    slugs = ["ohrana-skladov"]
+    for manifest_name in ("object-pages.json", "shared-pages.json"):
+        slugs.extend(str(page["slug"]) for page in load_manifest(manifest_name))
+    if len(slugs) != len(set(slugs)):
+        raise RuntimeError("duplicate slug across regular manifests")
+    return slugs
 
 
 def main() -> None:
     errors: list[str] = []
-    for slug in object_slugs():
+    for slug in regular_slugs():
         path = ROOT / slug / "index.html"
         css = ROOT / "assets" / "css" / f"{slug}.css"
         if not path.exists():
@@ -60,7 +74,7 @@ def main() -> None:
 
     if errors:
         raise SystemExit("Shared shell validation failed:\n - " + "\n - ".join(errors))
-    print(f"Shared shell OK: {len(object_slugs())} object pages + /ceny/")
+    print(f"Shared shell OK: {len(regular_slugs())} regular pages + /ceny/")
 
 
 if __name__ == "__main__":
