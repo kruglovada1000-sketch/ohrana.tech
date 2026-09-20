@@ -9,8 +9,20 @@ var progress=document.getElementById('progress');if(progress){window.addEventLis
 var burger=document.getElementById('burger'),nav=document.getElementById('siteNav');if(burger&&nav){burger.addEventListener('click',function(){var open=nav.classList.toggle('open');burger.classList.toggle('open',open);burger.setAttribute('aria-expanded',String(open));});nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){nav.classList.remove('open');burger.classList.remove('open');burger.setAttribute('aria-expanded','false');});});}
 if(nav){var path=location.pathname.replace(/index\.html$/,'');nav.querySelectorAll('a').forEach(function(a){var href=(a.getAttribute('href')||'').replace(/index\.html$/,'');if(href==='/'?path==='/':path.indexOf(href)===0)a.classList.add('active');});}
 var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;var reveal=document.querySelectorAll('[data-reveal]');if('IntersectionObserver'in window&&!rm){var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target);}});},{threshold:.1});reveal.forEach(function(el){io.observe(el);});setTimeout(function(){reveal.forEach(function(el){el.classList.add('in');});},2000);}else{reveal.forEach(function(el){el.classList.add('in');});}
-document.querySelectorAll('.faq-item.open').forEach(function(item){var q=item.querySelector('.faq-q'),answer=item.querySelector('.faq-a');if(q)q.setAttribute('aria-expanded','true');if(answer)answer.style.maxHeight=answer.scrollHeight+'px';});
-var faq=document.querySelectorAll('.faq-item .faq-q');faq.forEach(function(q){q.addEventListener('click',function(){var item=q.closest('.faq-item');var answer=item&&item.querySelector('.faq-a');var open=item&&item.classList.toggle('open');q.setAttribute('aria-expanded',String(!!open));if(answer)answer.style.maxHeight=open?answer.scrollHeight+'px':'';});});
+function setFaqState(item,open){if(!item)return;var q=item.querySelector('.faq-q'),answer=item.querySelector('.faq-a');item.classList.toggle('open',!!open);if(q)q.setAttribute('aria-expanded',String(!!open));if(answer)answer.style.maxHeight=open?answer.scrollHeight+'px':'';}
+document.querySelectorAll('.faq-item').forEach(function(item){setFaqState(item,item.classList.contains('open'));});
+var faq=document.querySelectorAll('.faq-item .faq-q');faq.forEach(function(q){
+  if(q.dataset.sharedFaqBound==='1')return;
+  q.dataset.sharedFaqBound='1';
+  q.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    var item=q.closest('.faq-item');
+    var shouldOpen=!!item&&!item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(openItem){if(openItem!==item)setFaqState(openItem,false);});
+    setFaqState(item,shouldOpen);
+  },true);
+});
 
 /* Shared flip-card accessibility for pages that use CSS hover on desktop. */
 var finePointer=window.matchMedia&&window.matchMedia('(hover:hover) and (pointer:fine)').matches;
