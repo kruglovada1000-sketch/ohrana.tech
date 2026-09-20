@@ -52,6 +52,20 @@ def page_head_from_legacy(page: str) -> str:
     return "\n".join(item.strip() for item in chunks if item.strip())
 
 
+def legacy_defines_organization(page_head: str) -> bool:
+    organization_id = f"{SITE['site_url']}/#organization"
+    scripts = re.findall(
+        r"<script\s+type=[\"']application/ld\+json[\"']>(.*?)</script>",
+        page_head,
+        re.I | re.S,
+    )
+    organization_type = re.compile(
+        r'"@type"\s*:\s*(?:"Organization"|\[[^\]]*"Organization"[^\]]*\])',
+        re.I | re.S,
+    )
+    return any(organization_id in script and organization_type.search(script) for script in scripts)
+
+
 def publish_shared_assets() -> None:
     pairs = [
         (SRC / "assets" / "site-shell.css", ROOT / "assets" / "css" / "site-shell.css"),
@@ -81,12 +95,15 @@ def build_legacy_page(slug: str, source_name: str) -> None:
     css_path.parent.mkdir(parents=True, exist_ok=True)
     css_path.write_text(style + "\n", encoding="utf-8")
 
+    page_head = page_head_from_legacy(legacy)
+    organization_jsonld = "" if legacy_defines_organization(page_head) else read_partial("organization-jsonld.html")
+
     out = f'''<!DOCTYPE html>
 <html lang="ru" class="no-js">
 <head>
 {read_partial("head-common.html")}
-{page_head_from_legacy(legacy)}
-{read_partial("organization-jsonld.html")}
+{page_head}
+{organization_jsonld}
 <link rel="stylesheet" href="/assets/css/{slug}.css">
 <link rel="stylesheet" href="/assets/css/site-shell.css">
 </head>
