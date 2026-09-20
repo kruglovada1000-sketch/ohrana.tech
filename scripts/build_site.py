@@ -189,16 +189,29 @@ def build_prices_page() -> None:
 </tr>'''
         )
 
-    cards: list[str] = []
-    for item in PRICING["services"]:
-        cards.append(
-            f'''<article class="service-price-card" data-reveal>
-<h3>{esc(item['name'])}</h3>
-<div class="big">{money(item['price_from'], item['unit'])}</div>
-<p>{esc(item['note'])}</p>
-<a class="price-link" href="{esc(item['url'])}">Об услуге →</a>
+    featured_cards: list[str] = []
+    featured_tariffs = PRICING.get("featured_tariffs", [])
+    for index, tariff in enumerate(featured_tariffs, start=1):
+        service = service_by_id[tariff["service_id"]]
+        featured_cards.append(
+            f'''<article class="tariff-card" data-tariff-card>
+<div class="tariff-card-head"><span class="tariff-badge">{esc(tariff['badge'])}</span><span class="tariff-no">{index:02d}</span></div>
+<h3>{esc(service['name'])}</h3>
+<div class="tariff-price">{money(service['price_from'], service['unit'])}</div>
+<p class="tariff-desc">{esc(tariff['description'])}</p>
+<dl class="tariff-specs">
+<div><dt>График работы</dt><dd>{esc(tariff['schedule'])}</dd></div>
+<div><dt>Экипировка</dt><dd>{esc(tariff['equipment'])}</dd></div>
+<div><dt>Профподготовка</dt><dd>{esc(tariff['training'])}</dd></div>
+<div><dt>Условия</dt><dd>{esc(tariff['conditions'])}</dd></div>
+</dl>
+<div class="tariff-card-actions"><a class="btn btn-gold" href="/kontakty/">Заказать</a><a class="tariff-more" href="{esc(service['url'])}">Подробнее →</a></div>
 </article>'''
         )
+    carousel_dots = ''.join(
+        f'<button type="button" data-carousel-dot aria-label="Показать тариф {i}" aria-pressed="false"></button>'
+        for i in range(1, len(featured_cards) + 1)
+    )
 
     title = "Цены на услуги ЧОП в Москве — стоимость охраны объектов | ЧОО «Рускорпорация»"
     description = "Цены на физическую и пультовую охрану, охрану мероприятий, личную охрану и сопровождение грузов. Подбор стоимости по типу объекта."
@@ -216,7 +229,7 @@ def build_prices_page() -> None:
 <meta property="og:locale" content="ru_RU">
 {read_partial("organization-jsonld.html")}
 <script type="application/ld+json">{pricing_jsonld()}</script>
-<link rel="stylesheet" href="/assets/css/pricing.css?v=20260920-brandshield1">
+<link rel="stylesheet" href="/assets/css/pricing.css?v=20260920-carousel1">
 <link rel="stylesheet" href="/assets/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
@@ -225,9 +238,9 @@ def build_prices_page() -> None:
 <main>
 <div class="wrap"><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="/">Главная</a><span>/</span><b>Цены</b></nav></div>
 <section class="price-hero"><div class="wrap" data-reveal><span class="price-kicker">Стоимость услуг</span><h1>Цены на <em>охранные услуги</em></h1><p class="price-lead">Единый каталог ориентировочных тарифов. Выберите тип объекта или услугу. Точный расчёт делаем после уточнения режима, количества постов, площади и задач.</p><div class="price-actions"><a class="btn btn-gold" href="#objects">Подобрать по объекту</a><a class="btn btn-line" href="/kontakty/">Получить точный расчёт</a></div></div></section>
+<section class="price-section price-tariffs" id="tariffs"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">Тарифы</span><h2>Выберите <em>формат охраны</em></h2><p>Пять основных вариантов для быстрого ориентира. Листайте карточки, сравнивайте режим, оснащение и подготовку сотрудников. Точная смета формируется после оценки объекта и задач.</p></div><div class="tariff-carousel" data-price-carousel><div class="tariff-viewport" data-carousel-viewport tabindex="0" aria-label="Карусель тарифов охранных услуг"><div class="tariff-track">{''.join(featured_cards)}</div></div><div class="tariff-controls"><div class="tariff-dots" aria-label="Навигация по тарифам">{carousel_dots}</div><div class="tariff-arrows"><button type="button" class="tariff-arrow" data-carousel-prev aria-label="Предыдущий тариф">←</button><button type="button" class="tariff-arrow" data-carousel-next aria-label="Следующий тариф">→</button></div></div></div></div></section>
 <section class="price-section alt" id="objects"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">По типу объекта</span><h2>Найдите свой <em>объект</em></h2><p>Все варианты находятся в HTML страницы: фильтр нужен только для удобства пользователя и не скрывает каталог от поисковых и AI-роботов.</p></div><div class="price-tools"><input id="priceFilter" type="search" placeholder="Например: склад, магазин, ЖК, мероприятие" aria-label="Поиск по каталогу цен"></div><div class="price-table-wrap" data-reveal><table class="price-table"><thead><tr><th>Объект</th><th>Рекомендуемые услуги</th><th>Ориентир</th><th>Что влияет на цену</th><th>Страница</th></tr></thead><tbody>{''.join(object_rows)}</tbody></table></div><p class="price-note">{esc(PRICING['disclaimer'])}</p></div></section>
-<section class="price-section"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">По услуге</span><h2>Базовые <em>тарифы</em></h2><p>Тарифы собраны из действующих коммерческих страниц проекта и теперь управляются централизованно.</p></div><div class="service-cards">{''.join(cards)}</div></div></section>
-<section class="price-section alt"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">Расчёт</span><h2>Что меняет <em>итоговую стоимость</em></h2></div><div class="factors"><div class="factor" data-reveal><b>Режим</b><span>24/7, дневная, ночная или разовая охрана.</span></div><div class="factor" data-reveal><b>Объект</b><span>Площадь, периметр, входы, КПП и поток людей.</span></div><div class="factor" data-reveal><b>Состав</b><span>Количество сотрудников, разряд, вооружение и ГБР.</span></div><div class="factor" data-reveal><b>Техника</b><span>Сигнализация, камеры, СКУД и другие системы безопасности.</span></div></div></div></section>
+<section class="price-section alt"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">Расчёт</span><h2>Что меняет <em>итоговую стоимость</em></h2><p>Ориентир в карточке помогает сравнить варианты, но договорная цена зависит от конкретной схемы охраны.</p></div><div class="factors"><div class="factor" data-reveal><b>График и состав</b><span>Режим поста, продолжительность смены и количество сотрудников.</span></div><div class="factor" data-reveal><b>Подготовка</b><span>Разряд, квалификация и требования к сотрудникам под задачу объекта.</span></div><div class="factor" data-reveal><b>Экипировка</b><span>Спецсредства, связь и вооружение там, где оно предусмотрено схемой охраны.</span></div><div class="factor" data-reveal><b>Технические средства</b><span>Сигнализация, видеонаблюдение, СКУД, тревожная кнопка и мониторинг.</span></div></div></div></section>
 <section class="price-cta"><div class="wrap"><div class="price-cta-box" data-reveal><h2>Нужен точный расчёт?</h2><p>Сообщите тип объекта, адрес и режим работы. Подберём схему охраны и рассчитаем стоимость под конкретные задачи.</p><a class="btn btn-gold" href="/kontakty/">Рассчитать охрану</a></div></div></section>
 </main>
 {read_partial("footer.html")}

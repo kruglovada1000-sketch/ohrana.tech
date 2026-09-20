@@ -78,4 +78,16 @@ document.querySelectorAll('form[action*="formspree.io"]').forEach(function(form)
 });
 
 if(!rm&&window.matchMedia&&!window.matchMedia('(hover:none)').matches){var dot=document.querySelector('.cursor-dot'),ring=document.querySelector('.cursor-ring');if(dot&&ring){var mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.transform='translate('+(mx-3)+'px,'+(my-3)+'px)';},{passive:true});(function loop(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.transform='translate('+(rx-ring.offsetWidth/2)+'px,'+(ry-ring.offsetHeight/2)+'px)';requestAnimationFrame(loop);})();}}
+/* pricing-carousel-v1 */
+document.querySelectorAll('[data-price-carousel]').forEach(function(carousel){
+  var viewport=carousel.querySelector('[data-carousel-viewport]'),cards=Array.prototype.slice.call(carousel.querySelectorAll('[data-tariff-card]')),prev=carousel.querySelector('[data-carousel-prev]'),next=carousel.querySelector('[data-carousel-next]'),dots=Array.prototype.slice.call(carousel.querySelectorAll('[data-carousel-dot]'));
+  if(!viewport||!cards.length)return;
+  var active=0,scrollTick=false;
+  function clamp(i){return Math.max(0,Math.min(cards.length-1,i));}
+  function setUi(i){active=clamp(i);dots.forEach(function(dot,index){dot.setAttribute('aria-pressed',String(index===active));});if(prev)prev.disabled=active===0;if(next)next.disabled=active===cards.length-1;}
+  function nearest(){var left=viewport.scrollLeft,best=0,distance=Infinity;cards.forEach(function(card,index){var d=Math.abs(card.offsetLeft-left);if(d<distance){distance=d;best=index;}});setUi(best);}
+  function go(i){var target=clamp(i);setUi(target);viewport.scrollTo({left:cards[target].offsetLeft,behavior:rm?'auto':'smooth'});}
+  if(prev)prev.addEventListener('click',function(){go(active-1);});if(next)next.addEventListener('click',function(){go(active+1);});dots.forEach(function(dot,index){dot.addEventListener('click',function(){go(index);});});
+  viewport.addEventListener('scroll',function(){if(scrollTick)return;scrollTick=true;requestAnimationFrame(function(){nearest();scrollTick=false;});},{passive:true});viewport.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){e.preventDefault();go(active-1);}else if(e.key==='ArrowRight'){e.preventDefault();go(active+1);}});window.addEventListener('resize',nearest,{passive:true});setUi(0);
+});
 })();
