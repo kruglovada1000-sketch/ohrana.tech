@@ -33,44 +33,56 @@ jobs:
       - name: Build static pages
         run: |
           python scripts/build_site.py
+          python scripts/build_object_pages.py
           python scripts/normalize_generated_links.py
           python scripts/normalize_sitemap.py
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py scripts/normalize_generated_links.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
+          python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/normalize_generated_links.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
           test -f ohrana-skladov/index.html
+          test -f ohrana-ofisov/index.html
           test -f ceny/index.html
           test -f assets/css/ohrana-skladov.css
+          test -f assets/css/ohrana-ofisov.css
           test -f assets/css/site-shell.css
           test -f assets/css/pricing.css
           test -f assets/js/site.js
           grep -q 'href="/ceny/"' ohrana-skladov/index.html
+          grep -q 'href="/ceny/"' ohrana-ofisov/index.html
           grep -q 'href="/ceny/"' ceny/index.html
           grep -q 'https://ohrana.tech/ceny/' sitemap.xml
           grep -q '/stati/soprovozhdenie-gruzov.html' ceny/index.html
           ! grep -q '/ohrana-stroyaploshchadok/' ohrana-skladov/index.html
           ! grep -q '/ohrana-uvelirnyh-magazinov/' ohrana-skladov/index.html
           ! grep -q '<style' ohrana-skladov/index.html
+          ! grep -q '<style' ohrana-ofisov/index.html
           ! grep -q '<style' ceny/index.html
           ! grep -q '{{site\.' ohrana-skladov/index.html
+          ! grep -q '{{site\.' ohrana-ofisov/index.html
           ! grep -q '{{site\.' ceny/index.html
           ! grep -q "</filter id='n'>" assets/css/site-shell.css
 
-      - name: Validate warehouse markers
+      - name: Validate object page shells
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
-          html = Path('ohrana-skladov/index.html').read_text(encoding='utf-8')
-          for marker in ['id="risks"','id="services"','id="types"','id="prices"','id="steps"','id="why"','id="faq"','id="articles"','id="cta"']:
-              assert marker in html, marker
-          assert len(re.findall(r'<header\b', html, re.I)) == 1
-          assert len(re.findall(r'<main\b', html, re.I)) == 1
-          assert len(re.findall(r'<footer\b', html, re.I)) == 1
-          assert html.index('/assets/css/ohrana-skladov.css') < html.index('/assets/css/site-shell.css')
-          print('Warehouse content and shell markers OK')
+          checks = {
+              'ohrana-skladov': ['id="risks"','id="services"','id="types"','id="prices"','id="steps"','id="why"','id="faq"','id="articles"','id="cta"'],
+              'ohrana-ofisov': [],
+          }
+          for slug, markers in checks.items():
+              html = Path(slug, 'index.html').read_text(encoding='utf-8')
+              for marker in markers:
+                  assert marker in html, (slug, marker)
+              assert len(re.findall(r'<header\b', html, re.I)) == 1, slug
+              assert len(re.findall(r'<main\b', html, re.I)) == 1, slug
+              assert len(re.findall(r'<footer\b', html, re.I)) == 1, slug
+              assert f'/assets/css/{slug}.css' in html, slug
+              assert html.index(f'/assets/css/{slug}.css') < html.index('/assets/css/site-shell.css'), slug
+          print('Object page content and shared shell markers OK')
           PY
 
       - name: Validate HTML integrity and internal links
@@ -88,6 +100,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ohrana-skladov/index.html ceny/index.html sitemap.xml assets/css assets/js
+          git add ohrana-skladov/index.html ohrana-ofisov/index.html ceny/index.html sitemap.xml assets/css assets/js
           git commit -m "build: regenerate shared pages [skip ci]"
           git push
