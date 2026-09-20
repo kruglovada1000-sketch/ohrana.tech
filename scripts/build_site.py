@@ -216,7 +216,7 @@ def build_prices_page() -> None:
 <meta property="og:locale" content="ru_RU">
 {read_partial("organization-jsonld.html")}
 <script type="application/ld+json">{pricing_jsonld()}</script>
-<link rel="stylesheet" href="/assets/css/pricing.css">
+<link rel="stylesheet" href="/assets/css/pricing.css?v=20260920-mobilecards1">
 <link rel="stylesheet" href="/assets/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
