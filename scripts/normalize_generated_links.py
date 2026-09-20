@@ -12,11 +12,27 @@ ALIASES = {
 }
 
 
+def load_manifest(name: str) -> list[dict[str, object]]:
+    path = SRC / name
+    if not path.exists():
+        return []
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, list):
+        raise RuntimeError(f"{name} must contain a list")
+    return value
+
+
 def generated_pages() -> list[Path]:
-    manifest = json.loads((SRC / "object-pages.json").read_text(encoding="utf-8"))
     paths = [ROOT / "ohrana-skladov" / "index.html", ROOT / "ceny" / "index.html"]
-    paths.extend(ROOT / page["slug"] / "index.html" for page in manifest)
-    return paths
+    for manifest_name in ("object-pages.json", "custom-pages.json"):
+        paths.extend(ROOT / str(page["slug"]) / "index.html" for page in load_manifest(manifest_name))
+    unique: list[Path] = []
+    seen: set[Path] = set()
+    for path in paths:
+        if path not in seen:
+            seen.add(path)
+            unique.append(path)
+    return unique
 
 
 def main() -> None:
