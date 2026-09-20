@@ -32,3 +32,5 @@ jobs:
           git add assets/css/site-shell.css site-src/assets/site-shell.css assets/css/home-light-fix.css assets/js/ohrana-fizicheskih-lic.js assets/js/dogovor.js
           git commit -m 'Fix radar and light-theme contrast across key pages'
           git push origin HEAD:main
+
+# trigger
