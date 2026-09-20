@@ -14,12 +14,27 @@ SCRIPT_RE = re.compile(
 )
 
 
+def load_manifest(name: str) -> list[dict[str, object]]:
+    path = SRC / name
+    if not path.exists():
+        return []
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, list):
+        raise RuntimeError(f"{name} must contain a list")
+    return value
+
+
 def generated_pages() -> list[Path]:
-    manifest = json.loads((SRC / "object-pages.json").read_text(encoding="utf-8"))
-    paths = [ROOT / "ohrana-skladov" / "index.html"]
-    paths.extend(ROOT / page["slug"] / "index.html" for page in manifest)
-    paths.append(ROOT / "ceny" / "index.html")
-    return paths
+    paths = [ROOT / "ohrana-skladov" / "index.html", ROOT / "ceny" / "index.html"]
+    for manifest_name in ("object-pages.json", "custom-pages.json"):
+        paths.extend(ROOT / str(page["slug"]) / "index.html" for page in load_manifest(manifest_name))
+    unique: list[Path] = []
+    seen: set[Path] = set()
+    for path in paths:
+        if path not in seen:
+            seen.add(path)
+            unique.append(path)
+    return unique
 
 
 def types_of(value: dict) -> set[str]:
@@ -97,9 +112,6 @@ def normalize_page(path: Path) -> None:
         ) + "</script>"
 
     text = SCRIPT_RE.sub(replace, text)
-    if ORG_ID in text:
-        # References to the shared @id may remain, but its declaration was removed above.
-        pass
     organization = read_partial("organization-jsonld.html").strip()
     text = text.replace("</head>", organization + "\n</head>", 1)
     path.write_text(text, encoding="utf-8")
