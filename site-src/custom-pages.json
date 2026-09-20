@@ -19,5 +19,11 @@
     "source": "dogovor.source.html",
     "script_source": "dogovor.js",
     "script_marker": "shieldCanvas"
+  },
+  {
+    "slug": "ohrana-yuridicheskih-lic",
+    "source": "ohrana-yuridicheskih-lic.source.html",
+    "script_source": "ohrana-yuridicheskih-lic.js",
+    "script_marker": "holoShieldCanvas"
   }
 ]
