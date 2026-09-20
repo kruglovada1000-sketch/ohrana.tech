@@ -1111,6 +1111,18 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
   .brand-sub{font-size:.64rem;letter-spacing:.045em}
   .mbar a{font-size:.72rem}
 }
+
+/* header-brand-logo-fit-v2 */
+.site-header .brand-ic::after{
+  width:42px!important;
+  height:42px!important;
+  background-size:contain;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+@media(max-width:420px){
+  .site-header .brand-ic::after{width:36px!important;height:36px!important}
+}
 </style>
 </head>
 <body>
