@@ -906,6 +906,29 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A}
   #about .about-visual{padding:14px;border-radius:18px}
 }
 
+/* home-about-circle-fit-v2 */
+#about .about-visual{
+  aspect-ratio:1/1;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  padding:38px;
+}
+#about .about-visual img{
+  width:100%;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  object-position:center;
+}
+@media(max-width:960px){
+  #about .about-visual{width:min(100%,620px);padding:30px}
+}
+@media(max-width:560px){
+  #about .about-visual{width:100%;padding:20px}
+}
+
 /* homepage-responsive-polish-v1 */
 @media(max-width:1100px){
   .wrap{padding-left:22px;padding-right:22px}
