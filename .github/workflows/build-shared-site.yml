@@ -6,7 +6,7 @@ on:
       - refactor/shared-site-template
     paths:
       - "site-src/**"
-      - "scripts/build_site.py"
+      - "scripts/**"
       - ".github/workflows/build-shared-site.yml"
   pull_request:
     branches:
@@ -35,7 +35,7 @@ jobs:
 
       - name: Validate generated structure
         run: |
-          python -m py_compile scripts/build_site.py
+          python -m py_compile scripts/build_site.py scripts/validate_sitemap.py
           git diff --check
           test -f ohrana-skladov/index.html
           test -f ceny/index.html
@@ -67,6 +67,9 @@ jobs:
           assert html.index('/assets/css/ohrana-skladov.css') < html.index('/assets/css/site-shell.css')
           print('Warehouse content and shell markers OK')
           PY
+
+      - name: Validate sitemap targets
+        run: python scripts/validate_sitemap.py
 
       - name: Commit generated files on refactor branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/refactor/shared-site-template' && github.actor != 'github-actions[bot]'
