@@ -11,6 +11,7 @@ MANIFESTS = [
     ROOT / "site-src" / "object-pages.json",
     ROOT / "site-src" / "shared-pages.json",
     ROOT / "site-src" / "custom-pages.json",
+    ROOT / "site-src" / "document-pages.json",
 ]
 
 RISK_MARKERS = {
@@ -26,16 +27,7 @@ RISK_MARKERS = {
     "map": r"ymaps|<iframe[^>]+map|карта",
 }
 
-SKIP_TOP_LEVEL = {
-    ".git",
-    ".github",
-    "assets",
-    "css",
-    "images",
-    "js",
-    "scripts",
-    "site-src",
-}
+SKIP_TOP_LEVEL = {".git", ".github", "assets", "css", "images", "js", "scripts", "site-src"}
 
 
 def manifest_slugs() -> set[str]:
@@ -67,7 +59,7 @@ def main() -> None:
     for path in sorted(ROOT.rglob("index.html")):
         rel = path.relative_to(ROOT)
         if rel == Path("index.html"):
-            continue  # homepage is the visual reference, not a migration candidate
+            continue
         if rel.parts[0] in SKIP_TOP_LEVEL:
             continue
         if len(rel.parts) == 2 and rel.parts[0] in migrated:
@@ -88,6 +80,8 @@ def main() -> None:
     for row in rows:
         print("\t".join(map(str, row)))
     print(f"Remaining standalone index pages: {len(rows)}")
+    if rows:
+        raise SystemExit("Unmanaged standalone pages remain")
 
 
 if __name__ == "__main__":

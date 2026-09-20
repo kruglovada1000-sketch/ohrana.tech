@@ -1,0 +1,116 @@
+/* Gilded Noir screen theme for the printable commercial proposal.
+   This stylesheet is intentionally scoped to the KP document. */
+@media screen {
+  html:has(.kp-wrap), body:has(.kp-wrap) {
+    background:#07090D !important;
+    color:#F2EEE4 !important;
+    font-family:'Manrope',system-ui,sans-serif !important;
+  }
+  .kp-wrap {
+    background:#0D1118 !important;
+    color:#F2EEE4 !important;
+    border:1px solid rgba(242,238,228,.08) !important;
+    box-shadow:0 30px 80px rgba(0,0,0,.55) !important;
+    border-radius:18px !important;
+  }
+  .kp-header {
+    border-bottom:1px solid rgba(232,200,122,.35) !important;
+  }
+  .kp-header h1,
+  .kp-section h2 {
+    color:#F5E3B3 !important;
+    font-family:'Cormorant',Georgia,serif !important;
+    font-weight:500 !important;
+  }
+  .kp-header h1 {
+    font-size:34px !important;
+    letter-spacing:.04em !important;
+  }
+  .kp-header p,
+  .kp-section p,
+  .kp-list,
+  .kp-sign,
+  .kp-wrap em {
+    color:#C7CBD4 !important;
+  }
+  .kp-section h2 {
+    border-left:3px solid #E8C87A !important;
+  }
+  .kp-field {
+    border-bottom-color:rgba(232,200,122,.65) !important;
+    color:#F2EEE4 !important;
+  }
+  .kp-table th {
+    background:#12161F !important;
+    color:#F5E3B3 !important;
+    border-color:rgba(232,200,122,.22) !important;
+  }
+  .kp-table td {
+    border-color:rgba(242,238,228,.10) !important;
+    color:#D9DCE3 !important;
+  }
+  .kp-table tr:nth-child(even) {
+    background:#0A0D13 !important;
+  }
+  .kp-table tfoot tr {
+    background:#12161F !important;
+    color:#F5E3B3 !important;
+  }
+  .kp-table tfoot .kp-field {
+    background:#0D1118 !important;
+    color:#F2EEE4 !important;
+  }
+  .kp-total,
+  .print-btn {
+    background:linear-gradient(115deg,#F5E3B3 0%,#E8C87A 45%,#B98F3E 100%) !important;
+    color:#171003 !important;
+    border:none !important;
+    box-shadow:0 14px 40px rgba(232,200,122,.22) !important;
+  }
+  .print-btn {
+    border-radius:100px !important;
+    padding:14px 28px !important;
+    font-weight:800 !important;
+  }
+  .print-btn:hover {
+    transform:translateY(-2px);
+    box-shadow:0 20px 52px rgba(232,200,122,.32) !important;
+  }
+  .kp-sign {
+    border-top-color:rgba(232,200,122,.22) !important;
+  }
+}
+
+@media print {
+  html, body {
+    background:#fff !important;
+    color:#111 !important;
+  }
+  .kp-wrap {
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    background:#fff !important;
+    color:#111 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+  }
+  .kp-header h1,
+  .kp-section h2,
+  .kp-header p,
+  .kp-section p,
+  .kp-list,
+  .kp-sign,
+  .kp-wrap em {
+    color:#111 !important;
+  }
+  .kp-header { border-bottom-color:#777 !important; }
+  .kp-section h2 { border-left-color:#333 !important; }
+  .kp-field { border-bottom-color:#777 !important; color:#111 !important; }
+  .kp-table th { background:#222 !important; color:#fff !important; border-color:#aaa !important; }
+  .kp-table td { color:#111 !important; border-color:#bbb !important; }
+  .kp-table tr:nth-child(even) { background:#f3f3f3 !important; }
+  .kp-total { background:#eee !important; color:#111 !important; border:1px solid #aaa !important; box-shadow:none !important; }
+  .print-btn { display:none !important; }
+}
