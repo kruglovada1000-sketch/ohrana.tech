@@ -11,6 +11,16 @@ if(nav){var path=location.pathname.replace(/index\.html$/,'');nav.querySelectorA
 var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;var reveal=document.querySelectorAll('[data-reveal]');if('IntersectionObserver'in window&&!rm){var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target);}});},{threshold:.1});reveal.forEach(function(el){io.observe(el);});setTimeout(function(){reveal.forEach(function(el){el.classList.add('in');});},2000);}else{reveal.forEach(function(el){el.classList.add('in');});}
 document.querySelectorAll('.faq-item.open').forEach(function(item){var q=item.querySelector('.faq-q'),answer=item.querySelector('.faq-a');if(q)q.setAttribute('aria-expanded','true');if(answer)answer.style.maxHeight=answer.scrollHeight+'px';});
 var faq=document.querySelectorAll('.faq-item .faq-q');faq.forEach(function(q){q.addEventListener('click',function(){var item=q.closest('.faq-item');var answer=item&&item.querySelector('.faq-a');var open=item&&item.classList.toggle('open');q.setAttribute('aria-expanded',String(!!open));if(answer)answer.style.maxHeight=open?answer.scrollHeight+'px':'';});});
+
+/* Shared flip-card accessibility for pages that use CSS hover on desktop. */
+var finePointer=window.matchMedia&&window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+document.querySelectorAll('.flip').forEach(function(card){
+  if(card.dataset.sharedFlipBound==='1')return;
+  card.dataset.sharedFlipBound='1';
+  if(!finePointer){card.addEventListener('click',function(e){if(e.target.closest('a,button,input,select,textarea,label'))return;card.classList.toggle('flipped');});}
+  card.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){if(e.target!==card)return;e.preventDefault();card.classList.toggle('flipped');}});
+});
+
 var chatBtn=document.getElementById('chatBtn'),chatPanel=document.getElementById('chatPanel');if(chatBtn&&chatPanel){chatBtn.addEventListener('click',function(e){e.stopPropagation();chatPanel.classList.toggle('open');});document.addEventListener('click',function(e){if(!chatPanel.contains(e.target)&&!chatBtn.contains(e.target))chatPanel.classList.remove('open');});}
 var filter=document.getElementById('priceFilter');if(filter){filter.addEventListener('input',function(){var q=(filter.value||'').trim().toLowerCase();document.querySelectorAll('[data-price-row]').forEach(function(row){var text=(row.textContent||'').toLowerCase();row.hidden=!!q&&text.indexOf(q)===-1;});});}
 var typeSelect=document.getElementById('priceType');if(typeSelect){typeSelect.addEventListener('change',function(){var v=typeSelect.value;document.querySelectorAll('[data-price-row]').forEach(function(row){row.hidden=!!v&&row.dataset.kind!==v;});});}
@@ -20,21 +30,38 @@ function setCounterValue(el,value){var suffix=el.getAttribute('data-suffix')||''
 function runCounter(el){if(el.dataset.counterDone==='1')return;el.dataset.counterDone='1';var target=Number(el.getAttribute('data-value'));if(!Number.isFinite(target)){return;}if(rm){setCounterValue(el,target);return;}var start=performance.now(),duration=1100;function tick(now){var p=Math.min(1,(now-start)/duration);var eased=1-Math.pow(1-p,3);setCounterValue(el,target*eased);if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);}
 if(counters.length){if('IntersectionObserver'in window&&!rm){var counterIo=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){runCounter(entry.target);counterIo.unobserve(entry.target);}});},{threshold:.35});counters.forEach(function(el){counterIo.observe(el);});}else{counters.forEach(runCounter);}}
 
+function nativeSubmit(form){try{HTMLFormElement.prototype.submit.call(form);}catch(e){form.submit();}}
+function successNodeFor(form){
+  var local=form.parentElement&&form.parentElement.querySelector('.form-ok,.form-success,[data-form-success]');
+  var ok=document.getElementById('formOk')||local;
+  if(ok)return ok;
+  ok=document.createElement('div');
+  ok.className='form-ok shared-form-ok';
+  ok.setAttribute('role','status');
+  ok.setAttribute('aria-live','polite');
+  var heading=document.createElement('h3');heading.textContent='Заявка отправлена!';
+  var text=document.createElement('p');text.textContent='Спасибо. Мы получили заявку и свяжемся с вами.';
+  ok.appendChild(heading);ok.appendChild(text);
+  (form.parentElement||form).appendChild(ok);
+  return ok;
+}
 document.querySelectorAll('form[action*="formspree.io"]').forEach(function(form){
   if(form.dataset.sharedFormBound==='1')return;
   form.dataset.sharedFormBound='1';
   form.addEventListener('submit',function(e){
     e.preventDefault();
+    var button=form.querySelector('button[type="submit"],input[type="submit"]');
+    var oldText=button?(button.tagName==='INPUT'?button.value:button.textContent):'';
+    if(button){button.disabled=true;if(button.tagName==='INPUT')button.value='Отправляем…';else button.textContent='Отправляем…';}
     var data=new FormData(form);
     fetch(form.action,{method:'POST',body:data,headers:{'Accept':'application/json'}})
       .then(function(res){
-        if(!res.ok){form.submit();return;}
+        if(!res.ok){if(button){button.disabled=false;if(button.tagName==='INPUT')button.value=oldText;else button.textContent=oldText;}nativeSubmit(form);return;}
         goal('form_submit');goal('lead_form_ok');
         form.style.display='none';
-        var ok=document.getElementById('formOk')||form.parentElement&&form.parentElement.querySelector('.form-ok');
-        if(ok){ok.style.display='block';ok.hidden=false;}
+        var ok=successNodeFor(form);ok.style.display='block';ok.hidden=false;
       })
-      .catch(function(){form.submit();});
+      .catch(function(){if(button){button.disabled=false;if(button.tagName==='INPUT')button.value=oldText;else button.textContent=oldText;}nativeSubmit(form);});
   });
 });
 
