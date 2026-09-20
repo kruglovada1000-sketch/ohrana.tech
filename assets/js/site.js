@@ -8,13 +8,21 @@ function forceYinYang(btn){
   btn.innerHTML='<span class="theme-yinyang" aria-hidden="true">☯</span>';
   btn.title='Светлая / тёмная тема';
 }
+var themePlacementMq=window.matchMedia?window.matchMedia('(max-width:1100px)'):null;
 function placeThemeToggle(){
   var btn=document.getElementById('themeToggle');
   var navWrap=document.querySelector('#siteNav .wrap');
-  if(!navWrap)return btn;
-  if(!btn){btn=document.createElement('button');btn.type='button';btn.id='themeToggle';btn.className='theme-toggle nav-theme-toggle';navWrap.appendChild(btn);}
-  else if(btn.parentElement!==navWrap){navWrap.appendChild(btn);}
-  btn.classList.add('nav-theme-toggle');
+  var hdRight=document.querySelector('.site-header .hd-right');
+  var burger=document.getElementById('burger');
+  var compact=!!(themePlacementMq&&themePlacementMq.matches);
+  var target=compact&&hdRight?hdRight:navWrap;
+  if(!target)return btn;
+  if(!btn){btn=document.createElement('button');btn.type='button';btn.id='themeToggle';btn.className='theme-toggle';}
+  if(compact&&target===hdRight){
+    if(btn.parentElement!==hdRight||btn.nextElementSibling!==burger)hdRight.insertBefore(btn,burger||null);
+  }else if(btn.parentElement!==target){target.appendChild(btn);}
+  btn.classList.toggle('nav-theme-toggle',!compact);
+  btn.classList.toggle('header-theme-toggle',compact);
   forceYinYang(btn);
   return btn;
 }
@@ -36,6 +44,11 @@ function ensureThemeToggle(){
   applySiteTheme(root.dataset.theme==='light'?'light':'dark');
 }
 ensureThemeToggle();
+if(themePlacementMq){
+  var onThemePlacementChange=function(){applySiteTheme(root.dataset.theme==='light'?'light':'dark');};
+  if(themePlacementMq.addEventListener)themePlacementMq.addEventListener('change',onThemePlacementChange);
+  else if(themePlacementMq.addListener)themePlacementMq.addListener(onThemePlacementChange);
+}
 
 /* contacts-visual-restore-v2: scope emergency contact fixes to the Contacts page only. */
 var cleanPath=location.pathname.replace(/\/+$/,'')||'/';

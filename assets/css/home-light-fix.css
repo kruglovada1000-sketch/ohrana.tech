@@ -34,3 +34,10 @@ html[data-theme="light"] .plan.popular{background:#fff!important;border:1.5px so
 html[data-theme="light"] .plan.popular::before{display:none!important}
 html[data-theme="light"] .plan.popular :where(h3,.desc,li){color:var(--ink)!important}
 html[data-theme="light"] .reg-cities span{color:#0c0c0c!important;background:#fff!important;border-color:rgba(18,15,10,.16)!important}
+
+/* homepage-audit-readability-v1 */
+html[data-theme="light"] .form-panel .field label{color:#34312D!important}
+@media(max-width:1100px){
+  .site-header .header-theme-toggle{width:42px!important;height:42px!important;flex:0 0 42px!important;margin:0!important;display:grid!important;place-items:center!important;background:var(--panel)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:50%!important;box-shadow:0 8px 24px rgba(0,0,0,.10)!important}
+  html[data-theme="light"] .site-header .header-theme-toggle{background:#fff!important;color:#171717!important;border-color:rgba(23,23,23,.16)!important}
+}
