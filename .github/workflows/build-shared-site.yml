@@ -44,48 +44,50 @@ jobs:
         run: |
           python -m py_compile scripts/build_site.py scripts/build_object_pages.py scripts/audit_migration_candidates.py scripts/normalize_generated_links.py scripts/normalize_sitemap.py scripts/validate_sitemap.py scripts/validate_generated_html.py
           git diff --check
-          test -f ohrana-skladov/index.html
-          test -f ohrana-ofisov/index.html
-          test -f ceny/index.html
-          test -f assets/css/ohrana-skladov.css
-          test -f assets/css/ohrana-ofisov.css
-          test -f assets/css/site-shell.css
-          test -f assets/css/pricing.css
-          test -f assets/js/site.js
-          grep -q 'href="/ceny/"' ohrana-skladov/index.html
-          grep -q 'href="/ceny/"' ohrana-ofisov/index.html
-          grep -q 'href="/ceny/"' ceny/index.html
-          grep -q 'https://ohrana.tech/ceny/' sitemap.xml
-          grep -q '/stati/soprovozhdenie-gruzov.html' ceny/index.html
-          ! grep -q '/ohrana-stroyaploshchadok/' ohrana-skladov/index.html
-          ! grep -q '/ohrana-uvelirnyh-magazinov/' ohrana-skladov/index.html
-          ! grep -q '<style' ohrana-skladov/index.html
-          ! grep -q '<style' ohrana-ofisov/index.html
-          ! grep -q '<style' ceny/index.html
-          ! grep -q '{{site\.' ohrana-skladov/index.html
-          ! grep -q '{{site\.' ohrana-ofisov/index.html
-          ! grep -q '{{site\.' ceny/index.html
-          ! grep -q "</filter id='n'>" assets/css/site-shell.css
-
-      - name: Validate object page shells
-        run: |
           python - <<'PY'
           from pathlib import Path
+          import json
           import re
-          checks = {
-              'ohrana-skladov': ['id="risks"','id="services"','id="types"','id="prices"','id="steps"','id="why"','id="faq"','id="articles"','id="cta"'],
-              'ohrana-ofisov': [],
-          }
-          for slug, markers in checks.items():
-              html = Path(slug, 'index.html').read_text(encoding='utf-8')
-              for marker in markers:
-                  assert marker in html, (slug, marker)
+
+          root = Path('.')
+          manifest = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          slugs = ['ohrana-skladov'] + [page['slug'] for page in manifest]
+          assert len(slugs) == len(set(slugs)), 'duplicate migrated slug'
+          assert len(manifest) == 12, f'unexpected object manifest size: {len(manifest)}'
+
+          for slug in slugs:
+              page = root / slug / 'index.html'
+              css = root / 'assets' / 'css' / f'{slug}.css'
+              assert page.exists(), page
+              assert css.exists(), css
+              html = page.read_text(encoding='utf-8')
+              assert 'href="/ceny/"' in html, slug
+              assert '<style' not in html.lower(), slug
+              assert '{{site.' not in html, slug
               assert len(re.findall(r'<header\b', html, re.I)) == 1, slug
               assert len(re.findall(r'<main\b', html, re.I)) == 1, slug
               assert len(re.findall(r'<footer\b', html, re.I)) == 1, slug
               assert f'/assets/css/{slug}.css' in html, slug
               assert html.index(f'/assets/css/{slug}.css') < html.index('/assets/css/site-shell.css'), slug
-          print('Object page content and shared shell markers OK')
+
+          prices = Path('ceny/index.html').read_text(encoding='utf-8')
+          assert 'href="/ceny/"' in prices
+          assert '<style' not in prices.lower()
+          assert '{{site.' not in prices
+          assert 'https://ohrana.tech/ceny/' in Path('sitemap.xml').read_text(encoding='utf-8')
+          assert '/stati/soprovozhdenie-gruzov.html' in prices
+          assert "</filter id='n'>" not in Path('assets/css/site-shell.css').read_text(encoding='utf-8')
+          print(f'Generated structure OK: {len(slugs)} object pages + prices')
+          PY
+
+      - name: Validate warehouse content markers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html = Path('ohrana-skladov/index.html').read_text(encoding='utf-8')
+          for marker in ['id="risks"','id="services"','id="types"','id="prices"','id="steps"','id="why"','id="faq"','id="articles"','id="cta"']:
+              assert marker in html, marker
+          print('Warehouse unique content markers OK')
           PY
 
       - name: Validate HTML integrity and internal links
@@ -103,6 +105,25 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ohrana-skladov/index.html ohrana-ofisov/index.html ceny/index.html sitemap.xml assets/css assets/js
-          git commit -m "build: regenerate shared pages [skip ci]"
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          manifest = json.loads(Path('site-src/object-pages.json').read_text(encoding='utf-8'))
+          paths = [
+              'ohrana-skladov/index.html',
+              'ceny/index.html',
+              'sitemap.xml',
+              'assets/css',
+              'assets/js',
+          ]
+          paths.extend(f"{page['slug']}/index.html" for page in manifest)
+          subprocess.run(['git', 'add', '--', *paths], check=True)
+          PY
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit"
+            exit 0
+          fi
+          git commit -m "build: regenerate shared object batch [skip ci]"
           git push
