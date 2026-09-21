@@ -1,22 +1,22 @@
 @import url('/assets/css/fizicheskaya-ohrana-base.css');
 
-/* dragons-section-01-direct-v3 */
+/* dragons-section-01-direct-v4 */
 #guard>.wrap{position:relative}
-.guard-practice-row{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(300px,440px);
-  gap:48px;
-  align-items:center;
-  margin-bottom:48px;
-}
-#guard .guard-practice-row .sec-head{
+#guard .sec-head{
   max-width:760px;
-  margin-bottom:0;
+  min-height:360px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
   padding-right:12px;
 }
 .guard-dragons{
-  width:100%;
+  position:absolute;
+  top:0;
+  right:28px;
+  width:min(34vw,440px);
   margin:0;
+  z-index:1;
   border:1px solid rgba(232,200,122,.58);
   border-radius:22px;
   box-shadow:0 20px 34px rgba(0,0,0,.34);
@@ -29,15 +29,17 @@
   height:auto;
   object-fit:contain;
 }
+#guard .sec-head,
+#guard .flip-grid,
+#guard .highlight-box{position:relative;z-index:2}
 @media(max-width:1100px){
-  .guard-practice-row{grid-template-columns:minmax(0,1fr) minmax(280px,360px);gap:34px}
-  #guard .guard-practice-row .sec-head{max-width:680px}
+  #guard .sec-head{max-width:680px;min-height:320px}
+  .guard-dragons{width:min(32vw,360px);right:24px}
 }
 @media(max-width:960px){
-  .guard-practice-row{grid-template-columns:1fr;gap:28px;margin-bottom:38px}
-  #guard .guard-practice-row .sec-head{max-width:820px;padding-right:0}
-  .guard-dragons{width:min(100%,560px);margin:0 auto;border-radius:20px}
+  #guard .sec-head{max-width:820px;min-height:0;display:block;padding-right:0}
+  .guard-dragons{position:relative;top:auto;right:auto;width:min(100%,560px);margin:0 auto 34px;border-radius:20px}
 }
 @media(max-width:640px){
-  .guard-dragons{width:100%;border-radius:18px}
+  .guard-dragons{width:100%;border-radius:18px;margin-bottom:28px}
 }
