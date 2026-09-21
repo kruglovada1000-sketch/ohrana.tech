@@ -83,33 +83,38 @@ document.querySelectorAll('form[action*="formspree.io"]').forEach(function(form)
 if(!rm&&window.matchMedia&&!window.matchMedia('(hover:none)').matches){var dot=document.querySelector('.cursor-dot'),ring=document.querySelector('.cursor-ring');if(dot&&ring){var mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.transform='translate('+(mx-3)+'px,'+(my-3)+'px)';},{passive:true});(function loop(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.transform='translate('+(rx-ring.offsetWidth/2)+'px,'+(ry-ring.offsetHeight/2)+'px)';requestAnimationFrame(loop);})();}}
 document.querySelectorAll('[data-price-carousel]').forEach(function(carousel){
   var viewport=carousel.querySelector('[data-carousel-viewport]');
+  var track=carousel.querySelector('.tariff-track');
   var pairs=Array.prototype.slice.call(carousel.querySelectorAll('[data-carousel-pair]'));
   var prev=carousel.querySelector('[data-carousel-prev]');
   var next=carousel.querySelector('[data-carousel-next]');
   var dots=Array.prototype.slice.call(carousel.querySelectorAll('[data-carousel-dot]'));
-  if(!viewport||!pairs.length)return;
-  var active=0,scrollTick=false;
-  function setUi(){
-    dots.forEach(function(dot,index){dot.hidden=index>=pairs.length;dot.setAttribute('aria-pressed',String(index===active));});
-    if(prev)prev.disabled=active===0;
-    if(next)next.disabled=active===pairs.length-1;
+  if(!viewport||!track||!pairs.length)return;
+  var active=0;
+  function render(animate){
+    if(!animate)track.style.transition='none';
+    else track.style.transition='transform .45s cubic-bezier(.22,.61,.36,1)';
+    track.style.transform='translate3d('+(-active*100)+'%,0,0)';
+    dots.forEach(function(dot,index){
+      dot.hidden=index>=pairs.length;
+      dot.setAttribute('aria-pressed',String(index===active));
+    });
+    if(prev){prev.disabled=active===0;prev.setAttribute('aria-disabled',String(active===0));}
+    if(next){next.disabled=active===pairs.length-1;next.setAttribute('aria-disabled',String(active===pairs.length-1));}
+    if(!animate)requestAnimationFrame(function(){track.style.transition='transform .45s cubic-bezier(.22,.61,.36,1)';});
   }
-  function go(index,behavior){
-    active=Math.max(0,Math.min(pairs.length-1,index));
-    viewport.scrollTo({left:pairs[active].offsetLeft,behavior:behavior||(rm?'auto':'smooth')});
-    setUi();
+  function go(index){
+    var nextIndex=Math.max(0,Math.min(pairs.length-1,index));
+    if(nextIndex===active)return;
+    active=nextIndex;
+    render(true);
   }
-  function nearest(){
-    var left=viewport.scrollLeft,best=0,distance=Infinity;
-    pairs.forEach(function(pair,index){var d=Math.abs(pair.offsetLeft-left);if(d<distance){distance=d;best=index;}});
-    if(best!==active){active=best;setUi();}
-  }
-  if(prev)prev.addEventListener('click',function(){if(active>0)go(active-1);});
-  if(next)next.addEventListener('click',function(){if(active<pairs.length-1)go(active+1);});
-  dots.forEach(function(dot,index){dot.addEventListener('click',function(){if(index<pairs.length)go(index);});});
-  viewport.addEventListener('scroll',function(){if(scrollTick)return;scrollTick=true;requestAnimationFrame(function(){nearest();scrollTick=false;});},{passive:true});
-  viewport.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'){e.preventDefault();if(active>0)go(active-1);}else if(e.key==='ArrowRight'){e.preventDefault();if(active<pairs.length-1)go(active+1);}});
-  window.addEventListener('resize',function(){go(active,'auto');},{passive:true});
-  go(0,'auto');
+  if(prev)prev.addEventListener('click',function(e){e.preventDefault();go(active-1);});
+  if(next)next.addEventListener('click',function(e){e.preventDefault();go(active+1);});
+  dots.forEach(function(dot,index){dot.addEventListener('click',function(e){e.preventDefault();go(index);});});
+  viewport.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft'){e.preventDefault();go(active-1);}
+    else if(e.key==='ArrowRight'){e.preventDefault();go(active+1);}
+  });
+  render(false);
 });
 })();

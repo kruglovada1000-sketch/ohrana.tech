@@ -116,7 +116,7 @@ def build_legacy_page(slug: str, source_name: str) -> None:
 {read_partial("footer.html")}
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
-<script src="/assets/js/site.js?v=20260921-pairs2" defer></script>
+<script src="/assets/js/site.js?v=20260921-pairs3" defer></script>
 </body>
 </html>
 '''
@@ -234,7 +234,7 @@ def build_prices_page() -> None:
 <meta property="og:locale" content="ru_RU">
 {read_partial("organization-jsonld.html")}
 <script type="application/ld+json">{pricing_jsonld()}</script>
-<link rel="stylesheet" href="/assets/css/pricing.css?v=20260921-pairs2">
+<link rel="stylesheet" href="/assets/css/pricing.css?v=20260921-pairs3">
 <link rel="stylesheet" href="/assets/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
@@ -251,7 +251,7 @@ def build_prices_page() -> None:
 {read_partial("footer.html")}
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
-<script src="/assets/js/site.js?v=20260921-pairs2" defer></script>
+<script src="/assets/js/site.js?v=20260921-pairs3" defer></script>
 </body>
 </html>
 '''
