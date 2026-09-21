@@ -1,16 +1,18 @@
-name: Apply dragons visual to physical security page
+name: Build physical security CSS asset
 
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/apply-dragons-main.yml'
+      - 'css/fizicheskaya-ohrana.css'
+      - 'css/fizicheskaya-ohrana-base.css'
 
 permissions:
   contents: write
 
 jobs:
-  patch:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -18,17 +20,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-
-      - name: Patch source
-        run: python scripts/patch_dragons_section01.py
-
-      - name: Rebuild
-        run: |
-          python scripts/build_site.py
-          python scripts/normalize_generated_links.py
-          python scripts/normalize_jsonld_entities.py
-          python scripts/normalize_counter_values.py
-          python scripts/normalize_sitemap.py
 
       - name: Build full deploy CSS in Assets
         run: |
@@ -53,18 +44,16 @@ jobs:
         run: |
           git diff --check
           test -f images/dragons.png
-          grep -q 'class="guard-visual"' site-src/pages/fizicheskaya-ohrana.source.html
-          grep -q '/images/dragons.png' site-src/pages/fizicheskaya-ohrana.source.html
-          grep -q 'guard-dragons-real-v3' site-src/pages/fizicheskaya-ohrana.source.html
-          grep -q 'width:min(100%,380px)' site-src/pages/fizicheskaya-ohrana.source.html
-          grep -q 'dragons-section-01-right-v7' assets/css/fizicheskaya-ohrana.css
+          grep -q 'dragons-section-01-right-v8' assets/css/fizicheskaya-ohrana.css
+          grep -q 'height:calc(var(--dragon-size) - 2px)' assets/css/fizicheskaya-ohrana.css
+          grep -q "url('/images/dragons.png') center/cover no-repeat" assets/css/fizicheskaya-ohrana.css
           test "$(wc -c < assets/css/fizicheskaya-ohrana.css)" -gt 25000
 
-      - name: Commit result
+      - name: Commit asset
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- site-src/pages/fizicheskaya-ohrana.source.html fizicheskaya-ohrana/index.html css/fizicheskaya-ohrana.css assets/css/fizicheskaya-ohrana.css
+          git add -- assets/css/fizicheskaya-ohrana.css
           if git diff --cached --quiet; then echo 'Already current'; exit 0; fi
-          git commit -m 'fix: build full physical security CSS asset [skip ci]'
+          git commit -m 'fix: rebuild full physical security CSS asset [skip ci]'
           git push origin HEAD:main
