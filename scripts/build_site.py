@@ -116,7 +116,7 @@ def build_legacy_page(slug: str, source_name: str) -> None:
 {read_partial("footer.html")}
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
-<script src="/assets/js/site.js?v=20260921-loop1" defer></script>
+<script src="/assets/js/site.js?v=20260921-pairs2" defer></script>
 </body>
 </html>
 '''
@@ -189,12 +189,13 @@ def build_prices_page() -> None:
 </tr>'''
         )
 
-    carousel_items: list[str] = []
+    carousel_pairs: list[str] = []
     featured_tariffs = PRICING.get("featured_tariffs", [])
     for index, tariff in enumerate(featured_tariffs, start=1):
         service = service_by_id[tariff["service_id"]]
-        carousel_items.append(
-            f'''<article class="tariff-card" data-tariff-card data-carousel-item>
+        carousel_pairs.append(
+            f'''<div class="tariff-pair" data-carousel-pair>
+<article class="tariff-card" data-tariff-card>
 <div class="tariff-card-head"><span class="tariff-badge">{esc(tariff['badge'])}</span><span class="tariff-no">{index:02d}</span></div>
 <h3>{esc(service['name'])}</h3>
 <div class="tariff-price">{money(service['price_from'], service['unit'])}</div>
@@ -206,12 +207,11 @@ def build_prices_page() -> None:
 <div><dt>Условия</dt><dd>{esc(tariff['conditions'])}</dd></div>
 </dl>
 <div class="tariff-card-actions"><a class="btn btn-gold" href="/kontakty/">Заказать</a><a class="tariff-more" href="{esc(service['url'])}">Подробнее →</a></div>
-</article>'''
-        )
-        carousel_items.append(
-            f'''<figure class="tariff-card tariff-image-card" data-carousel-item aria-label="{esc(tariff['image_alt'])}">
+</article>
+<figure class="tariff-card tariff-image-card" aria-label="{esc(tariff['image_alt'])}">
 <img src="{esc(tariff['image'])}" alt="{esc(tariff['image_alt'])}" width="1200" height="900" loading="lazy" decoding="async">
-</figure>'''
+</figure>
+</div>'''
         )
     carousel_dots = ''.join(
         f'<button type="button" data-carousel-dot aria-label="Показать тариф {i}" aria-pressed="false"></button>'
@@ -234,7 +234,7 @@ def build_prices_page() -> None:
 <meta property="og:locale" content="ru_RU">
 {read_partial("organization-jsonld.html")}
 <script type="application/ld+json">{pricing_jsonld()}</script>
-<link rel="stylesheet" href="/assets/css/pricing.css?v=20260921-loop1">
+<link rel="stylesheet" href="/assets/css/pricing.css?v=20260921-pairs2">
 <link rel="stylesheet" href="/assets/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
@@ -243,7 +243,7 @@ def build_prices_page() -> None:
 <main>
 <div class="wrap"><nav class="breadcrumbs" aria-label="Хлебные крошки"><a href="/">Главная</a><span>/</span><b>Цены</b></nav></div>
 <section class="price-hero"><div class="wrap price-hero-grid" data-reveal data-pricing-visual="1"><div class="price-hero-copy"><span class="price-kicker">Стоимость услуг</span><h1>Цены на <em>охранные услуги</em></h1><p class="price-lead">Единый каталог ориентировочных тарифов. Выберите тип объекта или услугу. Точный расчёт делаем после уточнения режима, количества постов, площади и задач.</p><div class="price-actions"><a class="btn btn-gold" href="#tariffs">Смотреть тарифы</a><a class="btn btn-line" href="/kontakty/">Получить точный расчёт</a></div></div><figure class="price-hero-visual"><img class="price-hero-bg" src="/images/ceny-hero.svg?v=20260920-brandshield2" alt="Аналитика стоимости охранных услуг" width="1600" height="900" fetchpriority="high" decoding="async"><div class="price-brand-shield"><img src="/images/schit.png" alt="Логотип ЧОО «Рускорпорация»" loading="eager" decoding="async"><svg class="price-brand-spark" viewBox="0 0 120 140" aria-hidden="true"><path class="spark-rail" d="M60 7 107 25 102 76c-4 29-20 48-42 58-22-10-38-29-42-58L13 25 60 7Z"/><path class="spark-run" d="M60 7 107 25 102 76c-4 29-20 48-42 58-22-10-38-29-42-58L13 25 60 7Z"/><circle class="spark-head" r="2.2"><animateMotion dur="4.8s" repeatCount="indefinite" path="M60 7 107 25 102 76c-4 29-20 48-42 58-22-10-38-29-42-58L13 25 60 7Z"/></circle></svg></div></figure></div></section>
-<section class="price-section price-tariffs" id="tariffs"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">Тарифы</span><h2>Выберите <em>формат охраны</em></h2><p>Семь основных вариантов для быстрого ориентира. Листайте карточки, сравнивайте режим, оснащение и подготовку сотрудников. Точная смета формируется после оценки объекта и задач.</p></div><div class="tariff-carousel" data-price-carousel><div class="tariff-viewport" data-carousel-viewport tabindex="0" aria-label="Карусель тарифов охранных услуг"><div class="tariff-track">{''.join(carousel_items)}</div></div><div class="tariff-controls"><div class="tariff-dots" aria-label="Навигация по тарифам">{carousel_dots}</div><div class="tariff-arrows"><button type="button" class="tariff-arrow" data-carousel-prev aria-label="Предыдущий тариф">‹</button><button type="button" class="tariff-arrow" data-carousel-next aria-label="Следующий тариф">›</button></div></div></div></div></section>
+<section class="price-section price-tariffs" id="tariffs"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">Тарифы</span><h2>Выберите <em>формат охраны</em></h2><p>Семь основных вариантов для быстрого ориентира. Листайте карточки, сравнивайте режим, оснащение и подготовку сотрудников. Точная смета формируется после оценки объекта и задач.</p></div><div class="tariff-carousel" data-price-carousel><div class="tariff-viewport" data-carousel-viewport tabindex="0" aria-label="Карусель тарифов охранных услуг"><div class="tariff-track">{''.join(carousel_pairs)}</div></div><div class="tariff-controls"><div class="tariff-dots" aria-label="Навигация по тарифам">{carousel_dots}</div><div class="tariff-arrows"><button type="button" class="tariff-arrow" data-carousel-prev aria-label="Предыдущий тариф">‹</button><button type="button" class="tariff-arrow" data-carousel-next aria-label="Следующий тариф">›</button></div></div></div></div></section>
 <section class="price-section alt" id="objects"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">По типу объекта</span><h2>Найдите свой <em>объект</em></h2><p>Все варианты находятся в HTML страницы: фильтр нужен только для удобства пользователя и не скрывает каталог от поисковых и AI-роботов.</p></div><div class="price-tools"><input id="priceFilter" type="search" placeholder="Например: склад, магазин, ЖК, мероприятие" aria-label="Поиск по каталогу цен"></div><div class="price-table-wrap" data-reveal><table class="price-table"><thead><tr><th>Объект</th><th>Рекомендуемые услуги</th><th>Ориентир</th><th>Что влияет на цену</th><th>Страница</th></tr></thead><tbody>{''.join(object_rows)}</tbody></table></div><p class="price-note">{esc(PRICING['disclaimer'])}</p></div></section>
 <section class="price-section alt"><div class="wrap"><div class="price-head" data-reveal><span class="eyebrow">Расчёт</span><h2>Что меняет <em>итоговую стоимость</em></h2><p>Ориентир в карточке помогает сравнить варианты, но договорная цена зависит от конкретной схемы охраны.</p></div><div class="factors"><div class="factor" data-reveal><b>График и состав</b><span>Режим поста, продолжительность смены и количество сотрудников.</span></div><div class="factor" data-reveal><b>Подготовка</b><span>Разряд, квалификация и требования к сотрудникам под задачу объекта.</span></div><div class="factor" data-reveal><b>Экипировка</b><span>Спецсредства, связь и вооружение там, где оно предусмотрено схемой охраны.</span></div><div class="factor" data-reveal><b>Технические средства</b><span>Сигнализация, видеонаблюдение, СКУД, тревожная кнопка и мониторинг.</span></div></div></div></section>
 <section class="price-cta"><div class="wrap"><div class="price-cta-box" data-reveal><h2>Нужен точный расчёт?</h2><p>Сообщите тип объекта, адрес и режим работы. Подберём схему охраны и рассчитаем стоимость под конкретные задачи.</p><a class="btn btn-gold" href="/kontakty/">Рассчитать охрану</a></div></div></section>
@@ -251,7 +251,7 @@ def build_prices_page() -> None:
 {read_partial("footer.html")}
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
-<script src="/assets/js/site.js?v=20260921-loop1" defer></script>
+<script src="/assets/js/site.js?v=20260921-pairs2" defer></script>
 </body>
 </html>
 '''
