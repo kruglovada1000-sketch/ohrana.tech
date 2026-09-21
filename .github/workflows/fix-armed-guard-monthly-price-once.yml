@@ -1,0 +1,32 @@
+name: One-time armed guard monthly tariff correction
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/fix-armed-guard-monthly-price-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Correct monthly tariff
+        run: python scripts/fix-armed-guard-monthly-price-once.py
+      - name: Validate and commit
+        run: |
+          grep -F 'от 450 000 ₽/месяц' ceny/index.html
+          grep -F '1 смена — 12 часов' ceny/index.html
+          grep -F '"price_from": 450000' site-src/pricing.json
+          grep -F '"unit": "месяц"' site-src/pricing.json
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ceny/index.html site-src/pricing.json
+          git commit -m 'Clarify armed guard tariff as 450000 per month'
+          git push origin HEAD:main
