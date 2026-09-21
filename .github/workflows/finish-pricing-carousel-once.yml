@@ -20,6 +20,7 @@ jobs:
         run: |
           python scripts/finish-pricing-carousel-once.py
           python scripts/build_site.py
+          python -c "from pathlib import Path; [p.write_text(p.read_text(encoding='utf-8').rstrip()+'\n', encoding='utf-8') for p in (Path('site-src/assets/pricing.css'), Path('assets/css/pricing.css'))]"
       - name: Validate and commit
         run: |
           grep -F 'Пост физической охраны усиленный' ceny/index.html
