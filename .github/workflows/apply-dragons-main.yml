@@ -30,6 +30,25 @@ jobs:
           python scripts/normalize_counter_values.py
           python scripts/normalize_sitemap.py
 
+      - name: Build full deploy CSS in Assets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          base_path = Path('css/fizicheskaya-ohrana-base.css')
+          overlay_path = Path('css/fizicheskaya-ohrana.css')
+          out_path = Path('assets/css/fizicheskaya-ohrana.css')
+
+          base = base_path.read_text(encoding='utf-8').rstrip()
+          overlay = overlay_path.read_text(encoding='utf-8')
+          lines = overlay.splitlines()
+          if lines and lines[0].lstrip().startswith('@import '):
+              lines = lines[1:]
+          overlay = '\n'.join(lines).lstrip().rstrip()
+
+          out_path.write_text(base + '\n\n' + overlay + '\n', encoding='utf-8')
+          PY
+
       - name: Validate
         run: |
           git diff --check
@@ -38,12 +57,14 @@ jobs:
           grep -q '/images/dragons.png' site-src/pages/fizicheskaya-ohrana.source.html
           grep -q 'guard-dragons-real-v3' site-src/pages/fizicheskaya-ohrana.source.html
           grep -q 'width:min(100%,380px)' site-src/pages/fizicheskaya-ohrana.source.html
+          grep -q 'dragons-section-01-right-v7' assets/css/fizicheskaya-ohrana.css
+          test "$(wc -c < assets/css/fizicheskaya-ohrana.css)" -gt 25000
 
       - name: Commit result
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- site-src/pages/fizicheskaya-ohrana.source.html fizicheskaya-ohrana/index.html css/fizicheskaya-ohrana.css
+          git add -- site-src/pages/fizicheskaya-ohrana.source.html fizicheskaya-ohrana/index.html css/fizicheskaya-ohrana.css assets/css/fizicheskaya-ohrana.css
           if git diff --cached --quiet; then echo 'Already current'; exit 0; fi
-          git commit -m 'feat: place compact dragons image beside section 01 [skip ci]'
+          git commit -m 'fix: build full physical security CSS asset [skip ci]'
           git push origin HEAD:main
