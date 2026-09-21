@@ -473,40 +473,94 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A;marg
   .shield-stage img{animation:none!important}
 }
 
-/* dragons-section-01-assets-v1 */
-#guard>.wrap{position:relative}
+/* ============ ДРАКОНЫ В РАЗДЕЛЕ 01 ============ */
+#guard > .wrap{position:relative}
 #guard .sec-head{
-  max-width:720px;
+  max-width:760px;
+  min-height:340px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+#guard > .wrap::after{
+  content:"";
+  position:absolute;
+  top:0;
+  right:28px;
+  width:340px;
+  height:340px;
+  background:url('/images/dragons.PNG') center/contain no-repeat;
+  pointer-events:none;
+  z-index:1;
+  filter:drop-shadow(0 18px 34px rgba(0,0,0,.35));
+}
+#guard .sec-head,
+#guard .flip-grid,
+#guard .highlight-box{position:relative;z-index:2}
+@media(max-width:1100px){
+  #guard .sec-head{max-width:580px;min-height:300px}
+  #guard > .wrap::after{width:290px;height:290px;right:24px}
+}
+@media(max-width:960px){
+  #guard .sec-head{max-width:820px;min-height:0;display:block}
+  #guard > .wrap::after{display:none}
+}
+
+/* dragons-section-01-right-v7 */
+#guard>.wrap{
+  position:relative;
+  --dragon-size:min(30vw,370px);
+  --dragon-right:28px;
+  --dragon-top:0px;
+}
+#guard .sec-head{
+  max-width:760px;
   min-height:350px;
   display:flex;
   flex-direction:column;
   justify-content:center;
   padding-right:12px;
 }
+#guard>.wrap::before,
 #guard>.wrap::after{
   content:"";
   position:absolute;
-  top:48px;
-  right:28px;
-  width:min(30vw,370px);
   aspect-ratio:1/1;
-  background:url('/images/dragons.png') center/contain no-repeat;
-  border:1px solid rgba(232,200,122,.9);
-  box-shadow:inset 0 0 0 1px rgba(245,227,179,.10);
-  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);
   pointer-events:none;
   z-index:1;
+}
+#guard>.wrap::before{
+  top:var(--dragon-top);
+  right:var(--dragon-right);
+  width:var(--dragon-size);
+  background:var(--gold);
+  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);
   filter:drop-shadow(0 18px 34px rgba(0,0,0,.35));
 }
-#guard .sec-head,#guard .flip-grid,#guard .highlight-box{position:relative;z-index:2}
+#guard>.wrap::after{
+  top:calc(var(--dragon-top) + 1px);
+  right:calc(var(--dragon-right) + 1px);
+  width:calc(var(--dragon-size) - 2px);
+  background:
+    url('/images/dragons.png') center/contain no-repeat,
+    rgba(7,9,13,.24);
+  box-shadow:inset 0 0 0 1px rgba(245,227,179,.12);
+  clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 13px,100% calc(100% - 13px),calc(100% - 13px) 100%,13px 100%,0 calc(100% - 13px),0 13px);
+}
+#guard .sec-head,
+#guard .flip-grid,
+#guard .highlight-box{position:relative;z-index:2}
 @media(max-width:1100px){
-  #guard .sec-head{max-width:650px;min-height:320px}
-  #guard>.wrap::after{width:min(29vw,335px);right:22px;top:54px}
+  #guard>.wrap{
+    --dragon-size:min(30vw,340px);
+    --dragon-right:22px;
+  }
+  #guard .sec-head{max-width:660px;min-height:320px}
 }
 @media(max-width:960px){
   #guard .sec-head{max-width:100%;min-height:0;display:block;padding-right:0;margin-bottom:28px}
   #guard>.wrap{padding-bottom:380px}
-  #guard>.wrap::after{
+  #guard>.wrap::before{
     top:auto;
     bottom:28px;
     left:50%;
@@ -514,8 +568,17 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A;marg
     width:min(78vw,340px);
     transform:translateX(-50%);
   }
+  #guard>.wrap::after{
+    top:auto;
+    bottom:29px;
+    left:50%;
+    right:auto;
+    width:calc(min(78vw,340px) - 2px);
+    transform:translateX(-50%);
+  }
 }
 @media(max-width:640px){
-  #guard>.wrap{padding-bottom:345px}
-  #guard>.wrap::after{width:min(82vw,310px);bottom:22px}
+  #guard>.wrap{padding-bottom:340px}
+  #guard>.wrap::before{width:min(82vw,310px);bottom:22px}
+  #guard>.wrap::after{width:calc(min(82vw,310px) - 2px);bottom:23px}
 }
