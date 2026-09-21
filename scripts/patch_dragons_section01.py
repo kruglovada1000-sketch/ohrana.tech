@@ -10,12 +10,12 @@ if marker not in text:
         raise SystemExit('CSS anchor not found')
     css = '''/* guard-dragons-real-v3 */
 #guard>.wrap::after{display:none!important}
-#guard .guard-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,440px);gap:48px;align-items:center;position:relative;z-index:2;margin-bottom:48px}
+#guard .guard-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,380px);gap:42px;align-items:center;position:relative;z-index:2;margin-bottom:46px}
 #guard .guard-intro .sec-head{max-width:none!important;min-height:0!important;display:block!important;padding-right:0!important;margin-bottom:0}
-#guard .guard-visual{margin:0;min-width:0;width:100%;padding:1px;background:linear-gradient(135deg,#F5E3B3,#E8C87A 45%,#A97F2F);clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);filter:drop-shadow(0 18px 34px rgba(0,0,0,.35))}
-#guard .guard-visual img{display:block;width:100%;height:auto;object-fit:contain;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 13px,100% calc(100% - 13px),calc(100% - 13px) 100%,13px 100%,0 calc(100% - 13px),0 13px)}
-@media(max-width:960px){#guard .guard-intro{grid-template-columns:1fr;gap:28px;margin-bottom:40px}#guard .guard-visual{width:min(100%,620px);margin:0 auto}}
-@media(max-width:640px){#guard .guard-intro{gap:20px;margin-bottom:34px}#guard .guard-visual{width:100%}}
+#guard .guard-visual{margin:0;min-width:0;width:min(100%,380px);justify-self:end;padding:8px;border:1px solid rgba(232,200,122,.9);clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);filter:drop-shadow(0 18px 34px rgba(0,0,0,.35))}
+#guard .guard-visual img{display:block;width:100%;height:auto;object-fit:contain}
+@media(max-width:960px){#guard .guard-intro{grid-template-columns:1fr;gap:26px;margin-bottom:38px}#guard .guard-visual{width:min(100%,360px);justify-self:center;margin:0 auto}}
+@media(max-width:640px){#guard .guard-intro{gap:18px;margin-bottom:32px}#guard .guard-visual{width:min(88vw,340px);padding:7px}}
 '''
     text = text.replace(anchor, css + anchor, 1)
 
