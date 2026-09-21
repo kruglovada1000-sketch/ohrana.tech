@@ -32,7 +32,7 @@ def main() -> None:
     errors: list[str] = []
     for slug in regular_slugs():
         path = ROOT / slug / "index.html"
-        css = ROOT / "assets" / "css" / f"{slug}.css"
+        css = ROOT / "css" / f"{slug}.css"
         if not path.exists():
             errors.append(f"{slug}: generated HTML missing")
             continue
@@ -40,15 +40,15 @@ def main() -> None:
             errors.append(f"{slug}: page CSS missing")
             continue
         text = path.read_text(encoding="utf-8")
-        page_css = f'/assets/css/{slug}.css'
-        shell_css = '/assets/css/site-shell.css'
+        page_css = f'/css/{slug}.css'
+        shell_css = '/css/site-shell.css'
         if page_css not in text:
             errors.append(f"{slug}: page CSS link missing")
         if shell_css not in text:
             errors.append(f"{slug}: shared shell CSS link missing")
         if page_css in text and shell_css in text and text.index(page_css) > text.index(shell_css):
             errors.append(f"{slug}: shared shell must load after page CSS")
-        if '/assets/js/site.js' not in text:
+        if '/js/site.js' not in text:
             errors.append(f"{slug}: shared JS missing")
         if 'href="/ceny/"' not in text:
             errors.append(f"{slug}: prices navigation item missing")
@@ -65,9 +65,9 @@ def main() -> None:
         errors.append("ceny: generated HTML missing")
     else:
         text = prices.read_text(encoding="utf-8")
-        if '/assets/css/pricing.css' not in text or '/assets/css/site-shell.css' not in text:
+        if '/css/pricing.css' not in text or '/css/site-shell.css' not in text:
             errors.append("ceny: expected pricing + shared shell CSS")
-        if text.index('/assets/css/pricing.css') > text.index('/assets/css/site-shell.css'):
+        if text.index('/css/pricing.css') > text.index('/css/site-shell.css'):
             errors.append("ceny: shared shell must load after pricing CSS")
         if 'href="/ceny/"' not in text:
             errors.append("ceny: prices navigation item missing")

@@ -15,8 +15,8 @@ def main() -> None:
         slug = str(config["slug"])
         marker = str(config.get("script_marker", ""))
         page = ROOT / slug / "index.html"
-        js = ROOT / "assets" / "js" / f"{slug}.js"
-        css = ROOT / "assets" / "css" / f"{slug}.css"
+        js = ROOT / "js" / f"{slug}.js"
+        css = ROOT / "css" / f"{slug}.css"
 
         inspect(page)
         if not js.exists():
@@ -31,11 +31,11 @@ def main() -> None:
                 raise SystemExit(f"{slug}: marker {marker!r} missing from HTML")
             if marker not in script:
                 raise SystemExit(f"{slug}: marker {marker!r} missing from custom JS")
-        if '/assets/js/site.js' not in html:
+        if '/js/site.js' not in html:
             raise SystemExit(f"{slug}: shared site.js missing")
-        if f'/assets/js/{slug}.js' not in html:
+        if f'/js/{slug}.js' not in html:
             raise SystemExit(f"{slug}: custom JS reference missing")
-        if html.index('/assets/js/site.js') > html.index(f'/assets/js/{slug}.js'):
+        if html.index('/js/site.js') > html.index(f'/js/{slug}.js'):
             raise SystemExit(f"{slug}: shared site.js must load before custom module")
         if 'href="/ceny/"' not in html:
             raise SystemExit(f"{slug}: prices navigation item missing")

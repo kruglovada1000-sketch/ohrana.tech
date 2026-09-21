@@ -33,7 +33,7 @@ def load_manifest(name: str) -> list[dict[str, object]]:
 
 
 def append_gilded_legacy_aliases(slug: str) -> None:
-    css_path = ROOT / "assets" / "css" / f"{slug}.css"
+    css_path = ROOT / "css" / f"{slug}.css"
     css = css_path.read_text(encoding="utf-8")
     css += """
 /* Shared Gilded Noir compatibility for legacy amber templates. */

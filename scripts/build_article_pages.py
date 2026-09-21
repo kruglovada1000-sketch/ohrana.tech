@@ -12,9 +12,9 @@ ARTICLES = ROOT / 'stati'
 SNAPSHOTS = SRC / 'articles'
 REPORT = SRC / 'article-pages.generated.json'
 ARTICLE_JS_SOURCE = SRC / 'assets' / 'article.js'
-ARTICLE_JS_PUBLIC = ROOT / 'assets' / 'js' / 'article.js'
-ARTICLE_CSS_DIR = ROOT / 'assets' / 'css' / 'articles'
-ARTICLE_CUSTOM_JS_DIR = ROOT / 'assets' / 'js' / 'articles'
+ARTICLE_JS_PUBLIC = ROOT / 'js' / 'article.js'
+ARTICLE_CSS_DIR = ROOT / 'css' / 'articles'
+ARTICLE_CUSTOM_JS_DIR = ROOT / 'js' / 'articles'
 
 CUSTOM_PATTERNS = {
     'canvas': re.compile(r'<canvas\b|getContext\s*\(', re.I),
@@ -158,7 +158,7 @@ def build_article(source: Path, text: str, repairs: list[str], reasons: list[str
         ARTICLE_CUSTOM_JS_DIR.mkdir(parents=True, exist_ok=True)
         module_path = ARTICLE_CUSTOM_JS_DIR / f'{stem}.js'
         module_path.write_text(custom_script + '\n', encoding='utf-8')
-        custom_src = f'<script src="/assets/js/articles/{stem}.js" defer></script>'
+        custom_src = f'<script src="/js/articles/{stem}.js" defer></script>'
 
     head = page_head_from_legacy(text)
     org = '' if legacy_defines_organization(head) else read_partial('organization-jsonld.html')
@@ -168,8 +168,8 @@ def build_article(source: Path, text: str, repairs: list[str], reasons: list[str
 {read_partial('head-common.html')}
 {head}
 {org}
-<link rel="stylesheet" href="/assets/css/articles/{stem}.css">
-<link rel="stylesheet" href="/assets/css/site-shell.css">
+<link rel="stylesheet" href="/css/articles/{stem}.css">
+<link rel="stylesheet" href="/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
 <div id="progress"></div>
@@ -180,17 +180,17 @@ def build_article(source: Path, text: str, repairs: list[str], reasons: list[str
 {read_partial('footer.html')}
 {read_partial('mobile-bar.html')}
 {read_partial('chat.html')}
-<script src="/assets/js/site.js" defer></script>
-<script src="/assets/js/article.js" defer></script>
+<script src="/js/site.js" defer></script>
+<script src="/js/article.js" defer></script>
 {custom_src}
 </body>
 </html>
 '''
     public.write_text(out, encoding='utf-8')
-    entry: dict[str, object] = {'file': public_name, 'source': source.name, 'css': f'assets/css/articles/{stem}.css', 'repairs': repairs}
+    entry: dict[str, object] = {'file': public_name, 'source': source.name, 'css': f'css/articles/{stem}.css', 'repairs': repairs}
     if reasons:
         entry['reasons'] = reasons
-        entry['script'] = f'assets/js/articles/{stem}.js'
+        entry['script'] = f'js/articles/{stem}.js'
     return entry
 
 
@@ -202,9 +202,9 @@ def validate_article(entry: dict[str, object], custom: bool) -> None:
         if len(re.findall(rf'<{tag}\b', html, re.I)) != 1: errors.append(f'exactly one <{tag}> required')
     if re.search(r'<style\b', html, re.I): errors.append('inline style remained')
     if 'href="/ceny/"' not in html: errors.append('prices nav missing')
-    if '/assets/js/site.js' not in html: errors.append('site.js missing')
-    if '/assets/js/article.js' not in html: errors.append('article.js missing')
-    if f'/assets/css/articles/{Path(str(entry["file"])).stem}.css' not in html: errors.append('article css missing')
+    if '/js/site.js' not in html: errors.append('site.js missing')
+    if '/js/article.js' not in html: errors.append('article.js missing')
+    if f'/css/articles/{Path(str(entry["file"])).stem}.css' not in html: errors.append('article css missing')
     if custom:
         expected = '/' + str(entry['script'])
         if expected not in html: errors.append('custom article module missing')

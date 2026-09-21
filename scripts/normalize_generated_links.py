@@ -90,14 +90,14 @@ def generated_pages() -> list[Path]:
 
 
 def normalize_shared_css() -> bool:
-    path=ROOT/'assets'/'css'/'site-shell.css'
+    path=ROOT/'css'/'site-shell.css'
     if not path.exists():
         raise RuntimeError(f'Shared CSS missing before responsive normalization: {path}')
     text=path.read_text(encoding='utf-8')
     if RESPONSIVE_FIX_MARKER in text:
         return False
     path.write_text(text.rstrip()+"\n"+RESPONSIVE_FIXES,encoding='utf-8')
-    print('Applied browser-QA responsive guards: assets/css/site-shell.css')
+    print('Applied browser-QA responsive guards: css/site-shell.css')
     return True
 
 
@@ -128,14 +128,14 @@ def enhance_pricing_page() -> bool:
 
 
 def enhance_pricing_css() -> bool:
-    path=ROOT/'assets'/'css'/'pricing.css'
+    path=ROOT/'css'/'pricing.css'
     if not path.exists():
         raise RuntimeError(f'Pricing CSS missing before visual enhancement: {path}')
     text=path.read_text(encoding='utf-8')
     if PRICING_CSS_MARKER in text:
         return False
     path.write_text(text.rstrip()+"\n"+PRICING_CSS,encoding='utf-8')
-    print('Applied pricing hero visual styles: assets/css/pricing.css')
+    print('Applied pricing hero visual styles: css/pricing.css')
     return True
 
 

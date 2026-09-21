@@ -68,9 +68,9 @@ def legacy_defines_organization(page_head: str) -> bool:
 
 def publish_shared_assets() -> None:
     pairs = [
-        (SRC / "assets" / "site-shell.css", ROOT / "assets" / "css" / "site-shell.css"),
-        (SRC / "assets" / "pricing.css", ROOT / "assets" / "css" / "pricing.css"),
-        (SRC / "assets" / "site.js", ROOT / "assets" / "js" / "site.js"),
+        (SRC / "assets" / "site-shell.css", ROOT / "css" / "site-shell.css"),
+        (SRC / "assets" / "pricing.css", ROOT / "css" / "pricing.css"),
+        (SRC / "assets" / "site.js", ROOT / "js" / "site.js"),
     ]
     for source, target in pairs:
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -91,7 +91,7 @@ def build_legacy_page(slug: str, source_name: str) -> None:
     if not style:
         raise RuntimeError(f"No <style> in {source_path}")
 
-    css_path = ROOT / "assets" / "css" / f"{slug}.css"
+    css_path = ROOT / "css" / f"{slug}.css"
     css_path.parent.mkdir(parents=True, exist_ok=True)
     css_path.write_text(style + "\n", encoding="utf-8")
 
@@ -104,8 +104,8 @@ def build_legacy_page(slug: str, source_name: str) -> None:
 {read_partial("head-common.html")}
 {page_head}
 {organization_jsonld}
-<link rel="stylesheet" href="/assets/css/{slug}.css">
-<link rel="stylesheet" href="/assets/css/site-shell.css">
+<link rel="stylesheet" href="/css/{slug}.css">
+<link rel="stylesheet" href="/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
 <div id="progress"></div>
@@ -116,7 +116,7 @@ def build_legacy_page(slug: str, source_name: str) -> None:
 {read_partial("footer.html")}
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
-<script src="/assets/js/site.js?v=20260921-pairs4" defer></script>
+<script src="/js/site.js?v=20260921-pairs4" defer></script>
 </body>
 </html>
 '''
@@ -234,8 +234,8 @@ def build_prices_page() -> None:
 <meta property="og:locale" content="ru_RU">
 {read_partial("organization-jsonld.html")}
 <script type="application/ld+json">{pricing_jsonld()}</script>
-<link rel="stylesheet" href="/assets/css/pricing.css?v=20260921-pairs4">
-<link rel="stylesheet" href="/assets/css/site-shell.css">
+<link rel="stylesheet" href="/css/pricing.css?v=20260921-pairs4">
+<link rel="stylesheet" href="/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
 <div id="progress"></div><div class="cursor-dot" aria-hidden="true"></div><div class="cursor-ring" aria-hidden="true"></div>
@@ -251,7 +251,7 @@ def build_prices_page() -> None:
 {read_partial("footer.html")}
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
-<script src="/assets/js/site.js?v=20260921-pairs4" defer></script>
+<script src="/js/site.js?v=20260921-pairs4" defer></script>
 </body>
 </html>
 '''
@@ -316,7 +316,7 @@ def update_sitemap() -> None:
 
 def validate_html(path: Path) -> None:
     page = path.read_text(encoding="utf-8")
-    required = ["<title>", 'rel="canonical"', "<h1", "application/ld+json", "/assets/js/site.js", 'href="/ceny/"']
+    required = ["<title>", 'rel="canonical"', "<h1", "application/ld+json", "/js/site.js", 'href="/ceny/"']
     missing = [token for token in required if token not in page]
     if missing:
         raise RuntimeError(f"{path}: missing {missing}")

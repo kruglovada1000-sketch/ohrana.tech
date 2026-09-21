@@ -47,10 +47,10 @@ def validate_custom_output(path: Path, slug: str, marker: str) -> None:
         "<h1",
         "application/ld+json",
         'href="/ceny/"',
-        '/assets/js/site.js',
-        f'/assets/js/{slug}.js',
-        f'/assets/css/{slug}.css',
-        '/assets/css/site-shell.css',
+        '/js/site.js',
+        f'/js/{slug}.js',
+        f'/css/{slug}.css',
+        '/css/site-shell.css',
     ]
     missing = [token for token in required if token not in page]
     if missing:
@@ -62,9 +62,9 @@ def validate_custom_output(path: Path, slug: str, marker: str) -> None:
         raise RuntimeError(f"{path}: inline style remained")
     if "{{site." in page:
         raise RuntimeError(f"{path}: unresolved template variable")
-    if page.index('/assets/js/site.js') > page.index(f'/assets/js/{slug}.js'):
+    if page.index('/js/site.js') > page.index(f'/js/{slug}.js'):
         raise RuntimeError(f"{path}: shared site.js must load before custom module")
-    js = (ROOT / "assets" / "js" / f"{slug}.js").read_text(encoding="utf-8")
+    js = (ROOT / "js" / f"{slug}.js").read_text(encoding="utf-8")
     if marker and marker not in js:
         raise RuntimeError(f"{path}: custom JS marker {marker!r} missing")
 
@@ -74,7 +74,7 @@ def build_custom_page(config: dict[str, object]) -> None:
     source_name = str(config["source"])
     script_source = str(config["script_source"])
     script_version = str(config.get("script_version", "")).strip()
-    custom_script_src = f"/assets/js/{slug}.js" + (f"?v={script_version}" if script_version else "")
+    custom_script_src = f"/js/{slug}.js" + (f"?v={script_version}" if script_version else "")
     source_path = SRC / "pages" / source_name
     legacy = source_path.read_text(encoding="utf-8")
 
@@ -102,11 +102,11 @@ def build_custom_page(config: dict[str, object]) -> None:
     if marker and marker not in main:
         raise RuntimeError(f"Custom HTML marker {marker!r} missing in {source_path}")
 
-    css_path = ROOT / "assets" / "css" / f"{slug}.css"
+    css_path = ROOT / "css" / f"{slug}.css"
     css_path.parent.mkdir(parents=True, exist_ok=True)
     css_path.write_text(style + "\n", encoding="utf-8")
 
-    js_path = ROOT / "assets" / "js" / f"{slug}.js"
+    js_path = ROOT / "js" / f"{slug}.js"
     js_path.parent.mkdir(parents=True, exist_ok=True)
     js_path.write_text(custom_js.rstrip() + "\n", encoding="utf-8")
 
@@ -116,8 +116,8 @@ def build_custom_page(config: dict[str, object]) -> None:
 {read_partial("head-common.html")}
 {page_head}
 {organization_jsonld}
-<link rel="stylesheet" href="/assets/css/{slug}.css">
-<link rel="stylesheet" href="/assets/css/site-shell.css">
+<link rel="stylesheet" href="/css/{slug}.css">
+<link rel="stylesheet" href="/css/site-shell.css">
 </head>
 <body data-metrika-id="{SITE['metrika_id']}">
 <div id="progress"></div>
@@ -128,7 +128,7 @@ def build_custom_page(config: dict[str, object]) -> None:
 {read_partial("footer.html")}
 {read_partial("mobile-bar.html")}
 {read_partial("chat.html")}
-<script src="/assets/js/site.js" defer></script>
+<script src="/js/site.js" defer></script>
 <script src="{custom_script_src}" defer></script>
 </body>
 </html>
