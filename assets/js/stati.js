@@ -1,5 +1,40 @@
 (function(){
 'use strict';
+var container=document.querySelector('.accordion-container');
+if(container){
+  var newItemsHtml=''+
+  '<div class="accordion-item" data-cat="vybor" data-reveal>'+ 
+    '<button class="accordion-header">'+
+      '<span>Как сменить ЧОП без разрыва охраны: пошаговый план передачи объекта</span>'+
+      '<span class="acc-date">21.09.2026</span>'+
+      '<span class="accordion-icon">▼</span>'+
+    '</button>'+
+    '<div class="accordion-content">'+
+      '<span class="acc-cat">Выбор ЧОП</span>'+
+      '<p class="accordion-trailer">Практический план смены охранной компании без провала в безопасности: как проверить договор, подготовить нового подрядчика, передать ключи, СКУД, постовую документацию и проконтролировать первую неделю.</p>'+
+      '<div class="accordion-buttons">'+
+        '<a href="/stati/kak-smenit-chop-bez-razryva-ohrany.html" class="btn btn-success">Читать полностью</a>'+
+        '<button class="btn btn-collapse">Свернуть</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>'+
+  '<div class="accordion-item" data-cat="vybor" data-reveal>'+ 
+    '<button class="accordion-header">'+
+      '<span>Как контролировать работу ЧОП: 9 проверок, которые занимают 30 минут в месяц</span>'+
+      '<span class="acc-date">21.09.2026</span>'+
+      '<span class="accordion-icon">▼</span>'+
+    '</button>'+
+    '<div class="accordion-content">'+
+      '<span class="acc-cat">Выбор ЧОП</span>'+
+      '<p class="accordion-trailer">Чек-лист заказчика: как проверить, что охрана реально работает — посты, журналы, обходы, пропускной режим, связь, внутренние проверки ЧОП, инциденты и устранение повторных замечаний.</p>'+
+      '<div class="accordion-buttons">'+
+        '<a href="/stati/kak-kontrolirovat-rabotu-chop.html" class="btn btn-success">Читать полностью</a>'+
+        '<button class="btn btn-collapse">Свернуть</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+  container.insertAdjacentHTML('afterbegin',newItemsHtml);
+}
 var items=Array.prototype.slice.call(document.querySelectorAll('.accordion-item'));
 if(!items.length)return;
 var searchInput=document.getElementById('artSearch');
