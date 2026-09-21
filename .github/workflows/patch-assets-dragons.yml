@@ -20,63 +20,18 @@ jobs:
           fetch-depth: 0
 
       - name: Patch CSS
+        env:
+          DRAGONS_CSS_B64: Ci8qIGRyYWdvbnMtc2VjdGlvbi0wMS1hc3NldHMtdjEgKi8KI2d1YXJkPi53cmFwe3Bvc2l0aW9uOnJlbGF0aXZlfQojZ3VhcmQgLnNlYy1oZWFkewogIG1heC13aWR0aDo3MjBweDsKICBtaW4taGVpZ2h0OjM1MHB4OwogIGRpc3BsYXk6ZmxleDsKICBmbGV4LWRpcmVjdGlvbjpjb2x1bW47CiAganVzdGlmeS1jb250ZW50OmNlbnRlcjsKICBwYWRkaW5nLXJpZ2h0OjEycHg7Cn0KI2d1YXJkPi53cmFwOjphZnRlcnsKICBjb250ZW50OiIiOwogIHBvc2l0aW9uOmFic29sdXRlOwogIHRvcDo0OHB4OwogIHJpZ2h0OjI4cHg7CiAgd2lkdGg6bWluKDMwdncsMzcwcHgpOwogIGFzcGVjdC1yYXRpbzoxLzE7CiAgYmFja2dyb3VuZDp1cmwoJy9pbWFnZXMvZHJhZ29ucy5wbmcnKSBjZW50ZXIvY29udGFpbiBuby1yZXBlYXQ7CiAgYm9yZGVyOjFweCBzb2xpZCByZ2JhKDIzMiwyMDAsMTIyLC45KTsKICBib3gtc2hhZG93Omluc2V0IDAgMCAwIDFweCByZ2JhKDI0NSwyMjcsMTc5LC4xMCk7CiAgY2xpcC1wYXRoOnBvbHlnb24oMTRweCAwLGNhbGMoMTAwJSAtIDE0cHgpIDAsMTAwJSAxNHB4LDEwMCUgY2FsYygxMDAlIC0gMTRweCksY2FsYygxMDAlIC0gMTRweCkgMTAwJSwxNHB4IDEwMCUsMCBjYWxjKDEwMCUgLSAxNHB4KSwwIDE0cHgpOwogIHBvaW50ZXItZXZlbnRzOm5vbmU7CiAgei1pbmRleDoxOwogIGZpbHRlcjpkcm9wLXNoYWRvdygwIDE4cHggMzRweCByZ2JhKDAsMCwwLC4zNSkpOwp9CiNndWFyZCAuc2VjLWhlYWQsI2d1YXJkIC5mbGlwLWdyaWQsI2d1YXJkIC5oaWdobGlnaHQtYm94e3Bvc2l0aW9uOnJlbGF0aXZlO3otaW5kZXg6Mn0KQG1lZGlhKG1heC13aWR0aDoxMTAwcHgpewogICNndWFyZCAuc2VjLWhlYWR7bWF4LXdpZHRoOjY1MHB4O21pbi1oZWlnaHQ6MzIwcHh9CiAgI2d1YXJkPi53cmFwOjphZnRlcnt3aWR0aDptaW4oMjl2dywzMzVweCk7cmlnaHQ6MjJweDt0b3A6NTRweH0KfQpAbWVkaWEobWF4LXdpZHRoOjk2MHB4KXsKICAjZ3VhcmQgLnNlYy1oZWFke21heC13aWR0aDoxMDAlO21pbi1oZWlnaHQ6MDtkaXNwbGF5OmJsb2NrO3BhZGRpbmctcmlnaHQ6MDttYXJnaW4tYm90dG9tOjI4cHh9CiAgI2d1YXJkPi53cmFwe3BhZGRpbmctYm90dG9tOjM4MHB4fQogICNndWFyZD4ud3JhcDo6YWZ0ZXJ7CiAgICB0b3A6YXV0bzsKICAgIGJvdHRvbToyOHB4OwogICAgbGVmdDo1MCU7CiAgICByaWdodDphdXRvOwogICAgd2lkdGg6bWluKDc4dncsMzQwcHgpOwogICAgdHJhbnNmb3JtOnRyYW5zbGF0ZVgoLTUwJSk7CiAgfQp9CkBtZWRpYShtYXgtd2lkdGg6NjQwcHgpewogICNndWFyZD4ud3JhcHtwYWRkaW5nLWJvdHRvbTozNDVweH0KICAjZ3VhcmQ+LndyYXA6OmFmdGVye3dpZHRoOm1pbig4MnZ3LDMxMHB4KTtib3R0b206MjJweH0KfQo=
         run: |
           python - <<'PY'
+          import base64, os
           from pathlib import Path
           path = Path('assets/css/fizicheskaya-ohrana.css')
           text = path.read_text(encoding='utf-8')
           marker = '/* dragons-section-01-assets-v1 */'
           if marker not in text:
-              css = r'''
-
-/* dragons-section-01-assets-v1 */
-#guard>.wrap{position:relative}
-#guard .sec-head{
-  max-width:720px;
-  min-height:350px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  padding-right:12px;
-}
-#guard>.wrap::after{
-  content:"";
-  position:absolute;
-  top:48px;
-  right:28px;
-  width:min(30vw,370px);
-  aspect-ratio:1/1;
-  background:url('/images/dragons.png') center/contain no-repeat;
-  border:1px solid rgba(232,200,122,.9);
-  box-shadow:inset 0 0 0 1px rgba(245,227,179,.10);
-  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px);
-  pointer-events:none;
-  z-index:1;
-  filter:drop-shadow(0 18px 34px rgba(0,0,0,.35));
-}
-#guard .sec-head,#guard .flip-grid,#guard .highlight-box{position:relative;z-index:2}
-@media(max-width:1100px){
-  #guard .sec-head{max-width:650px;min-height:320px}
-  #guard>.wrap::after{width:min(29vw,335px);right:22px;top:54px}
-}
-@media(max-width:960px){
-  #guard .sec-head{max-width:100%;min-height:0;display:block;padding-right:0;margin-bottom:28px}
-  #guard>.wrap{padding-bottom:380px}
-  #guard>.wrap::after{
-    top:auto;
-    bottom:28px;
-    left:50%;
-    right:auto;
-    width:min(78vw,340px);
-    transform:translateX(-50%);
-  }
-}
-@media(max-width:640px){
-  #guard>.wrap{padding-bottom:345px}
-  #guard>.wrap::after{width:min(82vw,310px);bottom:22px}
-}
-'''
-              path.write_text(text.rstrip() + css + '\n', encoding='utf-8')
+              css = base64.b64decode(os.environ['DRAGONS_CSS_B64']).decode('utf-8')
+              path.write_text(text.rstrip() + '\n' + css + '\n', encoding='utf-8')
           PY
 
       - name: Validate
