@@ -1,0 +1,45 @@
+name: One-time restore cursor and section numbers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/restore-cursor-section-numbers-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore cursor and section numbers
+        run: |
+          python scripts/restore-cursor-section-numbers-once.py
+          python scripts/build_site.py
+          python - <<'PY'
+          from pathlib import Path
+          for name in ('site-src/assets/site-shell.css','assets/css/site-shell.css','site-src/assets/pricing.css','assets/css/pricing.css'):
+              p=Path(name)
+              p.write_text(p.read_text(encoding='utf-8').rstrip()+'\n', encoding='utf-8')
+          PY
+      - name: Validate and commit
+        run: |
+          grep -F 'shared-crafted-cursor-section-numbers-v1' assets/css/site-shell.css
+          grep -F 'cursor-ring.hov' assets/css/site-shell.css
+          grep -F 'shared-crafted-cursor-hover-v1' assets/js/site.js
+          grep -F '<span class="sec-num">01</span><span class="eyebrow">Тарифы</span>' ceny/index.html
+          grep -F '<span class="sec-num">02</span><span class="eyebrow">По типу объекта</span>' ceny/index.html
+          grep -F '<span class="sec-num">03</span><span class="eyebrow">Расчёт</span>' ceny/index.html
+          grep -F '<span class="sec-num price-cta-num">04</span>' ceny/index.html
+          grep -F '/assets/css/pricing.css?v=20260921-pairs4' ceny/index.html
+          grep -F '/assets/js/site.js?v=20260921-pairs4' ceny/index.html
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site-src/assets/site-shell.css site-src/assets/site.js site-src/assets/pricing.css scripts/build_site.py assets/css/site-shell.css assets/js/site.js assets/css/pricing.css ceny/index.html
+          git commit -m 'Restore crafted cursor and decorative section numbers'
+          git push origin HEAD:main
