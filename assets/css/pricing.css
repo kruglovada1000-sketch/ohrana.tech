@@ -154,4 +154,9 @@
   .price-tariffs .tariff-arrow[data-carousel-prev]{grid-column:1!important;grid-row:1!important}
   .price-tariffs .tariff-arrow[data-carousel-next]{grid-column:3!important;grid-row:1!important}
   .price-tariffs .tariff-dots{grid-column:2!important;grid-row:1!important}
-}
+}/* pricing-section-numbers-v1 */
+.price-head{position:relative;z-index:1}
+.price-head>.sec-num{z-index:-1}
+.price-cta-box>.price-cta-num{top:20px!important;right:26px!important;z-index:0!important;font-size:clamp(4.5rem,9vw,8rem)!important}
+.price-cta-box>h2,.price-cta-box>p,.price-cta-box>.btn{position:relative;z-index:1}
+@media(max-width:700px){.price-cta-box>.price-cta-num{top:16px!important;right:18px!important;font-size:5rem!important}}

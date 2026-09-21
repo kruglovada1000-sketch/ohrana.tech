@@ -42,4 +42,12 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:var(--footer
 .site-header .brand-ic{width:46px!important;height:46px!important;min-width:46px!important;flex:0 0 46px!important;border-radius:50%!important;background:var(--gold-grad)!important;display:grid!important;place-items:center!important}
 .site-header .brand-ic>img,.site-header .brand-ic>svg{display:none!important}
 .site-header .brand-ic::after{content:""!important;width:42px!important;height:42px!important;background:url("/images/schit.png") center/contain no-repeat!important;display:block!important}
-@media(max-width:420px){.site-header .brand-ic::after{width:36px!important;height:36px!important}}
+@media(max-width:420px){.site-header .brand-ic::after{width:36px!important;height:36px!important}}/* shared-crafted-cursor-section-numbers-v1 */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;z-index:5000;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor-dot{width:6px;height:6px;background:var(--gold2)}
+.cursor-ring{width:38px;height:38px;border:1px solid rgba(232,200,122,.5);transition:width .35s var(--ease),height .35s var(--ease),border-color .35s,background .35s}
+.cursor-ring.hov{width:64px;height:64px;border-color:rgba(232,200,122,.9);background:rgba(232,200,122,.06)}
+@media (hover:none),(max-width:960px){.cursor-dot,.cursor-ring{display:none!important}}
+.sec-num{position:absolute!important;top:-58px!important;right:0!important;font-family:var(--serif)!important;font-style:italic!important;font-size:clamp(4rem,9vw,8rem)!important;line-height:1!important;color:transparent!important;-webkit-text-stroke:1px rgba(232,200,122,.14)!important;pointer-events:none!important;user-select:none!important;z-index:0}
+.sec-head.center .sec-num{right:50%!important;transform:translateX(50%)!important}
+:root[data-theme="light"] .sec-num{-webkit-text-stroke-color:rgba(111,75,10,.20)!important}
