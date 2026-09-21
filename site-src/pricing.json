@@ -12,9 +12,9 @@
     },
     {
       "id": "armed-post",
-      "name": "Вооружённый пост",
-      "price_from": 230000,
-      "unit": "месяц",
+      "name": "Охрана с оружием",
+      "price_from": 450000,
+      "unit": "смена",
       "url": "/fizicheskaya-ohrana/",
       "note": "охранник 6-го разряда"
     },
