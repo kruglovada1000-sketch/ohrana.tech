@@ -20,6 +20,12 @@ jobs:
         run: |
           python scripts/fix-pricing-pair-carousel-once.py
           python scripts/build_site.py
+          python - <<'PY'
+          from pathlib import Path
+          for name in ('site-src/assets/pricing.css','assets/css/pricing.css'):
+              p=Path(name)
+              p.write_text(p.read_text(encoding='utf-8').rstrip()+'\n', encoding='utf-8')
+          PY
       - name: Validate and commit
         run: |
           test "$(grep -o 'data-carousel-pair' ceny/index.html | wc -l | tr -d ' ')" = "7"
