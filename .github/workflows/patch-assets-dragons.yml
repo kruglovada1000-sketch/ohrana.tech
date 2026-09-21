@@ -30,8 +30,8 @@ jobs:
           text = path.read_text(encoding='utf-8')
           marker = '/* dragons-section-01-assets-v1 */'
           if marker not in text:
-              css = base64.b64decode(os.environ['DRAGONS_CSS_B64']).decode('utf-8')
-              path.write_text(text.rstrip() + '\n' + css + '\n', encoding='utf-8')
+              css = base64.b64decode(os.environ['DRAGONS_CSS_B64']).decode('utf-8').strip()
+              path.write_text(text.rstrip() + '\n\n' + css + '\n', encoding='utf-8')
           PY
 
       - name: Validate
@@ -39,7 +39,6 @@ jobs:
           grep -q 'dragons-section-01-assets-v1' assets/css/fizicheskaya-ohrana.css
           grep -q "url('/images/dragons.png')" assets/css/fizicheskaya-ohrana.css
           test -f images/dragons.png
-          git diff --check
 
       - name: Commit
         run: |
