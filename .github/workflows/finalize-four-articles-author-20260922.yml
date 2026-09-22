@@ -27,18 +27,15 @@ jobs:
               Path('stati/kak-smenit-chop-bez-razryva-ohrany.html'),
           ]
 
-          author_block = '''<div class="author" data-reveal>
-          <div class="author-ava">ПЖ</div>
-          <div>
-            <b>Пётр Жгун</b>
-            <span>Эксперт по физической охране, ЧОО «Рускорпорация»</span>
-          </div>
-        </div>'''
+          author_block = ('<div class="author" data-reveal>'
+                          '<div class="author-ava">ПЖ</div>'
+                          '<div><b>Пётр Жгун</b>'
+                          '<span>Эксперт по физической охране, ЧОО «Рускорпорация»</span>'
+                          '</div></div>')
 
           for p in files:
               s = p.read_text(encoding='utf-8')
 
-              # Visible author card: one consistent expert attribution on every article.
               s, count = re.subn(
                   r'<div class="author" data-reveal>.*?</div>\s*</div>',
                   author_block,
@@ -49,7 +46,6 @@ jobs:
               if count != 1:
                   raise SystemExit(f'Author block not replaced in {p}')
 
-              # Article JSON-LD: author must be a Person, not an editorial organization.
               article_scripts = list(re.finditer(r'<script type="application/ld\+json">(.*?)</script>', s, re.S))
               replaced = False
               for m in article_scripts:
@@ -72,7 +68,6 @@ jobs:
               if not replaced:
                   raise SystemExit(f'Article JSON-LD not found in {p}')
 
-              # Production paths and required design/functionality checks.
               required = [
                   '<header class="site-header">',
                   '<section class="hero">',
@@ -101,7 +96,6 @@ jobs:
                   if token not in s:
                       raise SystemExit(f'Missing {token!r} in {p}')
 
-              # Reject the paths that previously broke the pages.
               bad = [
                   'href="/css/articles/kak-vybrat-chop-dlya-ohrany-obekta.css"',
                   'href="/css/site-shell.css"',
