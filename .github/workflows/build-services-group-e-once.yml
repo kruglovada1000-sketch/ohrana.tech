@@ -1,0 +1,54 @@
+name: Build services group E once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-services-group-e-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Generate additional service pages
+        run: python scripts/build_services_group_e.py
+      - name: Validate generated scope
+        run: |
+          test -f uslugi/dopolnitelnye-uslugi/index.html
+          test -f uslugi/pozharnaya-bezopasnost/index.html
+          test -f uslugi/videonablyudenie/index.html
+          test -f uslugi/kontrol-dostupa-skud/index.html
+          test -f uslugi/autsorsing-sluzhby-bezopasnosti/index.html
+          test -f uslugi/voditel-telohranitel/index.html
+          test -f uslugi/vip-ohrana/index.html
+          test -f uslugi/vooruzhennaya-ohrana/index.html
+          test -f uslugi/ohrannik-vahter-kontroler/index.html
+          test -f uslugi/konsyerzh-servis/index.html
+          grep -q '/uslugi/dopolnitelnye-uslugi/' uslugi/index.html
+          git status --short
+          BAD=$(git status --porcelain | awk '{print $2}' | grep -Ev '^(uslugi/index.html|uslugi/dopolnitelnye-uslugi/|uslugi/pozharnaya-bezopasnost/|uslugi/videonablyudenie/|uslugi/kontrol-dostupa-skud/|uslugi/autsorsing-sluzhby-bezopasnosti/|uslugi/voditel-telohranitel/|uslugi/vip-ohrana/|uslugi/vooruzhennaya-ohrana/|uslugi/ohrannik-vahter-kontroler/|uslugi/konsyerzh-servis/|sitemap.xml$)' || true)
+          if [ -n "$BAD" ]; then
+            echo "Unexpected files changed:"
+            echo "$BAD"
+            exit 1
+          fi
+      - name: Commit generated pages
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add uslugi/index.html uslugi/dopolnitelnye-uslugi uslugi/pozharnaya-bezopasnost uslugi/videonablyudenie uslugi/kontrol-dostupa-skud uslugi/autsorsing-sluzhby-bezopasnosti uslugi/voditel-telohranitel uslugi/vip-ohrana uslugi/vooruzhennaya-ohrana uslugi/ohrannik-vahter-kontroler uslugi/konsyerzh-servis sitemap.xml
+          if git diff --cached --quiet; then
+            echo 'No generated changes'
+            exit 0
+          fi
+          git commit -m 'Build services group E pages [skip ci]'
+          git push origin main
