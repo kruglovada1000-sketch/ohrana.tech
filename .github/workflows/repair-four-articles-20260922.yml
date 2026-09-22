@@ -1,0 +1,97 @@
+name: Repair four new articles 2026-09-22
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/repair-four-articles-20260922.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Normalize article template and image paths
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          template_path = Path('stati/kak-vybrat-chop-dlya-ohrany-obekta.html')
+          template = template_path.read_text(encoding='utf-8')
+
+          header_match = re.search(r'<header class="site-header">.*?</header>', template, re.S)
+          tail_match = re.search(r'<footer>.*?</html>\s*$', template, re.S)
+          if not header_match or not tail_match:
+              raise SystemExit('Cannot extract canonical article shell')
+
+          canonical_header = header_match.group(0)
+          canonical_tail = tail_match.group(0)
+          canonical_tail = canonical_tail.replace('src="/js/site.js"', 'src="/assets/js/site.js"')
+          canonical_tail = canonical_tail.replace('src="/js/article.js"', 'src="/assets/js/article.js"')
+
+          articles = {
+              'stati/tehnicheskoe-zadanie-na-ohranu-obekta.html': 'stati-tz-ohrana.webp',
+              'stati/skolko-ohrannikov-nuzhno-na-obekt.html': 'stati-kolichestvo-ohrannikov.webp',
+              'stati/kak-kontrolirovat-rabotu-chop.html': 'stati-kontrol-chop.webp',
+              'stati/kak-smenit-chop-bez-razryva-ohrany.html': 'stati-smena-chop.webp',
+          }
+
+          for file_name, image_name in articles.items():
+              p = Path(file_name)
+              s = p.read_text(encoding='utf-8')
+
+              # Restore the same site header/footer/mobile/chat shell as the proven article template.
+              s, n_header = re.subn(r'<header class="site-header">.*?</header>', canonical_header, s, count=1, flags=re.S)
+              s, n_tail = re.subn(r'<footer>.*?</html>\s*$', canonical_tail, s, count=1, flags=re.S)
+              if n_header != 1 or n_tail != 1:
+                  raise SystemExit(f'Cannot normalize shell in {file_name}: header={n_header}, tail={n_tail}')
+
+              # Production-compatible asset paths used by the restored Articles index.
+              s = s.replace('href="/css/articles/kak-vybrat-chop-dlya-ohrany-obekta.css"', 'href="/assets/css/articles/kak-vybrat-chop-dlya-ohrany-obekta.css"')
+              s = s.replace('href="/css/site-shell.css"', 'href="/assets/css/site-shell.css"')
+              s = s.replace('src="/js/site.js"', 'src="/assets/js/site.js"')
+              s = s.replace('src="/js/article.js"', 'src="/assets/js/article.js"')
+
+              # One independent article image per page. This changes OG image and both animated hero layers.
+              s = s.replace('/stati/schit.png', f'/images/{image_name}')
+
+              # Hard checks: page shell, assets, content and lead form must remain intact.
+              required = [
+                  '<header class="site-header">',
+                  '<main>',
+                  '<section class="hero">',
+                  '<div class="article-body">',
+                  '<footer>',
+                  'https://formspree.io/f/mvkpbvnb',
+                  '/assets/css/articles/kak-vybrat-chop-dlya-ohrany-obekta.css',
+                  '/assets/css/site-shell.css',
+                  '/assets/js/site.js',
+                  '/assets/js/article.js',
+                  f'/images/{image_name}',
+                  '</body>',
+                  '</html>',
+              ]
+              for token in required:
+                  if token not in s:
+                      raise SystemExit(f'Missing {token!r} in {file_name}')
+              if '/stati/schit.png' in s:
+                  raise SystemExit(f'Old article image still present in {file_name}')
+              if s.count(f'/images/{image_name}') < 3:
+                  raise SystemExit(f'Image path not applied to OG + two hero layers in {file_name}')
+
+              p.write_text(s, encoding='utf-8')
+
+          print('Repaired:', ', '.join(articles))
+
+      - name: Commit repaired articles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stati/tehnicheskoe-zadanie-na-ohranu-obekta.html stati/skolko-ohrannikov-nuzhno-na-obekt.html stati/kak-kontrolirovat-rabotu-chop.html stati/kak-smenit-chop-bez-razryva-ohrany.html
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: restore four article templates and unique images"
+          git push
