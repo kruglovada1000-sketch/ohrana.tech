@@ -1,0 +1,40 @@
+name: Restore office layout once
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/restore-office-layout-once.yml'
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore known-good office page and shared shell
+        run: |
+          git checkout 33c8dcd5d0d4cc642dc9b5cc0fa49b2c3c6a38d0 -- \
+            ohrana-ofisov/index.html \
+            css/ohrana-ofisov.css \
+            css/site-shell.css \
+            js/site.js \
+            site-src/pages/ohrana-ofisov.source.html
+          test -s ohrana-ofisov/index.html
+          test -s css/ohrana-ofisov.css
+          test -s css/site-shell.css
+          test -s js/site.js
+          grep -q '/css/ohrana-ofisov.css' ohrana-ofisov/index.html
+          grep -q '/css/site-shell.css' ohrana-ofisov/index.html
+          grep -q '/js/site.js' ohrana-ofisov/index.html
+      - name: Commit restoration and remove workflow
+        run: |
+          rm -f .github/workflows/restore-office-layout-once.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ohrana-ofisov/index.html css/ohrana-ofisov.css css/site-shell.css js/site.js site-src/pages/ohrana-ofisov.source.html .github/workflows/restore-office-layout-once.yml
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'fix: restore known-good office layout and shared CSS/JS [skip ci]'
+          git push
