@@ -1,0 +1,44 @@
+name: Add services link to homepage once
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/add-services-home-once.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Add Services after Home on homepage only
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '<a class="active" href="/" aria-current="page">Главная</a>\n      <a href="/dogovor/">Договор</a>'
+          new = '<a class="active" href="/" aria-current="page">Главная</a>\n      <a href="/uslugi/">Услуги</a>\n      <a href="/dogovor/">Договор</a>'
+          if new in s:
+              print('Homepage already patched')
+          elif old in s:
+              p.write_text(s.replace(old, new, 1), encoding='utf-8')
+              print('Added Services link to homepage nav')
+          else:
+              raise SystemExit('Expected homepage nav marker not found; refusing to modify')
+      - name: Commit homepage patch and remove workflow
+        run: |
+          rm -f .github/workflows/add-services-home-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/add-services-home-once.yml
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Add Services link to homepage navigation"
+          git push origin HEAD:main
