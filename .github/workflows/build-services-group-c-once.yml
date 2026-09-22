@@ -1,0 +1,54 @@
+name: Build services group C once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-services-group-c-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Generate social service pages
+        run: python scripts/build_services_group_c.py
+      - name: Validate generated scope
+        run: |
+          test -f uslugi/ohrana-socialnyh-obektov/index.html
+          test -f uslugi/ohrana-shkol-detsadov/index.html
+          test -f uslugi/ohrana-vuzov/index.html
+          test -f uslugi/ohrana-bolnic/index.html
+          test -f uslugi/ohrana-muzeev/index.html
+          test -f uslugi/ohrana-bibliotek/index.html
+          test -f uslugi/ohrana-teatrov/index.html
+          test -f uslugi/ohrana-hramov/index.html
+          test -f uslugi/ohrana-kladbish/index.html
+          test -f uslugi/ohrana-gosuchrezhdeniy/index.html
+          grep -q '/uslugi/ohrana-socialnyh-obektov/' uslugi/index.html
+          git status --short
+          BAD=$(git status --porcelain | awk '{print $2}' | grep -Ev '^(uslugi/index.html|uslugi/ohrana-socialnyh-obektov/|uslugi/ohrana-shkol-detsadov/|uslugi/ohrana-vuzov/|uslugi/ohrana-bolnic/|uslugi/ohrana-muzeev/|uslugi/ohrana-bibliotek/|uslugi/ohrana-teatrov/|uslugi/ohrana-hramov/|uslugi/ohrana-kladbish/|uslugi/ohrana-gosuchrezhdeniy/|sitemap.xml$)' || true)
+          if [ -n "$BAD" ]; then
+            echo "Unexpected files changed:"
+            echo "$BAD"
+            exit 1
+          fi
+      - name: Commit generated pages
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add uslugi/index.html uslugi/ohrana-socialnyh-obektov uslugi/ohrana-shkol-detsadov uslugi/ohrana-vuzov uslugi/ohrana-bolnic uslugi/ohrana-muzeev uslugi/ohrana-bibliotek uslugi/ohrana-teatrov uslugi/ohrana-hramov uslugi/ohrana-kladbish uslugi/ohrana-gosuchrezhdeniy sitemap.xml
+          if git diff --cached --quiet; then
+            echo 'No generated changes'
+            exit 0
+          fi
+          git commit -m 'Build services group C pages [skip ci]'
+          git push origin main
