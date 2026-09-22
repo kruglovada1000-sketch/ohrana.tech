@@ -538,6 +538,33 @@ ym(111882478,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4c-1.3 0-2.6-.3-3.7-.8L3 21l1.9-5.3a8.4 8.4 0 1 1 16.1-4.2Z"/><path d="M8.5 10.5h7M8.5 13.5h4"/></svg>
 </button>
 
+<script>
+/* FAQ этой страницы: локально, без изменений общего CSS/JS */
+document.addEventListener('DOMContentLoaded', function () {
+  const faq = document.querySelector('#faq');
+  if (!faq) return;
+
+  faq.querySelectorAll('.faq-q').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const item = button.closest('.faq-item');
+      if (!item) return;
+
+      const willOpen = !item.classList.contains('open');
+
+      faq.querySelectorAll('.faq-item.open').forEach(function (openItem) {
+        if (openItem !== item) {
+          openItem.classList.remove('open');
+          const openButton = openItem.querySelector('.faq-q');
+          if (openButton) openButton.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      item.classList.toggle('open', willOpen);
+      button.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+  });
+});
+</script>
 <script src="/assets/js/site.js" defer></script>
 </body>
 </html>
