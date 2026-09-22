@@ -393,25 +393,25 @@ ym(111882478,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",
       </div>
       <div class="faq-list" data-reveal>
 
-        <details class="faq-item" open><summary class="faq-q">
+        <div class="faq-item open"><button class="faq-q" type="button" aria-expanded="true">
             Работаете ли вы в регионах, которых нет в списке?
-            <span class="fi faq-arrow" aria-hidden="true">↓</span></summary><div class="faq-a"><div><p>Да. При долгосрочном контракте мы разворачиваем мобильные группы и посты в других регионах России. Оставьте <a href="#order">заявку</a> — обсудим условия выезда.</p></div></div></details>
+            <span class="fi faq-arrow" aria-hidden="true">←</span></button><div class="faq-a"><div><p>Да. При долгосрочном контракте мы разворачиваем мобильные группы и посты в других регионах России. Оставьте <a href="#order">заявку</a> — обсудим условия выезда.</p></div></div></div>
 
-        <details class="faq-item"><summary class="faq-q">
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">
             Как быстро можно выставить пост охраны в регионе?
-            <span class="fi faq-arrow" aria-hidden="true">←</span></summary><div class="faq-a"><div><p>В Москве и МО — в день подписания <a href="/dogovor/">договора</a>. В Перми, Сочи и Санкт-Петербурге — обычно от 2–3 дней в зависимости от типа объекта и требований.</p></div></div></details>
+            <span class="fi faq-arrow" aria-hidden="true">←</span></button><div class="faq-a"><div><p>В Москве и МО — в день подписания <a href="/dogovor/">договора</a>. В Перми, Сочи и Санкт-Петербурге — обычно от 2–3 дней в зависимости от типа объекта и требований.</p></div></div></div>
 
-        <details class="faq-item"><summary class="faq-q">
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">
             Одинаковое ли время прибытия ГБР во всех регионах?
-            <span class="fi faq-arrow" aria-hidden="true">←</span></summary><div class="faq-a"><div><p>В Москве и ближнем Подмосковье — 10–15 минут. В других регионах время зависит от расположения объекта и фиксируется в договоре в виде конкретной гарантии.</p></div></div></details>
+            <span class="fi faq-arrow" aria-hidden="true">←</span></button><div class="faq-a"><div><p>В Москве и ближнем Подмосковье — 10–15 минут. В других регионах время зависит от расположения объекта и фиксируется в договоре в виде конкретной гарантии.</p></div></div></div>
 
-        <details class="faq-item"><summary class="faq-q">
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">
             Отличаются ли цены охраны в регионах?
-            <span class="fi faq-arrow" aria-hidden="true">←</span></summary><div class="faq-a"><div><p>Да, стоимость зависит от локации, логистики и требований к персоналу. Расчёт делается индивидуально, но цена фиксируется в договоре и не меняется без вашего согласия.</p></div></div></details>
+            <span class="fi faq-arrow" aria-hidden="true">←</span></button><div class="faq-a"><div><p>Да, стоимость зависит от локации, логистики и требований к персоналу. Расчёт делается индивидуально, но цена фиксируется в договоре и не меняется без вашего согласия.</p></div></div></div>
 
-        <details class="faq-item"><summary class="faq-q">
+        <div class="faq-item"><button class="faq-q" type="button" aria-expanded="false">
             Кто работает на постах в регионах?
-            <span class="fi faq-arrow" aria-hidden="true">←</span></summary><div class="faq-a"><div><p>Местные охранники с удостоверениями ЧО 4–6 разрядов, знающие специфику своего города. Контроль качества ведут региональные менеджеры по единым стандартам компании.</p></div></div></details>
+            <span class="fi faq-arrow" aria-hidden="true">←</span></button><div class="faq-a"><div><p>Местные охранники с удостоверениями ЧО 4–6 разрядов, знающие специфику своего города. Контроль качества ведут региональные менеджеры по единым стандартам компании.</p></div></div></div>
 
       </div>
     </div>
@@ -518,31 +518,14 @@ ym(111882478,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4c-1.3 0-2.6-.3-3.7-.8L3 21l1.9-5.3a8.4 8.4 0 1 1 16.1-4.2Z"/><path d="M8.5 10.5h7M8.5 13.5h4"/></svg>
 </button>
 <style>
-/* FAQ страницы "Регионы": нативная гармошка, независимо от общего JS */
-#faq details.faq-item > summary{list-style:none;cursor:pointer}
-#faq details.faq-item > summary::-webkit-details-marker{display:none}
-#faq details.faq-item .faq-a{display:block!important;max-height:none!important;overflow:visible!important;grid-template-rows:none!important}
-#faq details.faq-item:not([open]) .faq-a{display:none!important}
-#faq details.faq-item[open]{border-color:rgba(232,200,122,.4)}
-#faq details.faq-item .fi{transform:none!important}
+#faq .faq-a{display:block!important;grid-template-rows:none!important;max-height:0;overflow:hidden;transition:max-height .55s var(--ease)}
+#faq .faq-a>div{overflow:visible}
+#faq .faq-item .faq-arrow{transform:none!important}
+#faq .faq-item .faq-arrow::before{content:"←"}
+#faq .faq-item.open .faq-arrow::before{content:"↓"}
+#faq .faq-arrow{font-size:0}
+#faq .faq-arrow::before{font-size:1.05rem}
 </style>
 <script src="/assets/js/site.js" defer></script>
-<script>
-document.addEventListener('DOMContentLoaded',function(){
-  var faq=document.getElementById('faq');
-  if(!faq)return;
-  faq.querySelectorAll('details.faq-item').forEach(function(item){
-    item.addEventListener('toggle',function(){
-      var arrow=item.querySelector('.faq-arrow');
-      if(arrow)arrow.textContent=item.open?'↓':'←';
-      if(item.open){
-        faq.querySelectorAll('details.faq-item[open]').forEach(function(other){
-          if(other!==item)other.removeAttribute('open');
-        });
-      }
-    });
-  });
-});
-</script>
 </body>
 </html>
