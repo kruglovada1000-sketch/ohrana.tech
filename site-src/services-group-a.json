@@ -1,0 +1,20 @@
+{
+  "group": "A",
+  "title": "Охрана коммерческих объектов",
+  "url": "/uslugi/ohrana-kommercheskih-obektov/",
+  "services": [
+    {"name":"Охрана складов","url":"/uslugi/ohrana-skladov/","image":"/images/ohrana-skladov-usluga.webp","price":"от 190 000 ₽/месяц"},
+    {"name":"Охрана магазинов","url":"/uslugi/ohrana-magazinov/","image":"/images/ohrana-magazinov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана офисов","url":"/uslugi/ohrana-ofisov/","image":"/images/ohrana-ofisov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана банков","url":"/uslugi/ohrana-bankov/","image":"/images/ohrana-bankov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана торговых центров","url":"/uslugi/ohrana-torgovyh-centrov/","image":"/images/ohrana-torgovyh-centrov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана бизнес-центров","url":"/uslugi/ohrana-biznes-centrov/","image":"/images/ohrana-biznes-centrov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана гостиниц и отелей","url":"/uslugi/ohrana-gostinic/","image":"/images/ohrana-gostinic-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана автосалонов и автосервисов","url":"/uslugi/ohrana-avtosalonov/","image":"/images/ohrana-avtosalonov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана АЗС","url":"/uslugi/ohrana-azs/","image":"/images/ohrana-azs-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана ресторанов и кафе","url":"/uslugi/ohrana-restoranov/","image":"/images/ohrana-restoranov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана ночных клубов и баров","url":"/uslugi/ohrana-nochnyh-klubov/","image":"/images/ohrana-nochnyh-klubov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана ломбардов и ювелирных магазинов","url":"/uslugi/ohrana-lombardov/","image":"/images/ohrana-lombardov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана букмекерских контор","url":"/uslugi/ohrana-bukmekerskih-kontor/","image":"/images/ohrana-bukmekerskih-kontor-usluga.webp","price":"Индивидуальный расчёт"}
+  ]
+}
