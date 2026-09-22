@@ -1,0 +1,50 @@
+name: Restore articles index assets 2026-09-22
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/restore-stati-index-20260922.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore working asset paths
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('stati/index.html')
+          s = p.read_text(encoding='utf-8')
+          replacements = {
+              'href="/css/stati.css"': 'href="/assets/css/stati.css"',
+              'href="/css/site-shell.css"': 'href="/assets/css/site-shell.css"',
+              'src="/js/site.js"': 'src="/assets/js/site.js"',
+              'src="/js/stati.js"': 'src="/assets/js/stati.js"',
+          }
+          for old, new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'Expected path not found: {old}')
+              s = s.replace(old, new)
+          required = [
+              '/stati/tehnicheskoe-zadanie-na-ohranu-obekta.html',
+              '/stati/skolko-ohrannikov-nuzhno-na-obekt.html',
+              '/stati/kak-kontrolirovat-rabotu-chop.html',
+              '/stati/kak-smenit-chop-bez-razryva-ohrany.html',
+          ]
+          for url in required:
+              if url not in s:
+                  raise SystemExit(f'Missing article card: {url}')
+          p.write_text(s, encoding='utf-8')
+      - name: Commit restored index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stati/index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: restore articles index design and scripts"
+          git push
