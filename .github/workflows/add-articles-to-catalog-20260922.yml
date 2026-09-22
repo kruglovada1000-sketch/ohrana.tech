@@ -1,0 +1,150 @@
+name: Add September articles to catalog
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/add-articles-to-catalog-20260922.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Add article cards and sitemap URLs
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index_path = Path('stati/index.html')
+          sitemap_path = Path('sitemap.xml')
+          index = index_path.read_text(encoding='utf-8')
+
+          marker = '      <div class="accordion-container">\n'
+          cards = r'''
+        <!-- СТАТЬЯ · 22.09.2026 · ВЫБОР ЧОП -->
+        <div class="accordion-item" data-cat="vybor" data-reveal>
+          <button class="accordion-header">
+            <span>Как составить техническое задание на охрану объекта: готовая структура ТЗ</span>
+            <span class="acc-date">22.09.2026</span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <span class="acc-cat">Выбор ЧОП</span>
+            <p class="accordion-trailer">Практическая структура технического задания на физическую охрану: объект, риски, посты, режим, порядок реагирования, контроль и отчётность. Помогает сравнивать предложения ЧОП по одинаковым условиям.</p>
+            <div class="accordion-buttons">
+              <a href="/stati/tehnicheskoe-zadanie-na-ohranu-obekta.html" class="btn btn-success" target="_blank" rel="noopener">Читать полностью</a>
+              <button class="btn btn-collapse">Свернуть</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- СТАТЬЯ · 22.09.2026 · ЦЕНЫ -->
+        <div class="accordion-item" data-cat="ceny" data-reveal>
+          <button class="accordion-header">
+            <span>Сколько охранников нужно на объект: как рассчитать посты и график</span>
+            <span class="acc-date">22.09.2026</span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <span class="acc-cat">Цены</span>
+            <p class="accordion-trailer">Как рассчитать количество постов и сотрудников без переплаты: какие зоны требуют постоянного контроля, что можно совмещать, как режим работы влияет на схему и почему нужен резерв на подмену.</p>
+            <div class="accordion-buttons">
+              <a href="/stati/skolko-ohrannikov-nuzhno-na-obekt.html" class="btn btn-success" target="_blank" rel="noopener">Читать полностью</a>
+              <button class="btn btn-collapse">Свернуть</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- СТАТЬЯ · 21.09.2026 · ВЫБОР ЧОП -->
+        <div class="accordion-item" data-cat="vybor" data-reveal>
+          <button class="accordion-header">
+            <span>Как контролировать работу ЧОП: 9 проверок, которые занимают 30 минут в месяц</span>
+            <span class="acc-date">21.09.2026</span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <span class="acc-cat">Выбор ЧОП</span>
+            <p class="accordion-trailer">Чек-лист для заказчика: как проверить посты, журналы, обходы, пропускной режим, связь, инциденты и отчётность — и понять, что охрана действительно работает, а не просто присутствует.</p>
+            <div class="accordion-buttons">
+              <a href="/stati/kak-kontrolirovat-rabotu-chop.html" class="btn btn-success" target="_blank" rel="noopener">Читать полностью</a>
+              <button class="btn btn-collapse">Свернуть</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- СТАТЬЯ · 21.09.2026 · ВЫБОР ЧОП -->
+        <div class="accordion-item" data-cat="vybor" data-reveal>
+          <button class="accordion-header">
+            <span>Как сменить ЧОП без разрыва охраны: пошаговый план передачи объекта</span>
+            <span class="acc-date">21.09.2026</span>
+            <span class="accordion-icon">▼</span>
+          </button>
+          <div class="accordion-content">
+            <span class="acc-cat">Выбор ЧОП</span>
+            <p class="accordion-trailer">Пошаговый план смены охранной компании без провала в безопасности: договор, подготовка нового подрядчика, передача ключей и доступов, акт передачи и контроль первой недели.</p>
+            <div class="accordion-buttons">
+              <a href="/stati/kak-smenit-chop-bez-razryva-ohrany.html" class="btn btn-success" target="_blank" rel="noopener">Читать полностью</a>
+              <button class="btn btn-collapse">Свернуть</button>
+            </div>
+          </div>
+        </div>
+'''
+
+          if '/stati/tehnicheskoe-zadanie-na-ohranu-obekta.html' not in index:
+              if marker not in index:
+                  raise SystemExit('accordion marker not found')
+              index = index.replace(marker, marker + cards, 1)
+              index_path.write_text(index, encoding='utf-8')
+
+          sitemap = sitemap_path.read_text(encoding='utf-8')
+          old_stati = '''  <url>\n    <loc>https://ohrana.tech/stati/</loc>\n    <lastmod>2026-09-07</lastmod>'''
+          new_stati = '''  <url>\n    <loc>https://ohrana.tech/stati/</loc>\n    <lastmod>2026-09-22</lastmod>'''
+          if old_stati in sitemap:
+              sitemap = sitemap.replace(old_stati, new_stati, 1)
+
+          entries = [
+              ('https://ohrana.tech/stati/kak-smenit-chop-bez-razryva-ohrany.html', '2026-09-21'),
+              ('https://ohrana.tech/stati/kak-kontrolirovat-rabotu-chop.html', '2026-09-21'),
+              ('https://ohrana.tech/stati/tehnicheskoe-zadanie-na-ohranu-obekta.html', '2026-09-22'),
+              ('https://ohrana.tech/stati/skolko-ohrannikov-nuzhno-na-obekt.html', '2026-09-22'),
+          ]
+          additions = []
+          for url, date in entries:
+              if f'<loc>{url}</loc>' not in sitemap:
+                  additions.append(f'''  <url>\n    <loc>{url}</loc>\n    <lastmod>{date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>''')
+          if additions:
+              sitemap = sitemap.replace('</urlset>', '\n'.join(additions) + '\n</urlset>', 1)
+              sitemap_path.write_text(sitemap, encoding='utf-8')
+          elif old_stati in sitemap:
+              sitemap_path.write_text(sitemap, encoding='utf-8')
+          PY
+
+      - name: Validate
+        run: |
+          git diff --check
+          grep -q '/stati/tehnicheskoe-zadanie-na-ohranu-obekta.html' stati/index.html
+          grep -q '/stati/skolko-ohrannikov-nuzhno-na-obekt.html' stati/index.html
+          grep -q '/stati/kak-kontrolirovat-rabotu-chop.html' stati/index.html
+          grep -q '/stati/kak-smenit-chop-bez-razryva-ohrany.html' stati/index.html
+          grep -q 'https://ohrana.tech/stati/tehnicheskoe-zadanie-na-ohranu-obekta.html' sitemap.xml
+          grep -q 'https://ohrana.tech/stati/skolko-ohrannikov-nuzhno-na-obekt.html' sitemap.xml
+          grep -q 'https://ohrana.tech/stati/kak-kontrolirovat-rabotu-chop.html' sitemap.xml
+          grep -q 'https://ohrana.tech/stati/kak-smenit-chop-bez-razryva-ohrany.html' sitemap.xml
+
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- stati/index.html sitemap.xml
+          if git diff --cached --quiet; then echo 'Already current'; exit 0; fi
+          git commit -m 'content: add September articles to catalog and sitemap [skip ci]'
+          git push origin HEAD:main
