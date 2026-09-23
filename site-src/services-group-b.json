@@ -3,10 +3,10 @@
   "title": "Охрана жилой недвижимости",
   "url": "/uslugi/ohrana-zhiloy-nedvizhimosti/",
   "services": [
-    {"name":"Охрана ЖК и ТСЖ","url":"/uslugi/ohrana-zhk-tszh/","image":"/images/ohrana-zhk-tszh-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана ЖК и ТСЖ","url":"/uslugi/ohrana-zhk-tszh/","image":"/images/ohrana-zhilyh-kompleksov.jpg","price":"Индивидуальный расчёт"},
     {"name":"Охрана коттеджных поселков и СНТ","url":"/uslugi/ohrana-kottedzhnyh-poselkov/","image":"/images/ohrana-kottedzhnyh-poselkov-usluga.webp","price":"Индивидуальный расчёт"},
-    {"name":"Охрана дач и коттеджей","url":"/uslugi/ohrana-dach-kottedzhey/","image":"/images/ohrana-dach-kottedzhey-usluga.webp","price":"от 5 000 ₽/месяц"},
+    {"name":"Охрана дач и коттеджей","url":"/uslugi/ohrana-dach-kottedzhey/","image":"/images/ohrana-dachi.jpg","price":"от 5 000 ₽/месяц"},
     {"name":"Охрана гаражей и кооперативов","url":"/uslugi/ohrana-garazhey/","image":"/images/ohrana-garazhey-usluga.webp","price":"Индивидуальный расчёт"},
-    {"name":"Охрана парковок и автостоянок","url":"/uslugi/ohrana-parkovok/","image":"/images/ohrana-parkovok-usluga.webp","price":"Индивидуальный расчёт"}
+    {"name":"Охрана парковок и автостоянок","url":"/uslugi/ohrana-parkovok/","image":"/images/ohrana-parkovok.jpg","price":"Индивидуальный расчёт"}
   ]
 }
