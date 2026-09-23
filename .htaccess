@@ -1,0 +1,13 @@
+# SEO canonical redirects for legacy/main service URLs
+# Keep established root URLs as the single indexable versions.
+
+Redirect 301 /uslugi/ohrana-skladov/ https://ohrana.tech/ohrana-skladov/
+Redirect 301 /uslugi/ohrana-magazinov/ https://ohrana.tech/ohrana-magazinov/
+Redirect 301 /uslugi/ohrana-ofisov/ https://ohrana.tech/ohrana-ofisov/
+Redirect 301 /uslugi/ohrana-torgovyh-centrov/ https://ohrana.tech/ohrana-torgovyh-centrov/
+Redirect 301 /uslugi/ohrana-biznes-centrov/ https://ohrana.tech/ohrana-biznes-centrov/
+Redirect 301 /uslugi/ohrana-gostinic/ https://ohrana.tech/ohrana-gostinic/
+Redirect 301 /uslugi/ohrana-avtosalonov/ https://ohrana.tech/ohrana-avtosalonov/
+Redirect 301 /uslugi/ohrana-restoranov/ https://ohrana.tech/ohrana-restoranov/
+Redirect 301 /uslugi/ohrana-parkovok/ https://ohrana.tech/ohrana-parkovok/
+Redirect 301 /uslugi/ohrana-stroitelnyh-obektov/ https://ohrana.tech/ohrana-stroitelnyh-obektov/
