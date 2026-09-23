@@ -1,0 +1,112 @@
+/* Visual regression fixes — 2026-09-24.
+   Scoped to the affected pricing and hero visuals only. */
+
+/* ===== Prices: restore a balanced 50/50 pair instead of tiny thumbnails ===== */
+.price-tariffs .tariff-pair{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:24px!important;
+  align-items:stretch!important;
+}
+.price-tariffs .tariff-pair>.tariff-card:not(.tariff-image-card){
+  width:100%!important;
+  height:100%!important;
+  min-height:520px!important;
+  border-radius:22px!important;
+}
+.price-tariffs .tariff-pair>.tariff-image-card{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:520px!important;
+  max-height:none!important;
+  justify-self:stretch!important;
+  align-self:stretch!important;
+  padding:0!important;
+  border-radius:22px!important;
+  overflow:hidden!important;
+  background:var(--panel)!important;
+}
+.price-tariffs .tariff-pair>.tariff-image-card .tariff-scene{
+  display:block!important;
+  flex:1 1 auto!important;
+  width:100%!important;
+  height:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:0!important;
+  filter:none!important;
+  transform:none!important;
+}
+.price-tariffs .tariff-pair>.tariff-image-card .tariff-shield{
+  position:absolute!important;
+  top:18px!important;
+  right:18px!important;
+  width:78px!important;
+  height:78px!important;
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,.42))!important;
+  transform:none!important;
+}
+.price-tariffs .tariff-image-card figcaption{
+  min-height:62px!important;
+  padding:12px 18px!important;
+  font-size:.96rem!important;
+}
+
+@media(max-width:900px){
+  .price-tariffs .tariff-pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:18px!important}
+  .price-tariffs .tariff-pair>.tariff-card:not(.tariff-image-card),
+  .price-tariffs .tariff-pair>.tariff-image-card{min-height:480px!important}
+}
+@media(max-width:700px){
+  .price-tariffs .tariff-pair{grid-template-columns:1fr!important;gap:14px!important}
+  .price-tariffs .tariff-pair>.tariff-card:not(.tariff-image-card){height:auto!important;min-height:0!important;padding:22px!important}
+  .price-tariffs .tariff-pair>.tariff-image-card{order:0!important;width:100%!important;height:360px!important;min-height:360px!important;max-height:none!important}
+  .price-tariffs .tariff-pair>.tariff-image-card .tariff-scene{height:0!important;min-height:0!important;max-height:none!important}
+  .price-tariffs .tariff-pair>.tariff-image-card .tariff-shield{width:64px!important;height:64px!important;top:12px!important;right:12px!important}
+  .price-tariffs .tariff-image-card figcaption{min-height:54px!important;padding:10px 14px!important;font-size:.88rem!important}
+}
+
+/* ===== Pult security: show the complete hero photograph without top/bottom crop ===== */
+.hero-fig .fig-frame:has(>img[src$="/pultovaya-ohrana.webp"]){
+  overflow:hidden!important;
+  border-radius:20px!important;
+}
+.hero-fig .fig-frame>img[src$="/pultovaya-ohrana.webp"]{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  border-radius:inherit!important;
+}
+
+/* ===== Personal / legal security: thin, smooth gold frame ===== */
+.hero-fig:has(>img[src$="/ohrana-meroprijatyi.png"]),
+.hero-fig:has(>img[src$="/ohrana-yuridicheskih-lic.jpg"]){
+  border:1px solid rgba(232,200,122,.78)!important;
+  border-radius:22px!important;
+  overflow:hidden!important;
+  box-shadow:0 24px 64px rgba(0,0,0,.38),0 0 0 1px rgba(245,227,179,.04) inset!important;
+}
+.hero-fig>img[src$="/ohrana-meroprijatyi.png"],
+.hero-fig>img[src$="/ohrana-yuridicheskih-lic.jpg"]{
+  border-radius:inherit!important;
+}
+
+@media(max-width:700px){
+  .hero-fig:has(>img[src$="/ohrana-meroprijatyi.png"]),
+  .hero-fig:has(>img[src$="/ohrana-yuridicheskih-lic.jpg"]),
+  .hero-fig .fig-frame:has(>img[src$="/pultovaya-ohrana.webp"]){border-radius:18px!important}
+}
