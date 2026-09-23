@@ -1,6 +1,34 @@
 /* Services disclosure enhances a real catalogue link; no header replacement. */
 (function(){
  'use strict';
+
+ // Shared visual regression fixes for the current site shell.
+ // This stylesheet is intentionally scoped to the affected visuals only.
+ if(!document.querySelector('link[data-visual-fixes="20260924"]')){
+  var visualFixes=document.createElement('link');
+  visualFixes.rel='stylesheet';
+  visualFixes.href='/css/visual-fixes-20260924.css?v=20260924-1';
+  visualFixes.dataset.visualFixes='20260924';
+  document.head.appendChild(visualFixes);
+ }
+
+ // Restore the real company photograph on homepage section 01.
+ if(location.pathname==='/'||location.pathname==='/index.html'){
+  var aboutImage=document.querySelector('#about .about-visual img');
+  if(aboutImage){
+   aboutImage.src='/images/chop-company.jpg';
+   aboutImage.alt='ЧОО «Рускорпорация» — охрана объектов и бизнеса';
+  }
+ }
+
+ // Price carousel uses the transparent brand shield, never the baked-background version.
+ var tariffShields=document.querySelectorAll('.price-tariffs .tariff-shield');
+ tariffShields.forEach(function(shield){
+  shield.src='/images/schit.png';
+  shield.removeAttribute('width');
+  shield.removeAttribute('height');
+ });
+
  var group=document.querySelector('#siteNav .services-nav');
  if(!group||group.dataset.servicesBound)return;
  group.dataset.servicesBound='1';
