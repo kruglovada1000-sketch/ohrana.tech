@@ -30,3 +30,5 @@
   .service-hero h1,.service-lead{overflow-wrap:anywhere;word-break:normal}
 }
 
+
+.service-photo-slot--portrait{background:#14181f}.service-photo-slot--portrait img{object-fit:contain}
