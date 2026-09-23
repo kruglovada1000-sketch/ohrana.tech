@@ -1,0 +1,68 @@
+name: Build hosting ZIP
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/package-hosting.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+
+      - name: Build deployable archive
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile, ZIP_DEFLATED
+
+          root = Path('.')
+          out = root / 'ohrana-tech-deploy.zip'
+          excluded_dirs = {'.git', '.github', 'scripts', 'site-src'}
+          excluded_files = {
+              '.gitignore', 'README.md', 'SEO-AUDIT.md', 'LICENSE',
+              'Память.txt', 'shared-resources.zip', 'ohrana-tech-deploy.zip'
+          }
+
+          with ZipFile(out, 'w', ZIP_DEFLATED, compresslevel=9) as zf:
+              for path in sorted(root.rglob('*')):
+                  if not path.is_file():
+                      continue
+                  rel = path.relative_to(root)
+                  if rel.parts and rel.parts[0] in excluded_dirs:
+                      continue
+                  if len(rel.parts) == 1 and rel.name in excluded_files:
+                      continue
+                  zf.write(path, rel.as_posix())
+
+          with ZipFile(out) as zf:
+              names = set(zf.namelist())
+              required = {
+                  'index.html', 'robots.txt', 'sitemap.xml',
+                  'uslugi/index.html', 'css/site-shell.css',
+                  'js/services-menu.js', 'images/schit.png'
+              }
+              missing = sorted(required - names)
+              if missing:
+                  raise SystemExit(f'Missing required deploy files: {missing}')
+              if any(name.startswith('ohrana.tech/') for name in names):
+                  raise SystemExit('Unexpected wrapper directory in archive')
+              print(f'Archive OK: {len(names)} files, {out.stat().st_size} bytes')
+          PY
+
+      - name: Upload hosting archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ohrana-tech-deploy
+          path: ohrana-tech-deploy.zip
+          if-no-files-found: error
+          retention-days: 7
