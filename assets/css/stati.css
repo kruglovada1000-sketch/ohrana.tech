@@ -400,6 +400,11 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A;marg
   .hero-media{max-width:340px}
 }
 @media(max-width:540px){.accordion-featured{grid-template-columns:1fr;gap:14px;padding:0 20px 6px}.accordion-featured>a{width:min(180px,100%)}}
+
+/* Article covers in the catalogue stay compact beside their summaries. */
+.accordion-featured{grid-template-columns:112px minmax(0,1fr);gap:16px}
+.accordion-featured>a{width:112px}
+@media(max-width:540px){.accordion-featured{grid-template-columns:88px minmax(0,1fr);gap:12px}.accordion-featured>a{width:88px}}
 @media(max-width:640px){
   .wrap{padding:0 20px}
   .hd-contact{display:none}

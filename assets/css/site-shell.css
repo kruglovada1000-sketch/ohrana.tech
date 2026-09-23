@@ -51,3 +51,13 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:var(--footer
 .sec-num{position:absolute!important;top:-58px!important;right:0!important;font-family:var(--serif)!important;font-style:italic!important;font-size:clamp(4rem,9vw,8rem)!important;line-height:1!important;color:transparent!important;-webkit-text-stroke:1px rgba(232,200,122,.14)!important;pointer-events:none!important;user-select:none!important;z-index:0}
 .sec-head.center .sec-num{right:50%!important;transform:translateX(50%)!important}
 :root[data-theme="light"] .sec-num{-webkit-text-stroke-color:rgba(111,75,10,.20)!important}
+
+/* Compact article photography; leave video, canvas and animated media untouched. */
+.hero-media .shield-wrap{width:min(100%,300px);max-width:300px}
+.hero-media .shield-box{max-height:400px}
+@media(max-width:900px){.hero-media .shield-wrap{width:min(100%,230px);max-width:230px}.hero-media .shield-box{max-height:307px}}
+@media(max-width:640px){.hero-media .shield-wrap{width:min(100%,176px);max-width:176px}.hero-media .shield-box{max-height:235px}}
+/* Keep static article hero photographs within a compact reading layout. */
+body:has(.article-meta) .hero-media .hero-frame,body:has(.article-meta) .hero .hero-img{width:min(100%,320px);max-width:320px;margin-inline:auto}
+body:has(.article-meta) .hero-media .hero-frame img,body:has(.article-meta) .hero .hero-img img{display:block;width:100%!important;height:230px!important;max-height:230px!important;aspect-ratio:auto!important;object-fit:contain!important}
+@media(max-width:640px){body:has(.article-meta) .hero-media .hero-frame,body:has(.article-meta) .hero .hero-img{width:min(100%,220px);max-width:220px}body:has(.article-meta) .hero-media .hero-frame img,body:has(.article-meta) .hero .hero-img img{height:158px!important;max-height:158px!important}}
