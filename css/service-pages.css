@@ -30,10 +30,9 @@
   .service-hero h1,.service-lead{overflow-wrap:anywhere;word-break:normal}
 }
 
-
 .service-photo-slot--portrait{background:#14181f}.service-photo-slot--portrait img{object-fit:contain}
 
-/* Service illustrations are supporting thumbnails, not full-height hero panels. */
+/* Individual service illustrations stay compact. */
 .service-hero .service-photo-slot{width:min(100%,340px);height:228px;max-height:228px;aspect-ratio:auto;justify-self:center;align-self:center;background:var(--panel)}
 .service-hero .service-photo-slot img{width:100%;height:100%;object-fit:contain}
 .service-direction>img{height:148px;aspect-ratio:auto;object-fit:contain;background:var(--panel2)}
@@ -46,4 +45,32 @@
   .service-direction>img{height:120px}
   .service-hero h1,.service-catalog-hero h1{font-size:clamp(2rem,8vw,2.5rem)}
   .service-lead{font-size:.94rem;line-height:1.55;margin-top:12px}
+}
+
+/* catalogue-hero-fullsize-v1: category pages need a real hero image, not a tiny thumbnail */
+.service-catalog-hero .service-photo-slot{
+  width:100%;
+  max-width:none;
+  height:auto;
+  max-height:none;
+  aspect-ratio:3/2;
+  justify-self:stretch;
+  align-self:center;
+  margin:0;
+  border-radius:22px;
+}
+.service-catalog-hero .service-photo-slot img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+@media(max-width:900px){
+  .service-catalog-hero .service-photo-slot{
+    width:100%;
+    height:auto;
+    max-height:none;
+    aspect-ratio:3/2;
+    margin:0 auto;
+  }
 }
