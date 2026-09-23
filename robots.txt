@@ -10,6 +10,7 @@ Disallow: /site-src/
 User-agent: *
 Crawl-delay: 2
 Allow: /
+Allow: /uslugi/
 Allow: /fizicheskaya-ohrana/
 Allow: /ohrana-fizicheskih-lic/
 Allow: /ohrana-yuridicheskih-lic/
@@ -76,4 +77,3 @@ Disallow: /license.txt
 Disallow: /wp-config.php
 
 Sitemap: https://ohrana.tech/sitemap.xml
-Sitemap: https://ohrana.tech/sitemap-stati-new.xml
