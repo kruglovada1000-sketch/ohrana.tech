@@ -3,8 +3,8 @@
   "title": "Охрана специальных объектов",
   "url": "/uslugi/ohrana-specialnyh-obektov/",
   "services": [
-    {"name":"Охрана строительных объектов","url":"/uslugi/ohrana-stroitelnyh-obektov/","image":"/images/ohrana-stroitelnyh-obektov-usluga.webp","price":"Индивидуальный расчёт"},
-    {"name":"Охрана производственных объектов","url":"/uslugi/ohrana-proizvodstvennyh-obektov/","image":"/images/ohrana-proizvodstvennyh-obektov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана строительных объектов","url":"/uslugi/ohrana-stroitelnyh-obektov/","image":"/images/stroyka-ohrana.jpg","price":"Индивидуальный расчёт"},
+    {"name":"Охрана производственных объектов","url":"/uslugi/ohrana-proizvodstvennyh-obektov/","image":"/images/ohrana-predpriyatij.jpg","price":"Индивидуальный расчёт"},
     {"name":"Охрана сельскохозяйственных объектов","url":"/uslugi/ohrana-selskohozyaystvennyh-obektov/","image":"/images/ohrana-selskohozyaystvennyh-obektov-usluga.webp","price":"Индивидуальный расчёт"},
     {"name":"Охрана рынков","url":"/uslugi/ohrana-rynkov/","image":"/images/ohrana-rynkov-usluga.webp","price":"Индивидуальный расчёт"},
     {"name":"Охрана аптек","url":"/uslugi/ohrana-aptek/","image":"/images/ohrana-aptek-usluga.webp","price":"Индивидуальный расчёт"},
