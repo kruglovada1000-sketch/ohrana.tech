@@ -160,3 +160,10 @@
 .price-cta-box>.price-cta-num{top:20px!important;right:26px!important;z-index:0!important;font-size:clamp(4.5rem,9vw,8rem)!important}
 .price-cta-box>h2,.price-cta-box>p,.price-cta-box>.btn{position:relative;z-index:1}
 @media(max-width:700px){.price-cta-box>.price-cta-num{top:16px!important;right:18px!important;font-size:5rem!important}}
+
+/* Keep each full tariff photograph and the original shield visible at every width. */
+.price-tariffs .tariff-pair>.tariff-image-card{display:flex!important;flex-direction:column!important;justify-content:stretch!important;position:relative!important;background:#10151c!important}
+.price-tariffs .tariff-pair>.tariff-image-card .tariff-scene{display:block!important;flex:1 1 0!important;width:100%!important;height:0!important;min-height:0!important;max-height:none!important;object-fit:contain!important;object-position:center!important;filter:none!important;transform:none!important}
+.price-tariffs .tariff-pair>.tariff-image-card .tariff-shield{position:absolute!important;top:14px!important;right:14px!important;z-index:2!important;display:block!important;width:82px!important;height:82px!important;min-height:0!important;object-fit:contain!important;background:#050505;border:1px solid rgba(232,200,122,.55);border-radius:12px;padding:5px;box-sizing:border-box;filter:none!important;transform:none!important}
+.price-tariffs .tariff-image-card figcaption{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-height:64px;padding:12px 18px;background:linear-gradient(90deg,#15191e,#272116);color:#f7e6b9;font-size:1rem;font-weight:700;line-height:1.25;text-align:center;box-sizing:border-box}
+@media(max-width:700px){.price-tariffs .tariff-pair>.tariff-image-card{height:380px!important;min-height:380px!important}.price-tariffs .tariff-pair>.tariff-image-card .tariff-shield{width:64px!important;height:64px!important;top:10px!important;right:10px!important}.price-tariffs .tariff-image-card figcaption{min-height:58px;font-size:.9rem}}
