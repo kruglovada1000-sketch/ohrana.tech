@@ -1,0 +1,141 @@
+name: Predeploy QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/predeploy-qa.yml'
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Rebuild all service groups
+        run: |
+          python scripts/build_services_group_a.py
+          python scripts/build_services_group_b.py
+          python scripts/build_services_group_c.py
+          python scripts/build_services_group_d.py
+          python scripts/build_services_group_e.py
+
+      - name: Verify generated service output is committed
+        run: |
+          git diff --exit-code -- uslugi sitemap.xml
+
+      - name: Structural predeploy audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, re, sys
+
+          root = Path('.')
+          groups = [json.loads((root / f'site-src/services-group-{x}.json').read_text(encoding='utf-8')) for x in 'abcde']
+          services = [s for g in groups for s in g['services']]
+          errors = []
+
+          if len(groups) != 5:
+              errors.append(f'Expected 5 service groups, found {len(groups)}')
+          if len(services) != 45:
+              errors.append(f'Expected 45 services, found {len(services)}')
+
+          expected_urls = ['/uslugi/'] + [g['url'] for g in groups] + [s['url'] for s in services]
+          if len(set(expected_urls)) != 51:
+              errors.append(f'Expected 51 unique service URLs, found {len(set(expected_urls))}')
+
+          sitemap = (root/'sitemap.xml').read_text(encoding='utf-8')
+          for url in expected_urls:
+              page = root / url.strip('/') / 'index.html'
+              if not page.exists():
+                  errors.append(f'Missing page: {page}')
+                  continue
+              text = page.read_text(encoding='utf-8')
+              canonical = 'https://ohrana.tech' + url
+              if canonical not in text:
+                  errors.append(f'Missing canonical {canonical} in {page}')
+              if canonical not in sitemap:
+                  errors.append(f'Missing sitemap URL {canonical}')
+              if '<h1' not in text:
+                  errors.append(f'Missing H1 in {page}')
+              if 'services-menu.css' not in text or 'services-menu.js' not in text:
+                  errors.append(f'Missing services menu assets in {page}')
+
+              for attr in ('src','href'):
+                  for ref in re.findall(fr'{attr}=["\'](/(?:images|css|js)/[^"\'#?]+)', text):
+                      local = root / ref.lstrip('/')
+                      if not local.exists():
+                          errors.append(f'Broken local asset {ref} referenced by {page}')
+
+          for s in services:
+              page = root / s['url'].strip('/') / 'index.html'
+              if not page.exists():
+                  continue
+              text = page.read_text(encoding='utf-8')
+              if '"@type":"Service"' not in text and '"@type": "Service"' not in text:
+                  errors.append(f'Missing Service schema in {page}')
+              if 'https://formspree.io/f/mvkpbvnb' not in text:
+                  errors.append(f'Missing Formspree endpoint in {page}')
+
+          home = (root/'index.html').read_text(encoding='utf-8')
+          dogovor = (root/'dogovor/index.html').read_text(encoding='utf-8')
+          if 'hd-main-site' not in home or 'https://ruscor24.ru/' not in home:
+              errors.append('Home special Основной сайт button is missing')
+          if 'hd-main-site' in dogovor:
+              errors.append('Internal page dogovor incorrectly contains home-only Основной сайт button')
+
+          robots = (root/'robots.txt').read_text(encoding='utf-8')
+          if 'User-agent: OAI-SearchBot' not in robots or 'Allow: /' not in robots:
+              errors.append('OAI-SearchBot crawl permission missing')
+          if 'Sitemap: https://ohrana.tech/sitemap.xml' not in robots:
+              errors.append('Primary sitemap declaration missing in robots.txt')
+
+          print(f'Services: {len(services)}; service section URLs: {len(expected_urls)}')
+          if errors:
+              print('\n'.join('ERROR: '+e for e in errors))
+              sys.exit(1)
+          print('STRUCTURAL QA GREEN')
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/ohrana-http.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/ohrana-http.log
+          exit 1
+
+      - name: Browser QA desktop tablet mobile
+        run: node scripts/visual-smoke.mjs
+
+      - name: Upload QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: predeploy-qa-${{ github.sha }}
+          path: |
+            visual-qa/
+            /tmp/ohrana-http.log
+          if-no-files-found: warn
+          retention-days: 7
