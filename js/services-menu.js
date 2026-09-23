@@ -23,4 +23,15 @@
  if(mq.addEventListener)mq.addEventListener('change',function(){setOpen(false);});
  else mq.addListener(function(){setOpen(false);});
  setOpen(false);
+
+ // Service-specific hero images while service pages are being completed.
+ if(location.pathname==='/uslugi/voditel-telohranitel/'||location.pathname==='/uslugi/voditel-telohranitel'){
+  var hero=document.querySelector('.service-photo-slot img');
+  if(hero){
+   hero.src='/images/voditel-telohranitel.webp';
+   hero.alt='Водитель-телохранитель';
+   hero.width=1024;
+   hero.height=1536;
+  }
+ }
 })();
