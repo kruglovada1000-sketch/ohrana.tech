@@ -4,13 +4,13 @@
   "url": "/uslugi/dopolnitelnye-uslugi/",
   "services": [
     {"name":"Пожарная безопасность объектов","url":"/uslugi/pozharnaya-bezopasnost/","image":"/images/pozharnaya-bezopasnost-usluga.webp","price":"Индивидуальный расчёт"},
-    {"name":"Видеонаблюдение","url":"/uslugi/videonablyudenie/","image":"/images/videonablyudenie-usluga.webp","price":"Индивидуальный расчёт"},
-    {"name":"Контроль доступа и СКУД","url":"/uslugi/kontrol-dostupa-skud/","image":"/images/kontrol-dostupa-skud-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Видеонаблюдение","url":"/uslugi/videonablyudenie/","image":"/images/tehnicheskaya-ohrana.jpg","price":"Индивидуальный расчёт"},
+    {"name":"Контроль доступа и СКУД","url":"/uslugi/kontrol-dostupa-skud/","image":"/images/security-system.jpg","price":"Индивидуальный расчёт"},
     {"name":"Аутсорсинг службы безопасности","url":"/uslugi/autsorsing-sluzhby-bezopasnosti/","image":"/images/autsorsing-sluzhby-bezopasnosti-usluga.webp","price":"Индивидуальный расчёт"},
     {"name":"Водитель-телохранитель","url":"/uslugi/voditel-telohranitel/","image":"/images/voditel-telohranitel-usluga.webp","price":"Индивидуальный расчёт"},
-    {"name":"VIP-охрана","url":"/uslugi/vip-ohrana/","image":"/images/vip-ohrana-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"VIP-охрана","url":"/uslugi/vip-ohrana/","image":"/images/lichka-ohrana.jpg","price":"Индивидуальный расчёт"},
     {"name":"Вооружённая охрана","url":"/uslugi/vooruzhennaya-ohrana/","image":"/images/vooruzhennaya-ohrana-usluga.webp","price":"Индивидуальный расчёт"},
-    {"name":"Охранник, вахтёр, контролёр","url":"/uslugi/ohrannik-vahter-kontroler/","image":"/images/ohrannik-vahter-kontroler-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охранник, вахтёр, контролёр","url":"/uslugi/ohrannik-vahter-kontroler/","image":"/images/security.jpg","price":"Индивидуальный расчёт"},
     {"name":"Консьерж-сервис","url":"/uslugi/konsyerzh-servis/","image":"/images/konsyerzh-servis-usluga.webp","price":"Индивидуальный расчёт"}
   ]
 }
