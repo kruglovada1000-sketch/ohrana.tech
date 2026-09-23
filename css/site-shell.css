@@ -51,3 +51,19 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:var(--footer
 .sec-num{position:absolute!important;top:-58px!important;right:0!important;font-family:var(--serif)!important;font-style:italic!important;font-size:clamp(4rem,9vw,8rem)!important;line-height:1!important;color:transparent!important;-webkit-text-stroke:1px rgba(232,200,122,.14)!important;pointer-events:none!important;user-select:none!important;z-index:0}
 .sec-head.center .sec-num{right:50%!important;transform:translateX(50%)!important}
 :root[data-theme="light"] .sec-num{-webkit-text-stroke-color:rgba(111,75,10,.20)!important}
+
+/* predeploy-mobile-containment-v1
+   Targeted safety net for legacy content: keep wide tables/cards/decorations
+   inside the viewport without changing desktop presentation. */
+@media(max-width:960px){
+  main .cards-grid.crit7{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  main .cards-grid.crit7 .sign-card{grid-column:auto!important}
+  main .radar{display:none!important}
+}
+@media(max-width:640px){
+  main .cards-grid.crit7,main .cards-grid.b2x2{grid-template-columns:minmax(0,1fr)!important}
+  main .cards-grid.crit7 .sign-card{grid-column:auto!important}
+  main .price-table{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  main img,main video,main iframe{max-width:100%}
+}
+

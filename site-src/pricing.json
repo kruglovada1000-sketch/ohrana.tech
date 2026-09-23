@@ -316,7 +316,7 @@
       "equipment": "без оружия; спецсредства — по задаче",
       "training": "4–6 разряд",
       "conditions": "бытовые условия на объекте — по договорённости",
-      "image": "/images/tarif-post-fizicheskoy-ohrany.webp",
+      "image": "/images/fizicheskaya-ohrana.jpg",
       "image_alt": "Пост физической охраны объекта"
     },
     {
@@ -327,7 +327,7 @@
       "equipment": "спецсредства и усиленная экипировка — по задаче",
       "training": "4–6 разряд",
       "conditions": "состав поста — после оценки объекта",
-      "image": "/images/tarif-usilennyy-post.webp",
+      "image": "/images/security-1.jpg",
       "image_alt": "Усиленный пост физической охраны"
     },
     {
@@ -338,7 +338,7 @@
       "equipment": "служебное оружие и спецсредства",
       "training": "6 разряд",
       "conditions": "состав поста — после оценки объекта",
-      "image": "/images/tarif-ohrana-s-oruzhiem.webp",
+      "image": "/images/security.jpg",
       "image_alt": "Охрана объекта с оружием"
     },
     {
@@ -349,7 +349,7 @@
       "equipment": "автомобиль, связь и спецсредства",
       "training": "4–6 разряд",
       "conditions": "1 автомобиль, 2 сотрудника",
-      "image": "/images/tarif-mobilnoe-patrulirovanie.webp",
+      "image": "/images/ohrana-tehniki.jpg",
       "image_alt": "Мобильное патрулирование охраняемой территории"
     },
     {
@@ -360,7 +360,7 @@
       "equipment": "тревожная сигнализация, связь с пультом",
       "training": "экипаж ГБР по регламенту ЧОО",
       "conditions": "оборудование и монтаж рассчитываются отдельно",
-      "image": "/images/tarif-pultovaya-ohrana-gbr.webp",
+      "image": "/images/pultovaya-ohrana.jpg",
       "image_alt": "Пультовая охрана и группа быстрого реагирования"
     },
     {
@@ -371,7 +371,7 @@
       "equipment": "спецсредства — по формату мероприятия",
       "training": "4–6 разряд",
       "conditions": "базовый ориентир — до 100 гостей",
-      "image": "/images/tarif-ohrana-meropriyatiya.webp",
+      "image": "/images/ohrana-meropriyatiy.jpg",
       "image_alt": "Охрана делового или частного мероприятия"
     },
     {
@@ -382,7 +382,7 @@
       "equipment": "по задаче и требованиям клиента",
       "training": "6 разряд",
       "conditions": "1 телохранитель",
-      "image": "/images/tarif-lichnaya-ohrana.webp",
+      "image": "/images/lichka-ohrana.jpg",
       "image_alt": "Личная охрана и сопровождение клиента"
     }
   ]

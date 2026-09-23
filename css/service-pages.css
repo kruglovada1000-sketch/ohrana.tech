@@ -23,3 +23,10 @@
 .service-section[id]{scroll-margin-top:150px}
 @media(max-width:1100px){.service-directions{grid-template-columns:repeat(2,minmax(0,1fr))}.service-catalog-cta{display:block}.service-catalog-cta .service-actions{margin-top:22px}}
 @media(max-width:640px){.service-directions{grid-template-columns:1fr}.service-catalog-hero h1{font-size:2.5rem}.service-actions .btn{padding:14px 20px;font-size:.8rem}.service-direction>div{padding:22px}.service-photo-slot{min-height:0}.service-page .service-section,.service-group-hub .service-section{padding-top:48px}}
+
+/* predeploy-service-mobile-wrap-v1 */
+@media(max-width:640px){
+  .service-hero>*{min-width:0}
+  .service-hero h1,.service-lead{overflow-wrap:anywhere;word-break:normal}
+}
+
