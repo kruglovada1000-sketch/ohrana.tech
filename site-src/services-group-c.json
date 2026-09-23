@@ -3,7 +3,7 @@
   "title": "Охрана социальных объектов",
   "url": "/uslugi/ohrana-socialnyh-obektov/",
   "services": [
-    {"name":"Охрана школ и детских садов","url":"/uslugi/ohrana-shkol-detsadov/","image":"/images/ohrana-shkol-detsadov-usluga.webp","price":"Индивидуальный расчёт"},
+    {"name":"Охрана школ и детских садов","url":"/uslugi/ohrana-shkol-detsadov/","image":"/images/ohrana-shkol.jpg","price":"Индивидуальный расчёт"},
     {"name":"Охрана ВУЗов","url":"/uslugi/ohrana-vuzov/","image":"/images/ohrana-vuzov-usluga.webp","price":"Индивидуальный расчёт"},
     {"name":"Охрана больниц и медцентров","url":"/uslugi/ohrana-bolnic/","image":"/images/ohrana-bolnic-usluga.webp","price":"Индивидуальный расчёт"},
     {"name":"Охрана музеев и галерей","url":"/uslugi/ohrana-muzeev/","image":"/images/ohrana-muzeev-usluga.webp","price":"Индивидуальный расчёт"},
