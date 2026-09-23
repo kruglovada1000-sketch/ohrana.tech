@@ -18,6 +18,9 @@ const shared = readJson('site-src/shared-pages.json', []);
 const custom = readJson('site-src/custom-pages.json', []);
 const documents = readJson('site-src/document-pages.json', []);
 const articles = readJson('site-src/article-pages.generated.json', { regular: [], custom: [] });
+const serviceGroups = ['a','b','c','d','e']
+  .map(letter => readJson(`site-src/services-group-${letter}.json`, null))
+  .filter(Boolean);
 
 const urls = new Set(['/']);
 urls.add('/ohrana-skladov/');
@@ -30,6 +33,15 @@ for (const row of documents) {
 urls.add('/stati/');
 for (const row of [...(articles.regular || []), ...(articles.custom || [])]) {
   urls.add(`/stati/${row.file}`);
+}
+
+// Services are a first-class commercial section and must be covered by browser QA.
+urls.add('/uslugi/');
+for (const group of serviceGroups) {
+  if (group.url) urls.add(group.url);
+  for (const service of group.services || []) {
+    if (service.url) urls.add(service.url);
+  }
 }
 
 const viewports = [
@@ -49,6 +61,9 @@ const screenshotUrls = new Set([
   '/stati/kak-vybrat-chop-dlya-ohrany-obekta.html',
   '/stati/kak-vybrat-chop-dlya-ohrany-strojki.html',
   '/kommercheskoe-predlozhenie/',
+  '/uslugi/', '/uslugi/ohrana-skladov/', '/uslugi/ohrana-zhk-tszh/',
+  '/uslugi/ohrana-shkol-detsadov/', '/uslugi/ohrana-stroitelnyh-obektov/',
+  '/uslugi/videonablyudenie/'
 ]);
 
 function safeName(url) {
@@ -195,4 +210,4 @@ if (failures.length) {
   for (const failure of failures) console.error(`${failure.viewport} ${failure.url}: ${failure.problems.join('; ')}`);
   process.exit(1);
 }
-console.log('Visual QA GREEN: no refactor-introduced horizontal overflow, local 4xx/5xx, browser exceptions, broken local images, or mobile burger failures.');
+console.log('Visual QA GREEN: no horizontal overflow, local 4xx/5xx, browser exceptions, broken local images, or mobile burger failures.');
