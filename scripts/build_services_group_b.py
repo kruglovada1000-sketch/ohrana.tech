@@ -2,6 +2,7 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+from services_catalog import image_block as catalog_image, root_hub as catalog_root, finish_group, finish_page
 
 ROOT=Path(__file__).resolve().parents[1]
 SRC=ROOT/'site-src'
@@ -39,11 +40,8 @@ def partial(name:str)->str:
         out=out.replace('ООО ЧОП «Рускорпорация»','ООО ЧОО «Рускорпорация»').replace('ООО ЧОП «Рускорпорация охрана и консалтинг»','ООО ЧОО «Рускорпорация охрана и консалтинг»')
     return out
 
-def image_block(item:dict)->str:
-    rel=item['image']; p=ROOT/rel.lstrip('/'); alt=f"{item['name']} — ЧОО «Рускорпорация»"
-    if p.exists():
-        return f'<figure class="service-photo-slot"><img src="{rel}" alt="{alt}" width="1200" height="800" loading="eager" decoding="async"></figure>'
-    return f'<figure class="service-photo-slot" data-image-file="{rel}" aria-label="Место для тематического изображения"><span>Файл изображения: {rel.split("/")[-1]}</span></figure>'
+def image_block(item):
+    return catalog_image(item, GROUP)
 
 def faq_items(item:dict):
     return [
@@ -98,8 +96,8 @@ def group_hub()->str:
     cards=''.join(f'<a class="service-hub-card" href="{i["url"]}"><b>{i["name"]}</b><span>{i["price"]}</span></a>' for i in GROUP['services'])
     return f'''<!DOCTYPE html><html lang="ru" class="no-js"><head>{partial('head-common.html')}<title>{GROUP['title']} в Москве и МО — ЧОО «Рускорпорация»</title><meta name="description" content="Охрана жилой недвижимости в Москве и МО: ЖК и ТСЖ, коттеджные поселки, дачи, гаражи, парковки и автостоянки."><link rel="canonical" href="{SITE['site_url']}{GROUP['url']}"><link rel="stylesheet" href="/css/site-shell.css"><link rel="stylesheet" href="/css/service-pages.css"></head><body data-metrika-id="{SITE['metrika_id']}"><div id="progress"></div>{partial('header.html')}<main class="service-group-hub"><div class="wrap"><nav class="service-crumbs"><a href="/">Главная</a><span>/</span><a href="/uslugi/">Услуги</a><span>/</span><b>{GROUP['title']}</b></nav><span class="service-kicker">Группа B</span><h1>{GROUP['title']} в Москве и Московской области</h1><p class="service-lead">Жилые комплексы, ТСЖ, коттеджные поселки, дачи, гаражи, парковки и автостоянки. Подбираем физическую и техническую защиту под конкретную территорию.</p><section class="service-section"><div class="service-hub-grid">{cards}</div></section></div></main>{partial('footer.html')}{partial('mobile-bar.html')}{partial('chat.html')}<script src="/js/site.js?v=20260921-pairs4" defer></script></body></html>'''
 
-def root_hub()->str:
-    return f'''<!DOCTYPE html><html lang="ru" class="no-js"><head>{partial('head-common.html')}<title>Услуги охраны в Москве и МО — ЧОО «Рускорпорация»</title><meta name="description" content="Каталог услуг ЧОО «Рускорпорация»: физическая и пультовая охрана, охрана коммерческих, жилых, социальных и специальных объектов."><link rel="canonical" href="{SITE['site_url']}/uslugi/"><link rel="stylesheet" href="/css/site-shell.css"><link rel="stylesheet" href="/css/service-pages.css"></head><body data-metrika-id="{SITE['metrika_id']}"><div id="progress"></div>{partial('header.html')}<main class="service-group-hub"><div class="wrap"><nav class="service-crumbs"><a href="/">Главная</a><span>/</span><b>Услуги</b></nav><span class="service-kicker">Каталог</span><h1>Услуги ЧОО «Рускорпорация»</h1><p class="service-lead">Направления собраны по группам. Существующие рабочие URL сохраняются, новые посадочные страницы развиваются внутри раздела «Услуги».</p><section class="service-section"><div class="service-hub-grid"><a class="service-hub-card" href="/uslugi/ohrana-kommercheskih-obektov/"><b>Коммерческие объекты</b><span>13 направлений — блок A</span></a><a class="service-hub-card" href="{GROUP['url']}"><b>Жилая недвижимость</b><span>5 направлений — блок B</span></a><a class="service-hub-card" href="/fizicheskaya-ohrana/"><b>Физическая охрана</b><span>Существующий раздел</span></a><a class="service-hub-card" href="/ohrana-pult/"><b>Пультовая охрана</b><span>Существующий раздел</span></a><div class="service-hub-card"><b>Социальные объекты</b><span>Следующий блок</span></div><div class="service-hub-card"><b>Специальные объекты</b><span>Следующий блок</span></div></div></section></div></main>{partial('footer.html')}{partial('mobile-bar.html')}{partial('chat.html')}<script src="/js/site.js?v=20260921-pairs4" defer></script></body></html>'''
+def root_hub():
+    return catalog_root(partial)
 
 def append_sitemap(urls):
     p=ROOT/'sitemap.xml'; txt=p.read_text(encoding='utf-8'); add=[]
@@ -113,10 +111,11 @@ def main():
     if not (ROOT/'css'/'service-pages.css').exists(): raise SystemExit('css/service-pages.css is required')
     (ROOT/'uslugi').mkdir(exist_ok=True)
     (ROOT/'uslugi'/'index.html').write_text(root_hub(),encoding='utf-8')
-    gp=ROOT/GROUP['url'].strip('/'); gp.mkdir(parents=True,exist_ok=True); (gp/'index.html').write_text(group_hub(),encoding='utf-8')
+    gp=ROOT/GROUP['url'].strip('/'); gp.mkdir(parents=True,exist_ok=True); (gp/'index.html').write_text(finish_group(group_hub(), GROUP),encoding='utf-8')
     urls=[GROUP['url']]
     for item in GROUP['services']:
-        out=ROOT/item['url'].strip('/'); out.mkdir(parents=True,exist_ok=True); (out/'index.html').write_text(page(item),encoding='utf-8'); urls.append(item['url'])
+        out=ROOT/item['url'].strip('/'); out.mkdir(parents=True,exist_ok=True); (out/'index.html').write_text(finish_page(page(item), GROUP),encoding='utf-8'); urls.append(item['url'])
     append_sitemap(urls)
     print('Generated',len(GROUP['services']),'residential service pages + hub')
 if __name__=='__main__': main()
+

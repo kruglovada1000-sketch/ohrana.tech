@@ -2,6 +2,7 @@
 from __future__ import annotations
 import json
 from pathlib import Path
+from services_catalog import image_block as catalog_image, root_hub as catalog_root, finish_group, finish_page
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / 'site-src'
@@ -62,14 +63,8 @@ def partial(name: str) -> str:
     return out
 
 
-def image_block(item: dict) -> str:
-    rel = item['image']
-    path = ROOT / rel.lstrip('/')
-    alt = f"{item['name']} — ЧОО «Рускорпорация»"
-    if path.exists():
-        return f'<figure class="service-photo-slot"><img src="{rel}" alt="{alt}" width="1200" height="800" loading="eager" decoding="async"></figure>'
-    return f'<figure class="service-photo-slot" data-image-file="{rel}" aria-label="Место для тематического изображения"><span>Файл изображения: {rel.split("/")[-1]}</span></figure>'
-
+def image_block(item):
+    return catalog_image(item, GROUP)
 
 def faq_items(item: dict):
     return [
@@ -140,17 +135,7 @@ def group_hub() -> str:
 
 
 def update_root_hub():
-    path = ROOT / 'uslugi' / 'index.html'
-    txt = path.read_text(encoding='utf-8')
-    marker = '<a class="service-hub-card" href="/uslugi/ohrana-specialnyh-obektov/"><b>Специальные объекты</b><span>9 направлений — блок D</span></a>'
-    card = f'<a class="service-hub-card" href="{GROUP["url"]}"><b>Дополнительные услуги</b><span>{len(GROUP["services"])} новых направлений — блок E</span></a>'
-    if GROUP['url'] in txt:
-        return
-    if marker not in txt:
-        raise SystemExit('Group D card not found in uslugi/index.html')
-    txt = txt.replace(marker, marker + card, 1)
-    path.write_text(txt, encoding='utf-8')
-
+    (ROOT / "uslugi/index.html").write_text(catalog_root(partial), encoding="utf-8")
 
 def append_sitemap(urls):
     path = ROOT / 'sitemap.xml'
@@ -171,12 +156,12 @@ def main():
         raise SystemExit('css/service-pages.css is required')
     gp = ROOT / GROUP['url'].strip('/')
     gp.mkdir(parents=True, exist_ok=True)
-    (gp / 'index.html').write_text(group_hub(), encoding='utf-8')
+    (gp / 'index.html').write_text(finish_group(group_hub(), GROUP), encoding='utf-8')
     urls = [GROUP['url']]
     for item in GROUP['services']:
         out = ROOT / item['url'].strip('/')
         out.mkdir(parents=True, exist_ok=True)
-        (out / 'index.html').write_text(page(item), encoding='utf-8')
+        (out / 'index.html').write_text(finish_page(page(item), GROUP), encoding='utf-8')
         urls.append(item['url'])
     update_root_hub()
     append_sitemap(urls)
@@ -185,3 +170,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
