@@ -216,6 +216,10 @@ nav.nav a:first-child::after{left:0}
   max-height:0;overflow:hidden;transition:max-height .45s var(--ease),opacity .3s ease;opacity:0}
 .accordion-content.active{opacity:1}
 .accordion-trailer{padding:0 24px 6px;font-size:.92rem;color:var(--mut);line-height:1.75}
+.accordion-featured{display:grid;grid-template-columns:160px minmax(0,1fr);gap:20px;align-items:start;padding:0 24px 6px}
+.accordion-featured>a{display:block;width:160px;max-width:100%;aspect-ratio:2/3;overflow:hidden;border-radius:12px;border:1px solid var(--line)}
+.accordion-featured img{display:block;width:100%;height:100%;object-fit:contain}
+.accordion-featured .accordion-trailer{padding:0}
 .accordion-buttons{display:flex;gap:12px;padding:16px 24px 24px;flex-wrap:wrap}
 .accordion-buttons .btn{font-size:.84rem;padding:11px 22px}
 .btn-collapse{background:rgba(242,238,228,.06);color:var(--mut);border:1px solid var(--line)}
@@ -395,6 +399,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A;marg
   .accordion-buttons .btn{width:100%;justify-content:center}
   .hero-media{max-width:340px}
 }
+@media(max-width:540px){.accordion-featured{grid-template-columns:1fr;gap:14px;padding:0 20px 6px}.accordion-featured>a{width:min(180px,100%)}}
 @media(max-width:640px){
   .wrap{padding:0 20px}
   .hd-contact{display:none}
