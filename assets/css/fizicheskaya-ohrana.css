@@ -489,7 +489,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:#05070A;marg
   right:28px;
   width:340px;
   height:340px;
-  background:url('/images/dragons.PNG') center/contain no-repeat;
+  background:url('/images/dragons.png') center/contain no-repeat;
   pointer-events:none;
   z-index:1;
   filter:drop-shadow(0 18px 34px rgba(0,0,0,.35));
