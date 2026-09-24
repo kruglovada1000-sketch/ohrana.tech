@@ -1,24 +1,40 @@
-name: Unpack article covers
+name: Build article covers
 on:
   push:
     paths:
-      - 'article-covers.ready'
+      - 'article-covers-sprite.webp'
 permissions:
   contents: write
 jobs:
-  unpack:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Rebuild and unpack optimized article covers
+      - name: Install Pillow
+        run: python -m pip install --quiet Pillow
+      - name: Split sprite into 25 lightweight WebP covers
         run: |
-          cat .article-cover-parts/part-* | base64 -d > article-covers.zip
-          mkdir -p images
-          unzip -o article-covers.zip -d images
-          rm -f article-covers.zip article-covers.ready
-          rm -rf .article-cover-parts
+          python - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          names = [
+            'stati-nevyhod-smena.webp','stati-zapusk-ohrany.webp','stati-zamena-ohrannika.webp','stati-otvetstvennost-imushchestvo.webp','stati-dokumenty-choo.webp',
+            'stati-zhurnaly-posta.webp','stati-osmotr-imushchestva.webp','stati-zaderzhanie-narushitelya.webp','stati-konflikt-prohodnaya.webp','stati-dopusk-podryadchikov.webp',
+            'stati-poteryan-propusk.webp','stati-kontrol-transporta.webp','stati-pogruzka-razgruzka.webp','stati-starshiy-smeny.webp','stati-razdelenie-otvetstvennosti.webp',
+            'stati-avariynyy-rezhim.webp','stati-antiglushenie.webp','stati-lozhnye-trevogi.webp','stati-trevozhnaya-knopka.webp','stati-vremya-pribytiya-gbr.webp',
+            'stati-usilenie-ohrany.webp','stati-ohrana-remont-pereezd.webp','stati-dacha-zimoy.webp','stati-pik-skladskih-otgruzok.webp','stati-choo-vnevedomstvennaya.webp'
+          ]
+          im = Image.open('article-covers-sprite.webp').convert('RGB')
+          cw, ch = im.width//5, im.height//5
+          out = Path('images'); out.mkdir(exist_ok=True)
+          for i,name in enumerate(names):
+              x=(i%5)*cw; y=(i//5)*ch
+              cell=im.crop((x,y,x+cw,y+ch)).resize((480,720),Image.Resampling.LANCZOS)
+              cell.save(out/name,'WEBP',quality=68,method=6)
+          Path('article-covers-sprite.webp').unlink()
+          PY
       - name: Commit covers
         run: |
           git config user.name "github-actions[bot]"
