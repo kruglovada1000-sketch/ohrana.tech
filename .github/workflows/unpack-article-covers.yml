@@ -2,7 +2,7 @@ name: Build article covers
 on:
   push:
     paths:
-      - 'article-covers-sprite.webp'
+      - 'article-covers.ready'
 permissions:
   contents: write
 jobs:
@@ -14,8 +14,9 @@ jobs:
           fetch-depth: 0
       - name: Install Pillow
         run: python -m pip install --quiet Pillow
-      - name: Split sprite into 25 lightweight WebP covers
+      - name: Rebuild sprite and split 25 optimized covers
         run: |
+          cat .article-cover-parts/part-* | base64 -d > article-covers-sprite.webp
           python - <<'PY'
           from PIL import Image
           from pathlib import Path
@@ -34,6 +35,8 @@ jobs:
               cell=im.crop((x,y,x+cw,y+ch)).resize((480,720),Image.Resampling.LANCZOS)
               cell.save(out/name,'WEBP',quality=68,method=6)
           Path('article-covers-sprite.webp').unlink()
+          Path('article-covers.ready').unlink(missing_ok=True)
+          import shutil; shutil.rmtree('.article-cover-parts', ignore_errors=True)
           PY
       - name: Commit covers
         run: |
