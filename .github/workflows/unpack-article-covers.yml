@@ -17,8 +17,8 @@ jobs:
       - name: Publish 25 optimized article covers
         run: |
           set -euo pipefail
-          test -f article-covers-bundle.b64
-          tr -d '\n\r' < article-covers-bundle.b64 | base64 -d -i > final25-covers.zip
+          test -d .article-cover-parts
+          cat .article-cover-parts/part-* | tr -d '\n\r' | base64 -d > final25-covers.zip
           unzip -t final25-covers.zip >/dev/null
           rm -rf .article-covers-tmp
           mkdir -p .article-covers-tmp
@@ -46,8 +46,11 @@ jobs:
               im_rgba.alpha_composite(lg, (px, py))
               im_rgba.convert('RGB').save(out / f.name, 'WEBP', quality=82, method=6)
 
-          if len(list(out.glob('stati-*.webp'))) < 25:
-              raise SystemExit('Cover publish verification failed')
+          names = {f.name for f in files}
+          published = {p.name for p in out.glob('stati-*.webp')}
+          missing = sorted(names - published)
+          if missing:
+              raise SystemExit(f'Missing published covers: {missing}')
           PY
           rm -rf .article-covers-tmp final25-covers.zip article-covers-bundle.b64 article-covers.ready .article-cover-parts
       - name: Commit covers
