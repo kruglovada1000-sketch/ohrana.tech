@@ -32,45 +32,68 @@
 
 .service-photo-slot--portrait{background:#14181f}.service-photo-slot--portrait img{object-fit:contain}
 
-/* Individual service illustrations stay compact. */
-.service-hero .service-photo-slot{width:min(100%,340px);height:228px;max-height:228px;aspect-ratio:auto;justify-self:center;align-self:center;background:var(--panel)}
-.service-hero .service-photo-slot img{width:100%;height:100%;object-fit:contain}
-.service-direction>img{height:148px;aspect-ratio:auto;object-fit:contain;background:var(--panel2)}
-@media(max-width:900px){
-  .service-hero .service-photo-slot{width:min(100%,260px);height:174px;max-height:174px;margin:0 auto}
-  .service-hero{gap:20px}
+/* service-hero-normalized-v2: one consistent large image size for every /uslugi/ hero. */
+.service-hero{
+  grid-template-columns:minmax(0,1.02fr) minmax(420px,.98fr);
+  gap:34px;
+  align-items:center;
 }
-@media(max-width:640px){
-  .service-hero .service-photo-slot{width:min(100%,220px);height:148px;max-height:148px}
-  .service-direction>img{height:120px}
-  .service-hero h1,.service-catalog-hero h1{font-size:clamp(2rem,8vw,2.5rem)}
-  .service-lead{font-size:.94rem;line-height:1.55;margin-top:12px}
-}
-
-/* catalogue-hero-fullsize-v1: category pages need a real hero image, not a tiny thumbnail */
+.service-hero .service-photo-slot,
 .service-catalog-hero .service-photo-slot{
   width:100%;
   max-width:none;
   height:auto;
   max-height:none;
+  min-height:0;
   aspect-ratio:3/2;
   justify-self:stretch;
   align-self:center;
   margin:0;
+  padding:0;
+  border:1px solid var(--line);
   border-radius:22px;
+  background:var(--panel);
+  overflow:hidden;
 }
+.service-hero .service-photo-slot img,
 .service-catalog-hero .service-photo-slot img{
   width:100%;
   height:100%;
-  object-fit:cover;
+  max-width:100%;
+  max-height:100%;
+  display:block;
+  object-fit:contain;
   object-position:center;
 }
-@media(max-width:900px){
+.service-photo-slot--portrait img{object-fit:contain}
+
+/* Cards in the main Services catalogue: same visual rhythm, no tiny thumbnails. */
+.service-direction>img{
+  width:100%;
+  height:auto;
+  aspect-ratio:3/2;
+  object-fit:cover;
+  object-position:center;
+  background:var(--panel2);
+}
+
+@media(max-width:1000px){
+  .service-hero{grid-template-columns:1fr;gap:26px}
+  .service-hero .service-photo-slot,
   .service-catalog-hero .service-photo-slot{
-    width:100%;
-    height:auto;
-    max-height:none;
-    aspect-ratio:3/2;
+    width:min(100%,760px);
+    justify-self:center;
     margin:0 auto;
   }
+}
+@media(max-width:640px){
+  .service-hero{gap:20px}
+  .service-hero .service-photo-slot,
+  .service-catalog-hero .service-photo-slot{
+    width:100%;
+    aspect-ratio:3/2;
+    border-radius:16px;
+  }
+  .service-hero h1,.service-catalog-hero h1{font-size:clamp(2rem,8vw,2.5rem)}
+  .service-lead{font-size:.94rem;line-height:1.55;margin-top:12px}
 }
