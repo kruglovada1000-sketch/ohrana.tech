@@ -23,6 +23,7 @@ Allow: /images/
 Allow: /css/
 Allow: /js/
 Allow: /assets/
+Allow: /llms.txt
 Allow: /favicon.ico
 Allow: /manifest.json
 Allow: /android-chrome-*.png
@@ -77,3 +78,4 @@ Disallow: /license.txt
 Disallow: /wp-config.php
 
 Sitemap: https://ohrana.tech/sitemap.xml
+Sitemap: https://ohrana.tech/sitemap-stati-voprosy.xml
