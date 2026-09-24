@@ -9,6 +9,7 @@ Disallow: /site-src/
 # All other compliant crawlers, including Google and Yandex.
 User-agent: *
 Crawl-delay: 2
+Clean-param: _ym_debug
 Allow: /
 Allow: /uslugi/
 Allow: /fizicheskaya-ohrana/
