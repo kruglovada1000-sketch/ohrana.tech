@@ -1,0 +1,85 @@
+name: Publish 25 articles to index
+on:
+  push:
+    paths:
+      - '.publish-25-articles.ready'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add 25 articles to /stati/
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          articles = [
+            ("Что делать, если охранник не вышел на смену?","chto-delat-esli-ohrannik-ne-vyshel-na-smenu.html","stati-nevyhod-smena.webp","Практика ЧОО","vybor","Разбираем, кто обязан немедленно закрыть пост, как работает резерв и что заказчик вправе требовать от ЧОО."),
+            ("За сколько времени можно выставить пост охраны на новый объект?","srok-zapuska-ohrany-novogo-obekta.html","stati-zapusk-ohrany.webp","Практика ЧОО","vybor","Что влияет на срок запуска физической охраны: обследование, инструкции, подбор смены и резерв."),
+            ("Может ли заказчик потребовать заменить конкретного охранника?","zamena-ohrannika-po-trebovaniyu-zakazchika.html","stati-zamena-ohrannika.webp","Практика ЧОО","vybor","Когда замена сотрудника обоснована и как провести её без провала в режиме охраны."),
+            ("Кто отвечает за кражу или ущерб на охраняемом объекте?","otvetstvennost-choo-za-propazhu-imushchestva.html","stati-otvetstvennost-imushchestvo.webp","Ответственность ЧОО","vybor","Где проходит граница ответственности ЧОО и заказчика и почему важны договор, инструкция и фиксация инцидента."),
+            ("Какие документы должен предоставить ЧОО до начала охраны?","dokumenty-choo-do-nachala-ohrany.html","stati-dokumenty-choo.webp","Выбор ЧОО","vybor","Какие документы стоит проверить заказчику до выхода первой смены на объект."),
+            ("Какие журналы и документы должны находиться на посту охраны?","zhurnaly-i-dokumenty-na-postu-ohrany.html","stati-zhurnaly-posta.webp","Практика охраны","vybor","Базовый комплект постовой документации: инструкции, журналы смен, посетителей, транспорта, ключей и происшествий."),
+            ("Имеет ли охранник право осматривать сумки, вещи и автомобиль?","imeet-li-ohrannik-pravo-osmatrivat-sumki-avtomobil.html","stati-osmotr-imushchestva.webp","Право и охрана","vybor","Простым языком о границах полномочий частного охранника и разнице между осмотром и досмотром."),
+            ("Может ли частный охранник задержать нарушителя до приезда полиции?","mozhet-li-chastnyy-ohrannik-zaderzhat-narushitelya.html","stati-zaderzhanie-narushitelya.webp","Право и охрана","vybor","Когда задержание допустимо, как действовать охране и каких действий следует избегать."),
+            ("Что делать, если посетитель отказывается соблюдать пропускной режим?","posetitel-otkazyvaetsya-soblyudat-propusknoy-rezhim.html","stati-konflikt-prohodnaya.webp","Пропускной режим","obekty","Пошаговый порядок действий охраны на проходной без самодеятельности и ненужного конфликта."),
+            ("Как правильно пропускать подрядчиков, курьеров и временных работников?","dopusk-podryadchikov-kurerov-vremennyh-rabotnikov.html","stati-dopusk-podryadchikov.webp","Контроль доступа","obekty","Заявки, документы, временные пропуска, сопровождение и возврат пропусков: рабочая схема для объекта."),
+            ("Что делать, если потерян пропуск, ключ или карта доступа?","poteryan-propusk-klyuch-karta-dostupa.html","stati-poteryan-propusk.webp","Контроль доступа","obekty","Как быстро закрыть риск: блокировка, фиксация потери, временный доступ и замена идентификатора."),
+            ("Как контролировать въезд и выезд автомобилей с территории?","kontrol-vezda-vyezda-transporta.html","stati-kontrol-transporta.webp","Контроль транспорта","obekty","Транспортные пропуска, сверка заявок, фиксация въезда и выезда и контроль вывозимого имущества."),
+            ("Как охранять погрузку и разгрузку товара?","ohrana-pogruzki-i-razgruzki.html","stati-pogruzka-razgruzka.webp","Охрана объекта","obekty","Где чаще возникают потери и как организовать контроль документов, ворот, транспорта и зоны отгрузки."),
+            ("Когда объекту нужен старший смены или начальник охраны?","kogda-nuzhen-starshiy-smeny-ohrany.html","stati-starshiy-smeny.webp","Организация охраны","vybor","Признаки объекта, где одного линейного поста недостаточно и нужен единый руководитель смены."),
+            ("Как разделить ответственность между ЧОО и службой безопасности заказчика?","otvetstvennost-choo-i-sluzhby-bezopasnosti-zakazchika.html","stati-razdelenie-otvetstvennosti.webp","Организация охраны","vybor","Кто ставит задачи, кто контролирует режим, кто расследует инциденты и как закрепить границы ответственности."),
+            ("Что происходит с охраной при отключении электричества, интернета или СКУД?","ohrana-pri-otklyuchenii-elektrichestva-interneta-skud.html","stati-avariynyy-rezhim.webp","Аварийный режим","obekty","Как объект переходит на ручной режим доступа, резервное питание и усиленный контроль при отказе систем."),
+            ("Можно ли заглушить сигнализацию и как защитить объект?","zashchita-ohrannoy-signalizacii-ot-glusheniya.html","stati-antiglushenie.webp","Техническое усиление","vidy","Резервные каналы, контроль потери связи, локальная запись и роль физической охраны при сбое."),
+            ("Как уменьшить количество ложных тревог на объекте?","kak-umenshit-lozhnye-trevogi.html","stati-lozhnye-trevogi.webp","Техническая охрана","vidy","Почему возникают ложные тревоги и как настройка, обслуживание и регламент реакции снижают их количество."),
+            ("Нужна ли тревожная кнопка, если уже есть камеры и сигнализация?","nuzhna-li-trevozhnaya-knopka-esli-est-kamery.html","stati-trevozhnaya-knopka.webp","Тревожная сигнализация","vidy","Камеры фиксируют, сигнализация обнаруживает, а тревожная кнопка вызывает помощь: разбираем разные задачи систем."),
+            ("Как быстро должна приехать ГБР после тревоги?","kak-bystro-dolzhna-priehat-gbr.html","stati-vremya-pribytiya-gbr.webp","ГБР","vidy","От чего реально зависит время прибытия группы быстрого реагирования и что проверить в договоре."),
+            ("Можно ли заказать физическую охрану только ночью, на выходные или праздники?","usilenie-ohrany-nochyu-vyhodnye-prazdniki.html","stati-usilenie-ohrany.webp","Физическая охрана","vidy","Когда временное усиление выгоднее круглосуточного поста и как правильно определить часы повышенного риска."),
+            ("Как организовать охрану объекта во время ремонта, переезда или реконструкции?","ohrana-obekta-vo-vremya-remonta-pereezda.html","stati-ohrana-remont-pereezd.webp","Охрана объекта","obekty","Как контролировать временный периметр, подрядчиков, открытые двери, имущество и ключи в период изменений."),
+            ("Как защитить дачу зимой, когда хозяева уезжают надолго?","kak-zashchitit-dachu-zimoy.html","stati-dacha-zimoy.webp","Загородная недвижимость","obekty","Практическая зимняя схема: периметр, признаки присутствия, сигнализация, связь и реагирование."),
+            ("Как усилить охрану склада перед сезоном пиковых отгрузок?","kak-usilit-ohranu-sklada-v-pikovyy-sezon.html","stati-pik-skladskih-otgruzok.webp","Охрана склада","obekty","Что менять в режиме, когда растут объёмы, число машин, временный персонал и ночные отгрузки."),
+            ("ЧОП, ЧОО и вневедомственная охрана — в чём разница для заказчика?","chop-choo-vnevedomstvennaya-ohrana-raznica.html","stati-choo-vnevedomstvennaya.webp","Выбор охраны","vybor","Без юридической каши: чем отличаются форматы охраны и что важно проверить заказчику в 2026 году.")
+          ]
+
+          root = Path('stati')
+          missing = [slug for _,slug,_,_,_,_ in articles if not (root/slug).exists()]
+          if missing:
+              raise SystemExit('Missing article pages: ' + ', '.join(missing))
+
+          p = root/'index.html'
+          s = p.read_text(encoding='utf-8')
+          start = '<!-- NEW25-ARTICLES-START -->'
+          end = '<!-- NEW25-ARTICLES-END -->'
+          if start in s and end in s:
+              a = s.index(start); b = s.index(end, a) + len(end)
+              s = s[:a] + s[b:]
+
+          cards=[]
+          for title,slug,img,label,cat,trailer in articles:
+              cards.append(f'''<div class="accordion-item" data-cat="{cat}" data-reveal>\n  <button class="accordion-header" type="button">\n    <span>{title}</span><span class="acc-date">24.09.2026</span><span class="accordion-icon">▼</span>\n  </button>\n  <div class="accordion-content">\n    <span class="acc-cat">{label}</span>\n    <div class="accordion-featured"><a href="/stati/{slug}"><img src="/images/{img}" alt="{title}" width="480" height="720" loading="lazy" decoding="async"></a><p class="accordion-trailer">{trailer}</p></div>\n    <div class="accordion-buttons"><a href="/stati/{slug}" class="btn btn-success">Читать полностью</a><button class="btn btn-collapse" type="button">Свернуть</button></div>\n  </div>\n</div>''')
+          block = start + '\n' + '\n'.join(cards) + '\n' + end + '\n'
+          needle = '<div class="accordion-container">'
+          if needle not in s:
+              raise SystemExit('accordion-container not found')
+          s = s.replace(needle, needle + '\n' + block, 1)
+
+          # Machine-readable ItemList for the 25 new answers.
+          items = [{"@type":"ListItem","position":i+1,"name":a[0],"url":"https://ohrana.tech/stati/"+a[1]} for i,a in enumerate(articles)]
+          schema = '<script id="new25-itemlist" type="application/ld+json">'+json.dumps({"@context":"https://schema.org","@type":"ItemList","name":"25 ответов на частые вопросы заказчиков физической охраны","itemListElement":items},ensure_ascii=False,separators=(',',':'))+'</script>\n'
+          old_schema_start = '<script id="new25-itemlist"'
+          if old_schema_start in s:
+              x=s.index(old_schema_start); y=s.index('</script>',x)+9; s=s[:x]+s[y:]
+          s=s.replace('</head>', schema+'</head>',1)
+          p.write_text(s,encoding='utf-8')
+          print('Published cards:',len(articles))
+          PY
+      - name: Commit article index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stati/index.html
+          git commit -m "Publish 25 new articles in article index"
+          git push
