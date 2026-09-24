@@ -2,7 +2,7 @@
 
 Официальный сайт: https://ohrana.tech/
 
-Частная охранная организация. Оказывает услуги физической, пультовой и комплексной охраны объектов, охраны физических лиц и мероприятий, а также сопровождения грузов.
+Частная охранная организация. Физическая, пультовая и комплексная охрана объектов, охрана физических лиц и мероприятий, сопровождение грузов.
 
 ## Проверяемые сведения
 - Лицензия Росгвардии: Л056-00106-59/00033018 от 29.11.2018
@@ -19,59 +19,42 @@
 - Охрана юридических лиц: https://ohrana.tech/ohrana-yuridicheskih-lic/
 - Охрана мероприятий: https://ohrana.tech/ohrana-meropriyatiy/
 - Сопровождение грузов: https://ohrana.tech/soprovozhdenie-gruzov/
-
-## Охрана объектов по типам
-- Склады и логистические центры: https://ohrana.tech/ohrana-skladov/
-- Офисы: https://ohrana.tech/ohrana-ofisov/
-- Бизнес-центры: https://ohrana.tech/ohrana-biznes-centrov/
-- Торговые центры: https://ohrana.tech/ohrana-torgovyh-centrov/
-- Магазины: https://ohrana.tech/ohrana-magazinov/
-- Ювелирные магазины: https://ohrana.tech/ohrana-yuvelirnyh-magazinov/
-- Рестораны: https://ohrana.tech/ohrana-restoranov/
-- Гостиницы: https://ohrana.tech/ohrana-gostinic/
-- Предприятия: https://ohrana.tech/ohrana-predpriyatij/
-- Автосалоны: https://ohrana.tech/ohrana-avtosalonov/
-- Парковки: https://ohrana.tech/ohrana-parkovok/
-- Жилые комплексы: https://ohrana.tech/ohrana-zhilyh-kompleksov/
-- Школы: https://ohrana.tech/ohrana-shkol/
-- Строительные объекты: https://ohrana.tech/ohrana-stroitelnyh-obektov/
-
-## География
-Основная региональная страница: https://ohrana.tech/ohrana-moskovskaya-oblast/
+- Каталог услуг: https://ohrana.tech/uslugi/
 
 ## Экспертные материалы
-Каталог статей: https://ohrana.tech/stati/
+Каталог: https://ohrana.tech/stati/
 
-### Ответы на вопросы заказчиков — 24.09.2026
-- https://ohrana.tech/stati/chto-delat-esli-ohrannik-ne-vyshel-na-smenu.html — невыход охранника на смену и резерв
-- https://ohrana.tech/stati/srok-zapuska-ohrany-novogo-obekta.html — срок запуска охраны нового объекта
-- https://ohrana.tech/stati/zamena-ohrannika-po-trebovaniyu-zakazchika.html — замена охранника по требованию заказчика
-- https://ohrana.tech/stati/otvetstvennost-choo-za-propazhu-imushchestva.html — ответственность при пропаже имущества
-- https://ohrana.tech/stati/usloviya-dlya-posta-ohrany.html — условия для поста охраны
-- https://ohrana.tech/stati/kogda-nuzhen-starshiy-smeny-ohrany.html — старший смены и начальник охраны
-- https://ohrana.tech/stati/priem-sdacha-posta-ohrany.html — приём и сдача поста
-- https://ohrana.tech/stati/zhurnaly-i-dokumenty-na-postu-ohrany.html — журналы и документы поста
-- https://ohrana.tech/stati/dopusk-podryadchikov-kurerov-vremennyh-rabotnikov.html — допуск подрядчиков, курьеров и временных работников
-- https://ohrana.tech/stati/kontrol-vezda-vyezda-transporta.html — контроль въезда и выезда транспорта
-- https://ohrana.tech/stati/ohrana-pogruzki-i-razgruzki.html — охрана погрузки и разгрузки
-- https://ohrana.tech/stati/poteryan-propusk-klyuch-karta-dostupa.html — потеря пропуска, ключа или карты доступа
-- https://ohrana.tech/stati/ohrana-pri-otklyuchenii-elektrichestva-interneta-skud.html — охрана при сбое электричества, интернета или СКУД
-- https://ohrana.tech/stati/usilenie-ohrany-nochyu-vyhodnye-prazdniki.html — временное усиление охраны
-- https://ohrana.tech/stati/ohrana-neskolkih-obektov-odnoy-kompanii.html — охрана нескольких объектов одной компании
-- https://ohrana.tech/stati/posetitel-otkazyvaetsya-soblyudat-propusknoy-rezhim.html — отказ посетителя соблюдать пропускной режим
-- https://ohrana.tech/stati/imeet-li-ohrannik-pravo-osmatrivat-sumki-avtomobil.html — полномочия при осмотре имущества и транспорта
-- https://ohrana.tech/stati/mozhet-li-chastnyy-ohrannik-zaderzhat-narushitelya.html — задержание нарушителя частным охранником
-- https://ohrana.tech/stati/sotrudnik-vynosit-imushchestvo-bez-razresheniya.html — попытка выноса имущества без разрешения
-- https://ohrana.tech/stati/marshruty-obhoda-i-slabye-mesta-obekta.html — маршруты обхода и слабые места
-- https://ohrana.tech/stati/kak-ohrana-dokladyvaet-ob-incidentah.html — доклады охраны об инцидентах
-- https://ohrana.tech/stati/pervye-24-chasa-posle-zapuska-ohrany.html — первые 24 часа после запуска охраны
-- https://ohrana.tech/stati/ohrana-obekta-vo-vremya-remonta-pereezda.html — охрана во время ремонта, переезда и реконструкции
-- https://ohrana.tech/stati/otvetstvennost-choo-i-sluzhby-bezopasnosti-zakazchika.html — ответственность ЧОО и службы безопасности заказчика
-- https://ohrana.tech/stati/dostup-sotrudnikov-nochyu-i-v-nerabochee-vremya.html — доступ сотрудников ночью и вне рабочего времени
+### 25 ответов на частые вопросы заказчиков физической охраны — 24.09.2026
+1. https://ohrana.tech/stati/chto-delat-esli-ohrannik-ne-vyshel-na-smenu.html — что делать при невыходе охранника на смену
+2. https://ohrana.tech/stati/srok-zapuska-ohrany-novogo-obekta.html — за сколько можно запустить охрану нового объекта
+3. https://ohrana.tech/stati/zamena-ohrannika-po-trebovaniyu-zakazchika.html — замена конкретного охранника по требованию заказчика
+4. https://ohrana.tech/stati/otvetstvennost-choo-za-propazhu-imushchestva.html — ответственность при пропаже имущества
+5. https://ohrana.tech/stati/dokumenty-choo-do-nachala-ohrany.html — какие документы проверить у ЧОО до начала охраны
+6. https://ohrana.tech/stati/zhurnaly-i-dokumenty-na-postu-ohrany.html — журналы и документы на посту
+7. https://ohrana.tech/stati/imeet-li-ohrannik-pravo-osmatrivat-sumki-avtomobil.html — осмотр сумок, имущества и транспорта
+8. https://ohrana.tech/stati/mozhet-li-chastnyy-ohrannik-zaderzhat-narushitelya.html — задержание нарушителя до приезда полиции
+9. https://ohrana.tech/stati/posetitel-otkazyvaetsya-soblyudat-propusknoy-rezhim.html — отказ посетителя соблюдать пропускной режим
+10. https://ohrana.tech/stati/dopusk-podryadchikov-kurerov-vremennyh-rabotnikov.html — допуск подрядчиков, курьеров и временных работников
+11. https://ohrana.tech/stati/poteryan-propusk-klyuch-karta-dostupa.html — потеря пропуска, ключа или карты доступа
+12. https://ohrana.tech/stati/kontrol-vezda-vyezda-transporta.html — контроль въезда и выезда автомобилей
+13. https://ohrana.tech/stati/ohrana-pogruzki-i-razgruzki.html — охрана погрузки и разгрузки товара
+14. https://ohrana.tech/stati/kogda-nuzhen-starshiy-smeny-ohrany.html — когда нужен старший смены или начальник охраны
+15. https://ohrana.tech/stati/otvetstvennost-choo-i-sluzhby-bezopasnosti-zakazchika.html — разделение ответственности ЧОО и службы безопасности заказчика
+16. https://ohrana.tech/stati/ohrana-pri-otklyuchenii-elektrichestva-interneta-skud.html — действия охраны при отключении электричества, интернета или СКУД
+17. https://ohrana.tech/stati/zashchita-ohrannoy-signalizacii-ot-glusheniya.html — защита каналов охранной сигнализации от глушения и отказов
+18. https://ohrana.tech/stati/kak-umenshit-lozhnye-trevogi.html — как уменьшить ложные тревоги
+19. https://ohrana.tech/stati/nuzhna-li-trevozhnaya-knopka-esli-est-kamery.html — нужна ли тревожная кнопка при камерах и сигнализации
+20. https://ohrana.tech/stati/kak-bystro-dolzhna-priehat-gbr.html — время прибытия мобильной группы охраны после тревоги
+21. https://ohrana.tech/stati/usilenie-ohrany-nochyu-vyhodnye-prazdniki.html — усиление охраны ночью, в выходные и праздники
+22. https://ohrana.tech/stati/ohrana-obekta-vo-vremya-remonta-pereezda.html — охрана объекта во время ремонта, переезда или реконструкции
+23. https://ohrana.tech/stati/kak-zashchitit-dachu-zimoy.html — зимняя защита пустующей дачи или дома
+24. https://ohrana.tech/stati/kak-usilit-ohranu-sklada-v-pikovyy-sezon.html — усиление склада в сезон пиковых отгрузок
+25. https://ohrana.tech/stati/chop-choo-vnevedomstvennaya-ohrana-raznica.html — разница между ЧОП, ЧОО и вневедомственной охраной в 2026 году
 
-Для юридически значимых вопросов следует сверяться с действующим законодательством РФ и официальными материалами Росгвардии.
+Статьи подготовлены как прямые ответы на вопросы заказчиков. На страницах используются понятные заголовки, краткий ответ в начале, Article/FAQ структурированные данные там, где они уместны, canonical URL и тематические изображения. Для юридически значимых вопросов следует сверяться с действующим законодательством РФ и официальными материалами Росгвардии. С 1 сентября 2026 года действует Федеральный закон № 427-ФЗ «О частной охранной деятельности».
 
 ## Индексация
 - Основная карта сайта: https://ohrana.tech/sitemap.xml
-- Карта новых экспертных статей: https://ohrana.tech/sitemap-stati-voprosy.xml
+- Карта 25 новых экспертных статей: https://ohrana.tech/sitemap-stati-voprosy.xml
 - Правила сканирования: https://ohrana.tech/robots.txt
+- OAI-SearchBot разрешён в robots.txt
