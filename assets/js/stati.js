@@ -1,50 +1,43 @@
 (function(){
 'use strict';
-var items=Array.prototype.slice.call(document.querySelectorAll('.accordion-item'));
-if(!items.length)return;
-var searchInput=document.getElementById('artSearch');
-var clearBtn=document.getElementById('artClear');
-var resetBtn=document.getElementById('artReset');
-var countEl=document.getElementById('artCount');
-var noRes=document.getElementById('artNoRes');
-var catBtns=Array.prototype.slice.call(document.querySelectorAll('.cat-btn'));
-var activeCat='all';
+var fresh=[
+['Что делать, если охранник не вышел на смену?','chto-delat-esli-ohrannik-ne-vyshel-na-smenu','vybor','Что происходит при невыходе сотрудника: резерв, подмена, уведомление заказчика и признаки системной проблемы.','stati-nevyhod-smena.webp'],
+['За сколько времени можно поставить охрану на новый объект?','srok-zapuska-ohrany-novogo-obekta','vybor','От обследования и инструкции до первой смены: когда возможен быстрый старт и почему сложному объекту нужна подготовка.','stati-zapusk-ohrany.webp'],
+['Можно ли заменить охранника по требованию заказчика?','zamena-ohrannika-po-trebovaniyu-zakazchika','vybor','Когда замена сотрудника обоснованна, как передать замечание ЧОО и провести замену без разрыва охраны.','stati-zamena-ohrannika.webp'],
+['Кто отвечает, если с охраняемого объекта пропало имущество?','otvetstvennost-choo-za-propazhu-imushchestva','vybor','Договор, зона ответственности, видео, журналы и причинная связь: как правильно разбирать пропажу имущества.','stati-otvetstvennost-imushchestvo.webp'],
+['Какие условия заказчик должен обеспечить на посту охраны?','usloviya-dlya-posta-ohrany','vybor','Рабочее место, обзор, связь, освещение, ключи, журналы и технические средства, которые реально влияют на качество поста.','stati-post-ohrany-usloviya.webp'],
+['Когда на объекте нужен старший смены или начальник охраны?','kogda-nuzhen-starshiy-smeny-ohrany','vybor','Как понять, что объекту уже недостаточно набора отдельных постов и нужна единая точка управления сменой.','stati-starshiy-smeny.webp'],
+['Как правильно организовать приём и сдачу поста охраны?','priem-sdacha-posta-ohrany','vybor','Что передают между сменами: ключи, рации, журналы, посетителей, незавершённые задачи и изменения режима.','stati-priem-sdacha-posta.webp'],
+['Какие журналы и документы должны быть на посту охраны?','zhurnaly-i-dokumenty-na-postu-ohrany','vybor','Практический набор документов без бумажного шума: инструкция, смены, транспорт, ключи, обходы и происшествия.','stati-zhurnaly-posta.webp'],
+['Как организовать допуск подрядчиков, курьеров и временных работников?','dopusk-podryadchikov-kurerov-vremennyh-rabotnikov','vidy','Заявки, временные пропуска, зоны доступа и сопровождение: как не превращать проходную в импровизацию.','stati-dopusk-podryadchikov.webp'],
+['Как контролировать въезд и выезд автомобилей с территории?','kontrol-vezda-vyezda-transporta','obekty','КПП, заявки, документы на вывоз, номера машин, видеофиксация и правила для постоянного и разового транспорта.','stati-kontrol-transporta.webp'],
+['Как организовать охрану погрузки и разгрузки товара?','ohrana-pogruzki-i-razgruzki','obekty','Как контролировать рампу, транспорт и допуск, не подменяя складской учёт и работу логистики.','stati-pogruzka-razgruzka.webp'],
+['Что делать, если потерян пропуск, ключ или карта доступа?','poteryan-propusk-klyuch-karta-dostupa','vidy','Блокировка, временный допуск, замена идентификатора и проверка событий после утраты.','stati-poteryan-propusk.webp'],
+['Как работает охрана при отключении электричества, интернета или СКУД?','ohrana-pri-otklyuchenii-elektrichestva-interneta-skud','vidy','Ручной режим допуска, дополнительные обходы, аварийная связь и восстановление контроля при сбое техники.','stati-avariynyy-rezhim.webp'],
+['Можно ли усилить охрану только ночью, в выходные или праздники?','usilenie-ohrany-nochyu-vyhodnye-prazdniki','vidy','Как временно добавить пост, обходы или контроль конкретной зоны именно в период повышенного риска.','stati-usilenie-ohrany.webp'],
+['Как организовать охрану нескольких объектов одной компании?','ohrana-neskolkih-obektov-odnoy-kompanii','obekty','Единые стандарты, локальные инструкции, общий куратор, резерв и сводная отчётность по сети площадок.','stati-set-obektov.webp'],
+['Что делать, если посетитель отказывается соблюдать пропускной режим?','posetitel-otkazyvaetsya-soblyudat-propusknoy-rezhim','vidy','Как спокойно исполнить правило, подтвердить доступ через ответственного и не превратить проходную в конфликт.','stati-konflikt-prohodnaya.webp'],
+['Имеет ли охранник право осматривать сумки, ручную кладь и автомобиль?','imeet-li-ohrannik-pravo-osmatrivat-sumki-avtomobil','vybor','Что разрешено законом на объекте с пропускным режимом и чем осмотр имущества отличается от личного досмотра.','stati-osmotr-imushchestva.webp'],
+['Может ли частный охранник задержать нарушителя до приезда полиции?','mozhet-li-chastnyy-ohrannik-zaderzhat-narushitelya','vybor','Когда закон допускает задержание, зачем нужна незамедлительная передача полиции и почему важна соразмерность.','stati-zaderzhanie-narushitelya.webp'],
+['Что делать, если сотрудник пытается вынести имущество без разрешения?','sotrudnik-vynosit-imushchestvo-bez-razresheniya','vidy','Как охрана проверяет основание для выноса имущества, кого вызывает и какие факты фиксирует.','stati-vynos-imushchestva.webp'],
+['Как проверить маршруты обхода и найти слабые места объекта?','marshruty-obhoda-i-slabye-mesta-obekta','vidy','Периметр, слепые зоны, контрольные точки и пересмотр маршрута после изменений на территории.','stati-marshrut-obhoda.webp'],
+['Как и когда охрана должна сообщать заказчику об инцидентах?','kak-ohrana-dokladyvaet-ob-incidentah','vybor','Какие события требуют немедленного звонка, что можно оставить в отчёт и как выглядит короткий полезный доклад.','stati-doklad-incident.webp'],
+['Как проходят первые 24 часа после запуска охраны нового объекта?','pervye-24-chasa-posle-zapuska-ohrany','vybor','Что проверяют в первую смену, ночью и на первой пересменке, чтобы быстро исправить слабые места регламента.','stati-pervye-24-chasa.webp'],
+['Как организовать охрану объекта во время ремонта, переезда или реконструкции?','ohrana-obekta-vo-vremya-remonta-pereezda','obekty','Временные проходы, подрядчики, вывоз имущества и меняющийся периметр требуют отдельной схемы охраны.','stati-ohrana-remont-pereezd.webp'],
+['Как разделить ответственность между ЧОО и службой безопасности заказчика?','otvetstvennost-choo-i-sluzhby-bezopasnosti-zakazchika','vybor','Кто управляет постами, кто расследует инциденты, кто отвечает за СКУД и кому разрешено давать распоряжения охране.','stati-razdelenie-otvetstvennosti.webp'],
+['Как организовать доступ сотрудников ночью и в нерабочее время?','dostup-sotrudnikov-nochyu-i-v-nerabochee-vremya','vidy','Постоянные права, разовые заявки, ночное подтверждение и согласованность физической охраны со СКУД.','stati-nochnoy-dostup.webp']
+];
+var box=document.querySelector('.accordion-container');
+if(box){var frag=document.createDocumentFragment();fresh.forEach(function(a){var item=document.createElement('div');item.className='accordion-item fresh-article';item.dataset.cat=a[2];item.innerHTML='<button class="accordion-header"><span>'+a[0]+'</span><span class="acc-date">24.09.2026</span><span class="accordion-icon">▼</span></button><div class="accordion-content"><span class="acc-cat">Вопрос клиента</span><div class="accordion-featured"><a href="/stati/'+a[1]+'.html" aria-label="Читать статью"><img src="/images/'+a[4]+'" alt="'+a[0].replace(/\?/g,'')+'" width="960" height="1440" loading="lazy" decoding="async"></a><p class="accordion-trailer">'+a[3]+'</p></div><div class="accordion-buttons"><a href="/stati/'+a[1]+'.html" class="btn btn-success" target="_blank" rel="noopener">Читать полностью</a><button class="btn btn-collapse" type="button">Свернуть</button></div></div>';frag.appendChild(item);});box.insertBefore(frag,box.firstChild);}
+var items=Array.prototype.slice.call(document.querySelectorAll('.accordion-item'));if(!items.length)return;
+var searchInput=document.getElementById('artSearch'),clearBtn=document.getElementById('artClear'),resetBtn=document.getElementById('artReset'),countEl=document.getElementById('artCount'),noRes=document.getElementById('artNoRes');
+var catBtns=Array.prototype.slice.call(document.querySelectorAll('.cat-btn')),activeCat='all';
 function plural(n){var n10=n%10,n100=n%100;if(n10===1&&n100!==11)return'статья';if(n10>=2&&n10<=4&&(n100<12||n100>14))return'статьи';return'статей';}
-function closeItem(item){
-  var header=item.querySelector('.accordion-header'),content=item.querySelector('.accordion-content');
-  item.classList.remove('open');
-  if(header){header.classList.remove('active');header.setAttribute('aria-expanded','false');}
-  if(content){content.classList.remove('active');content.style.maxHeight='';}
-}
-function applyFilter(){
-  var q=searchInput?(searchInput.value||'').trim().toLowerCase():'';
-  if(clearBtn)clearBtn.style.display=q?'grid':'none';
-  var visible=0;
-  items.forEach(function(item){
-    var text=(item.textContent||'').toLowerCase();
-    var cat=item.dataset.cat||'';
-    var show=(!q||text.indexOf(q)!==-1)&&(activeCat==='all'||cat===activeCat);
-    item.hidden=!show;
-    if(show)visible++;else closeItem(item);
-  });
-  if(countEl)countEl.innerHTML=q||activeCat!=='all'?'Найдено: <b>'+visible+'</b> '+plural(visible)+' из '+items.length:'Показано: <b>'+visible+'</b> из '+items.length+' статей';
-  if(noRes)noRes.style.display=visible?'none':'block';
-}
-if(searchInput)searchInput.addEventListener('input',applyFilter);
-if(clearBtn)clearBtn.addEventListener('click',function(){if(searchInput){searchInput.value='';searchInput.focus();}applyFilter();});
-if(resetBtn)resetBtn.addEventListener('click',function(){if(searchInput)searchInput.value='';activeCat='all';catBtns.forEach(function(btn){btn.classList.toggle('on',btn.dataset.cat==='all');});applyFilter();});
+function closeItem(item){var h=item.querySelector('.accordion-header'),c=item.querySelector('.accordion-content');item.classList.remove('open');if(h){h.classList.remove('active');h.setAttribute('aria-expanded','false');}if(c){c.classList.remove('active');c.style.maxHeight='';}}
+function applyFilter(){var q=searchInput?(searchInput.value||'').trim().toLowerCase():'';if(clearBtn)clearBtn.style.display=q?'grid':'none';var visible=0;items.forEach(function(item){var text=(item.textContent||'').toLowerCase(),cat=item.dataset.cat||'',show=(!q||text.indexOf(q)!==-1)&&(activeCat==='all'||cat===activeCat);item.hidden=!show;if(show)visible++;else closeItem(item);});if(countEl)countEl.innerHTML=q||activeCat!=='all'?'Найдено: <b>'+visible+'</b> '+plural(visible)+' из '+items.length:'Показано: <b>'+visible+'</b> из '+items.length+' статей';if(noRes)noRes.style.display=visible?'none':'block';}
+if(searchInput)searchInput.addEventListener('input',applyFilter);if(clearBtn)clearBtn.addEventListener('click',function(){if(searchInput){searchInput.value='';searchInput.focus();}applyFilter();});if(resetBtn)resetBtn.addEventListener('click',function(){if(searchInput)searchInput.value='';activeCat='all';catBtns.forEach(function(b){b.classList.toggle('on',b.dataset.cat==='all');});applyFilter();});
 catBtns.forEach(function(btn){btn.addEventListener('click',function(){activeCat=btn.dataset.cat||'all';catBtns.forEach(function(b){b.classList.toggle('on',b===btn);});applyFilter();});});
-var headers=Array.prototype.slice.call(document.querySelectorAll('.accordion-header'));
-headers.forEach(function(header){
-  header.setAttribute('aria-expanded','false');
-  header.addEventListener('click',function(){
-    var item=header.closest('.accordion-item'),content=header.nextElementSibling,isActive=header.classList.contains('active');
-    items.forEach(closeItem);
-    if(!isActive&&item&&content&&!item.hidden){
-      item.classList.add('open');header.classList.add('active');header.setAttribute('aria-expanded','true');content.classList.add('active');content.style.maxHeight=(content.scrollHeight+60)+'px';
-    }
-  });
-});
-var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){document.querySelectorAll('.accordion-header.active').forEach(function(header){var content=header.nextElementSibling;if(content)content.style.maxHeight=(content.scrollHeight+60)+'px';});},120);},{passive:true});
+items.forEach(function(item){var header=item.querySelector('.accordion-header'),content=item.querySelector('.accordion-content');if(!header||!content)return;header.setAttribute('aria-expanded','false');header.addEventListener('click',function(){var was=header.classList.contains('active');items.forEach(closeItem);if(!was&&!item.hidden){item.classList.add('open');header.classList.add('active');header.setAttribute('aria-expanded','true');content.classList.add('active');content.style.maxHeight=(content.scrollHeight+80)+'px';}});var collapse=item.querySelector('.btn-collapse');if(collapse)collapse.addEventListener('click',function(e){e.preventDefault();closeItem(item);header.focus();});});
+var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){document.querySelectorAll('.accordion-header.active').forEach(function(h){var c=h.nextElementSibling;if(c)c.style.maxHeight=(c.scrollHeight+80)+'px';});},120);},{passive:true});
 applyFilter();
 })();
