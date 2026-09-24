@@ -8,6 +8,13 @@ RewriteEngine On
 RewriteCond %{QUERY_STRING} (^|&)_ym_debug=[^&]*(&|$) [NC]
 RewriteRule ^$ / [R=301,L,QSD]
 
+# Canonical URL for the homepage without editing the large index.html.
+# Yandex supports rel=canonical in an HTTP Link header.
+<IfModule mod_headers.c>
+  SetEnvIf Request_URI "^/$" IS_HOME=1
+  Header set Link "<https://ohrana.tech/>; rel=\"canonical\"" env=IS_HOME
+</IfModule>
+
 # Legacy article URL -> current canonical article.
 Redirect 301 /kompleksnaja-ohrana/ https://ohrana.tech/stati/kompleksnaya-ohrana.html
 
