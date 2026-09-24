@@ -14,37 +14,46 @@ jobs:
           fetch-depth: 0
       - name: Install Pillow
         run: python -m pip install --quiet Pillow
-      - name: Build 25 optimized article covers
+      - name: Publish 25 optimized article covers
         run: |
           set -euo pipefail
-          cat .article-cover-parts/part-* | tr -d '\n\r' | base64 -d > article-covers-sprite.webp
+          test -f article-covers-bundle.b64
+          tr -d '\n\r' < article-covers-bundle.b64 | base64 -d > final25-covers.zip
+          rm -rf .article-covers-tmp
+          mkdir -p .article-covers-tmp
+          unzip -q -o final25-covers.zip -d .article-covers-tmp
           python - <<'PY'
-          from PIL import Image
+          from PIL import Image, ImageDraw, ImageOps
           from pathlib import Path
-          names = [
-            'stati-nevyhod-smena.webp','stati-zapusk-ohrany.webp','stati-zamena-ohrannika.webp','stati-otvetstvennost-imushchestvo.webp','stati-dokumenty-choo.webp',
-            'stati-zhurnaly-posta.webp','stati-osmotr-imushchestva.webp','stati-zaderzhanie-narushitelya.webp','stati-konflikt-prohodnaya.webp','stati-dopusk-podryadchikov.webp',
-            'stati-poteryan-propusk.webp','stati-kontrol-transporta.webp','stati-pogruzka-razgruzka.webp','stati-starshiy-smeny.webp','stati-razdelenie-otvetstvennosti.webp',
-            'stati-avariynyy-rezhim.webp','stati-antiglushenie.webp','stati-lozhnye-trevogi.webp','stati-trevozhnaya-knopka.webp','stati-vremya-pribytiya-gbr.webp',
-            'stati-usilenie-ohrany.webp','stati-ohrana-remont-pereezd.webp','stati-dacha-zimoy.webp','stati-pik-skladskih-otgruzok.webp','stati-choo-vnevedomstvennaya.webp'
-          ]
-          im = Image.open('article-covers-sprite.webp').convert('RGB')
-          assert im.width % 5 == 0 and im.height % 5 == 0
-          cw, ch = im.width // 5, im.height // 5
-          out = Path('images'); out.mkdir(exist_ok=True)
-          for i, name in enumerate(names):
-              x, y = (i % 5) * cw, (i // 5) * ch
-              cell = im.crop((x, y, x + cw, y + ch)).resize((480, 720), Image.Resampling.LANCZOS)
-              cell.save(out / name, 'WEBP', quality=76, method=6)
-          assert all((out / n).exists() for n in names)
+
+          src = Path('.article-covers-tmp')
+          out = Path('images')
+          files = sorted(src.glob('*.webp'))
+          if len(files) != 25:
+              raise SystemExit(f'Expected 25 covers, got {len(files)}')
+
+          logo = Image.open('images/schit.png').convert('RGBA')
+          for f in files:
+              im = Image.open(f).convert('RGB').resize((480, 720), Image.Resampling.LANCZOS)
+              draw = ImageDraw.Draw(im)
+              x, y, w, h = 8, 8, 68, 78
+              draw.rounded_rectangle((x, y, x+w, y+h), radius=10, fill=(5,7,10), outline=(202,163,77), width=1)
+              lg = ImageOps.contain(logo, (56, 66), Image.Resampling.LANCZOS)
+              px = x + (w-lg.width)//2
+              py = y + (h-lg.height)//2
+              im_rgba = im.convert('RGBA')
+              im_rgba.alpha_composite(lg, (px, py))
+              im_rgba.convert('RGB').save(out / f.name, 'WEBP', quality=82, method=6)
+
+          if len(list(out.glob('stati-*.webp'))) < 25:
+              raise SystemExit('Cover publish verification failed')
           PY
-          rm -f article-covers-sprite.webp final25-covers.zip article-covers.ready article-covers-bundle.b64
-          rm -rf .article-cover-parts
+          rm -rf .article-covers-tmp final25-covers.zip article-covers-bundle.b64 article-covers.ready .article-cover-parts
       - name: Commit covers
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Add 25 optimized article covers"
+          git commit -m "Publish 25 article covers"
           git push
