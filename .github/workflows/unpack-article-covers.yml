@@ -2,7 +2,7 @@ name: Build article covers
 on:
   push:
     paths:
-      - 'article-covers.ready'
+      - 'article-covers-bundle.b64'
 permissions:
   contents: write
 jobs:
@@ -12,32 +12,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install Pillow
-        run: python -m pip install --quiet Pillow
-      - name: Rebuild sprite and split 25 optimized covers
+      - name: Unpack 25 optimized article covers
         run: |
-          cat .article-cover-parts/part-* | base64 -d > article-covers-sprite.webp
-          python - <<'PY'
-          from PIL import Image
-          from pathlib import Path
-          names = [
-            'stati-nevyhod-smena.webp','stati-zapusk-ohrany.webp','stati-zamena-ohrannika.webp','stati-otvetstvennost-imushchestvo.webp','stati-dokumenty-choo.webp',
-            'stati-zhurnaly-posta.webp','stati-osmotr-imushchestva.webp','stati-zaderzhanie-narushitelya.webp','stati-konflikt-prohodnaya.webp','stati-dopusk-podryadchikov.webp',
-            'stati-poteryan-propusk.webp','stati-kontrol-transporta.webp','stati-pogruzka-razgruzka.webp','stati-starshiy-smeny.webp','stati-razdelenie-otvetstvennosti.webp',
-            'stati-avariynyy-rezhim.webp','stati-antiglushenie.webp','stati-lozhnye-trevogi.webp','stati-trevozhnaya-knopka.webp','stati-vremya-pribytiya-gbr.webp',
-            'stati-usilenie-ohrany.webp','stati-ohrana-remont-pereezd.webp','stati-dacha-zimoy.webp','stati-pik-skladskih-otgruzok.webp','stati-choo-vnevedomstvennaya.webp'
-          ]
-          im = Image.open('article-covers-sprite.webp').convert('RGB')
-          cw, ch = im.width//5, im.height//5
-          out = Path('images'); out.mkdir(exist_ok=True)
-          for i,name in enumerate(names):
-              x=(i%5)*cw; y=(i//5)*ch
-              cell=im.crop((x,y,x+cw,y+ch)).resize((480,720),Image.Resampling.LANCZOS)
-              cell.save(out/name,'WEBP',quality=68,method=6)
-          Path('article-covers-sprite.webp').unlink()
-          Path('article-covers.ready').unlink(missing_ok=True)
-          import shutil; shutil.rmtree('.article-cover-parts', ignore_errors=True)
-          PY
+          set -euo pipefail
+          base64 -d article-covers-bundle.b64 > article-covers.zip
+          mkdir -p images
+          unzip -o article-covers.zip -d images
+          test "$(find images -maxdepth 1 -type f -name 'stati-*.webp' | grep -E 'stati-(nevyhod-smena|zapusk-ohrany|zamena-ohrannika|otvetstvennost-imushchestvo|dokumenty-choo|zhurnaly-posta|osmotr-imushchestva|zaderzhanie-narushitelya|konflikt-prohodnaya|dopusk-podryadchikov|poteryan-propusk|kontrol-transporta|pogruzka-razgruzka|starshiy-smeny|razdelenie-otvetstvennosti|avariynyy-rezhim|antiglushenie|lozhnye-trevogi|trevozhnaya-knopka|vremya-pribytiya-gbr|usilenie-ohrany|ohrana-remont-pereezd|dacha-zimoy|pik-skladskih-otgruzok|choo-vnevedomstvennaya)\.webp$' | wc -l)" -eq 25
+          rm -f article-covers-bundle.b64 article-covers.zip
       - name: Commit covers
         run: |
           git config user.name "github-actions[bot]"
