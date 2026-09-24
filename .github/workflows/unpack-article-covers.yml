@@ -37,7 +37,7 @@ jobs:
             'stati-pogruzka-razgruzka.webp': 'images/1ohrana-skladov.jpg',
             'stati-starshiy-smeny.webp': 'images/security-1.jpg',
             'stati-razdelenie-otvetstvennosti.webp': 'images/autsorsing-sluzhby-bezopasnosti.webp',
-            'stati-avariynyy-rezhim.webp': 'images/security-system.jpg',
+            'stati-avariynyy-rezhim.webp': 'images/tehnicheskaya-ohrana.jpg',
             'stati-antiglushenie.webp': 'images/pultovaya-ohrana.webp',
             'stati-lozhnye-trevogi.webp': 'images/motion-sensor.jpg',
             'stati-trevozhnaya-knopka.webp': 'images/tarif-pultovaya-ohrana-gbr.webp',
@@ -60,7 +60,6 @@ jobs:
               if not path.exists():
                   raise SystemExit(f'Missing source: {source}')
               im = Image.open(path).convert('RGB')
-              # Vertical 2:3 cover; keep the visual centre safe for the accordion.
               im = ImageOps.fit(im, (480, 720), Image.Resampling.LANCZOS, centering=(0.5, 0.46))
               canvas = im.convert('RGBA')
               canvas.alpha_composite(logo, (12, 12))
