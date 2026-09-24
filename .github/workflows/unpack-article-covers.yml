@@ -18,7 +18,8 @@ jobs:
         run: |
           set -euo pipefail
           test -f article-covers-bundle.b64
-          tr -d '\n\r' < article-covers-bundle.b64 | base64 -d > final25-covers.zip
+          tr -d '\n\r' < article-covers-bundle.b64 | base64 -d -i > final25-covers.zip
+          unzip -t final25-covers.zip >/dev/null
           rm -rf .article-covers-tmp
           mkdir -p .article-covers-tmp
           unzip -q -o final25-covers.zip -d .article-covers-tmp
