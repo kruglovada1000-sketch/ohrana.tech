@@ -1,0 +1,146 @@
+name: Apply 25 customer-question articles
+on:
+  push:
+    paths:
+      - 'site-update.ready'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply optimized article package
+        run: |
+          cat .site-update-parts/part-* | base64 -d > /tmp/site-update.tar.gz
+          tar -xzf /tmp/site-update.tar.gz -C .
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          final = [
+            ('chto-delat-esli-ohrannik-ne-vyshel-na-smenu','stati-nevyhod-smena.webp'),
+            ('srok-zapuska-ohrany-novogo-obekta','stati-zapusk-ohrany.webp'),
+            ('zamena-ohrannika-po-trebovaniyu-zakazchika','stati-zamena-ohrannika.webp'),
+            ('otvetstvennost-choo-za-propazhu-imushchestva','stati-otvetstvennost-imushchestvo.webp'),
+            ('dokumenty-choo-do-nachala-ohrany','stati-dokumenty-choo.webp'),
+            ('zhurnaly-i-dokumenty-na-postu-ohrany','stati-zhurnaly-posta.webp'),
+            ('imeet-li-ohrannik-pravo-osmatrivat-sumki-avtomobil','stati-osmotr-imushchestva.webp'),
+            ('mozhet-li-chastnyy-ohrannik-zaderzhat-narushitelya','stati-zaderzhanie-narushitelya.webp'),
+            ('posetitel-otkazyvaetsya-soblyudat-propusknoy-rezhim','stati-konflikt-prohodnaya.webp'),
+            ('dopusk-podryadchikov-kurerov-vremennyh-rabotnikov','stati-dopusk-podryadchikov.webp'),
+            ('poteryan-propusk-klyuch-karta-dostupa','stati-poteryan-propusk.webp'),
+            ('kontrol-vezda-vyezda-transporta','stati-kontrol-transporta.webp'),
+            ('ohrana-pogruzki-i-razgruzki','stati-pogruzka-razgruzka.webp'),
+            ('kogda-nuzhen-starshiy-smeny-ohrany','stati-starshiy-smeny.webp'),
+            ('otvetstvennost-choo-i-sluzhby-bezopasnosti-zakazchika','stati-razdelenie-otvetstvennosti.webp'),
+            ('ohrana-pri-otklyuchenii-elektrichestva-interneta-skud','stati-avariynyy-rezhim.webp'),
+            ('zashchita-ohrannoy-signalizacii-ot-glusheniya','stati-antiglushenie.webp'),
+            ('kak-umenshit-lozhnye-trevogi','stati-lozhnye-trevogi.webp'),
+            ('nuzhna-li-trevozhnaya-knopka-esli-est-kamery','stati-trevozhnaya-knopka.webp'),
+            ('kak-bystro-dolzhna-priehat-gbr','stati-vremya-pribytiya-gbr.webp'),
+            ('usilenie-ohrany-nochyu-vyhodnye-prazdniki','stati-usilenie-ohrany.webp'),
+            ('ohrana-obekta-vo-vremya-remonta-pereezda','stati-ohrana-remont-pereezd.webp'),
+            ('kak-zashchitit-dachu-zimoy','stati-dacha-zimoy.webp'),
+            ('kak-usilit-ohranu-sklada-v-pikovyy-sezon','stati-pik-skladskih-otgruzok.webp'),
+            ('chop-choo-vnevedomstvennaya-ohrana-raznica','stati-choo-vnevedomstvennaya.webp'),
+          ]
+
+          # Normalize all 25 pages: correct lightweight cover, intrinsic 2:3 size, index/follow.
+          for slug,img in final:
+              p=Path('stati')/(slug+'.html')
+              if not p.exists():
+                  raise SystemExit(f'Missing final article: {p}')
+              s=p.read_text(encoding='utf-8')
+              s=re.sub(r'https://ohrana\.tech/images/stati-[^"<]+\.webp', f'https://ohrana.tech/images/{img}', s)
+              s=re.sub(r'/images/stati-[^"<]+\.webp', f'/images/{img}', s)
+              # Fix dimensions only on this cover image.
+              pat=r'(<img\b[^>]*src="/images/'+re.escape(img)+r'"[^>]*?)\swidth="\d+"\sheight="\d+"'
+              s=re.sub(pat, r'\1 width="480" height="720"', s)
+              if '<meta name="robots"' not in s:
+                  m=re.search(r'<meta name="description"[^>]*>',s)
+                  if m:
+                      s=s[:m.end()]+'<meta name="robots" content="index,follow,max-image-preview:large">'+s[m.end():]
+                  else:
+                      s=s.replace('</head>','<meta name="robots" content="index,follow,max-image-preview:large"></head>')
+              p.write_text(s,encoding='utf-8')
+
+          # Remove draft topics that were superseded before publication.
+          for name in [
+              'dostup-sotrudnikov-nochyu-i-v-nerabochee-vremya.html',
+              'kak-ohrana-dokladyvaet-ob-incidentah.html',
+              'marshruty-obhoda-i-slabye-mesta-obekta.html',
+              'ohrana-neskolkih-obektov-odnoy-kompanii.html',
+              'pervye-24-chasa-posle-zapuska-ohrany.html',
+              'priem-sdacha-posta-ohrany.html',
+              'sotrudnik-vynosit-imushchestvo-bez-razresheniya.html',
+              'usloviya-dlya-posta-ohrany.html',
+          ]:
+              (Path('stati')/name).unlink(missing_ok=True)
+
+          # Consolidate the 25 URLs into the main sitemap; keep one sitemap only.
+          sm=Path('sitemap.xml')
+          s=sm.read_text(encoding='utf-8')
+          s=re.sub(r'(<loc>https://ohrana\.tech/stati/</loc><lastmod>)[^<]+', r'\g<1>2026-09-24', s)
+          for slug,_ in final:
+              url=f'https://ohrana.tech/stati/{slug}.html'
+              s=re.sub(r'\s*<url><loc>'+re.escape(url)+r'</loc><lastmod>[^<]+</lastmod></url>', '', s)
+          add='\n'.join(f'  <url><loc>https://ohrana.tech/stati/{slug}.html</loc><lastmod>2026-09-24</lastmod></url>' for slug,_ in final)
+          s=s.replace('</urlset>',add+'\n</urlset>')
+          sm.write_text(s,encoding='utf-8')
+
+          # AI/search crawlability: OAI-SearchBot + wildcard already allowed; point robots to canonical sitemap.
+          rp=Path('robots.txt')
+          r=rp.read_text(encoding='utf-8')
+          r=re.sub(r'\n?Sitemap: https://ohrana\.tech/sitemap-stati-voprosy\.xml\s*','\n',r)
+          if 'Allow: /llms.txt' not in r:
+              r=r.replace('Allow: /assets/','Allow: /assets/\nAllow: /llms.txt')
+          rp.write_text(r.rstrip()+'\n',encoding='utf-8')
+
+          # llms.txt keeps all 25 article URLs but references only the canonical sitemap.
+          lp=Path('llms.txt')
+          l=lp.read_text(encoding='utf-8')
+          l=re.sub(r'\n- Карта 25 новых экспертных статей: https://ohrana\.tech/sitemap-stati-voprosy\.xml','',l)
+          if '25 новых материалов включены в основную карту сайта' not in l:
+              l=l.replace('- Основная карта сайта: https://ohrana.tech/sitemap.xml','- Основная карта сайта: https://ohrana.tech/sitemap.xml\n- 25 новых материалов включены в основную карту сайта')
+          lp.write_text(l,encoding='utf-8')
+
+          Path('sitemap-stati-voprosy.xml').unlink(missing_ok=True)
+          Path('article-covers.ready').unlink(missing_ok=True)
+          import shutil
+          shutil.rmtree('.article-cover-parts',ignore_errors=True)
+          shutil.rmtree('.site-update-parts',ignore_errors=True)
+          Path('site-update.ready').unlink(missing_ok=True)
+          Path('.github/workflows/unpack-article-covers.yml').unlink(missing_ok=True)
+          Path('.github/workflows/apply-25-articles.yml').unlink(missing_ok=True)
+          PY
+      - name: Verify package before commit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import re, xml.etree.ElementTree as ET
+          imgs=list(Path('images').glob('stati-*.webp'))
+          wanted=['stati-nevyhod-smena.webp','stati-zapusk-ohrany.webp','stati-zamena-ohrannika.webp','stati-otvetstvennost-imushchestvo.webp','stati-dokumenty-choo.webp','stati-zhurnaly-posta.webp','stati-osmotr-imushchestva.webp','stati-zaderzhanie-narushitelya.webp','stati-konflikt-prohodnaya.webp','stati-dopusk-podryadchikov.webp','stati-poteryan-propusk.webp','stati-kontrol-transporta.webp','stati-pogruzka-razgruzka.webp','stati-starshiy-smeny.webp','stati-razdelenie-otvetstvennosti.webp','stati-avariynyy-rezhim.webp','stati-antiglushenie.webp','stati-lozhnye-trevogi.webp','stati-trevozhnaya-knopka.webp','stati-vremya-pribytiya-gbr.webp','stati-usilenie-ohrany.webp','stati-ohrana-remont-pereezd.webp','stati-dacha-zimoy.webp','stati-pik-skladskih-otgruzok.webp','stati-choo-vnevedomstvennaya.webp']
+          for n in wanted:
+              p=Path('images')/n
+              assert p.exists(), n
+              with Image.open(p) as im: assert im.size==(480,720), (n,im.size)
+              assert p.stat().st_size < 200_000, (n,p.stat().st_size)
+          ET.parse('sitemap.xml')
+          txt=Path('sitemap.xml').read_text(encoding='utf-8')
+          assert sum(1 for x in wanted)==25
+          assert txt.count('<lastmod>2026-09-24</lastmod>') >= 25
+          assert 'sitemap-stati-voprosy.xml' not in Path('robots.txt').read_text(encoding='utf-8')
+          assert 'OAI-SearchBot' in Path('robots.txt').read_text(encoding='utf-8')
+          print('OK: 25 covers, 480x720, sitemap XML valid, AI/search crawl enabled')
+          PY
+      - name: Commit finished articles and covers
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish 25 customer-question articles with optimized covers"
+          git push
