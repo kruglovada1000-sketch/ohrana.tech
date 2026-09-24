@@ -1,6 +1,16 @@
 # SEO canonical redirects for legacy/main service URLs
 # Keep established root URLs as the single indexable versions.
 
+RewriteEngine On
+
+# Remove Yandex Metrika debug parameter from the homepage URL.
+# Example: /?_ym_debug=1 -> /
+RewriteCond %{QUERY_STRING} (^|&)_ym_debug=[^&]*(&|$) [NC]
+RewriteRule ^$ / [R=301,L,QSD]
+
+# Legacy article URL -> current canonical article.
+Redirect 301 /kompleksnaja-ohrana/ https://ohrana.tech/stati/kompleksnaya-ohrana.html
+
 Redirect 301 /uslugi/ohrana-skladov/ https://ohrana.tech/ohrana-skladov/
 Redirect 301 /uslugi/ohrana-magazinov/ https://ohrana.tech/ohrana-magazinov/
 Redirect 301 /uslugi/ohrana-ofisov/ https://ohrana.tech/ohrana-ofisov/
