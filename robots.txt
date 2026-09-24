@@ -78,4 +78,3 @@ Disallow: /license.txt
 Disallow: /wp-config.php
 
 Sitemap: https://ohrana.tech/sitemap.xml
-Sitemap: https://ohrana.tech/sitemap-stati-voprosy.xml
