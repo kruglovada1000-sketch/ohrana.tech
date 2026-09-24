@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'article-covers-bundle.b64'
+      - 'article-covers.ready'
 permissions:
   contents: write
 jobs:
@@ -19,7 +20,7 @@ jobs:
           mkdir -p images
           unzip -o article-covers.zip -d images
           test "$(find images -maxdepth 1 -type f -name 'stati-*.webp' | grep -E 'stati-(nevyhod-smena|zapusk-ohrany|zamena-ohrannika|otvetstvennost-imushchestvo|dokumenty-choo|zhurnaly-posta|osmotr-imushchestva|zaderzhanie-narushitelya|konflikt-prohodnaya|dopusk-podryadchikov|poteryan-propusk|kontrol-transporta|pogruzka-razgruzka|starshiy-smeny|razdelenie-otvetstvennosti|avariynyy-rezhim|antiglushenie|lozhnye-trevogi|trevozhnaya-knopka|vremya-pribytiya-gbr|usilenie-ohrany|ohrana-remont-pereezd|dacha-zimoy|pik-skladskih-otgruzok|choo-vnevedomstvennaya)\.webp$' | wc -l)" -eq 25
-          rm -f article-covers-bundle.b64 article-covers.zip
+          rm -f article-covers-bundle.b64 article-covers.zip article-covers.ready
       - name: Commit covers
         run: |
           git config user.name "github-actions[bot]"
