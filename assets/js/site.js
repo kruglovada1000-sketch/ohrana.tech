@@ -5,7 +5,9 @@ var body=document.body;
 /* site-theme-yinyang-js-v4 */
 function forceYinYang(btn){
   if(!btn)return;
-  btn.innerHTML='<span class="theme-yinyang" aria-hidden="true">☯</span>';
+  if(!btn.querySelector('.theme-yinyang')){
+    btn.innerHTML='<span class="theme-yinyang" aria-hidden="true">☯</span>';
+  }
   btn.title='Светлая / тёмная тема';
 }
 var themePlacementMq=window.matchMedia?window.matchMedia('(max-width:1100px)'):null;
