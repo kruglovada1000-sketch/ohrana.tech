@@ -55,9 +55,9 @@ jobs:
           if-no-files-found: ignore
 
   browser-smoke:
-    name: Browser smoke tests
+    name: Browser + visual image tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -85,8 +85,21 @@ jobs:
           cat /tmp/ohrana-http.log
           exit 1
 
-      - name: Playwright checks
+      - name: Playwright functional checks
         run: npx playwright test --config=playwright.config.mjs
+
+      - name: Scan all pages for visually cropped images
+        if: always()
+        run: node visual-image-audit.mjs
+
+      - name: Upload visual image audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-image-audit
+          path: visual-qa/
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Upload browser report on failure
         if: failure()
