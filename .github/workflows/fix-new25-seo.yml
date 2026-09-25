@@ -1,0 +1,113 @@
+name: Fix SEO metadata for new articles
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/fix-new25-seo.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+
+      - name: Normalize SEO metadata
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          names = [
+            'chto-delat-esli-ohrannik-ne-vyshel-na-smenu.html',
+            'srok-zapuska-ohrany-novogo-obekta.html',
+            'zamena-ohrannika-po-trebovaniyu-zakazchika.html',
+            'otvetstvennost-choo-za-propazhu-imushchestva.html',
+            'dokumenty-choo-do-nachala-ohrany.html',
+            'zhurnaly-i-dokumenty-na-postu-ohrany.html',
+            'imeet-li-ohrannik-pravo-osmatrivat-sumki-avtomobil.html',
+            'mozhet-li-chastnyy-ohrannik-zaderzhat-narushitelya.html',
+            'posetitel-otkazyvaetsya-soblyudat-propusknoy-rezhim.html',
+            'dopusk-podryadchikov-kurerov-vremennyh-rabotnikov.html',
+            'poteryan-propusk-klyuch-karta-dostupa.html',
+            'kontrol-vezda-vyezda-transporta.html',
+            'ohrana-pogruzki-i-razgruzki.html',
+            'kogda-nuzhen-starshiy-smeny-ohrany.html',
+            'otvetstvennost-choo-i-sluzhby-bezopasnosti-zakazchika.html',
+            'ohrana-pri-otklyuchenii-elektrichestva-interneta-skud.html',
+            'zashchita-ohrannoy-signalizacii-ot-glusheniya.html',
+            'kak-umenshit-lozhnye-trevogi.html',
+            'nuzhna-li-trevozhnaya-knopka-esli-est-kamery.html',
+            'kak-bystro-dolzhna-priehat-gbr.html',
+            'usilenie-ohrany-nochyu-vyhodnye-prazdniki.html',
+            'ohrana-obekta-vo-vremya-remonta-pereezda.html',
+            'kak-zashchitit-dachu-zimoy.html',
+            'kak-usilit-ohranu-sklada-v-pikovyy-sezon.html',
+            'chop-choo-vnevedomstvennaya-ohrana-raznica.html',
+          ]
+
+          publisher_old='"publisher":{"@id":"https://ohrana.tech/#organization"}'
+          publisher_new='"publisher":{"@type":"Organization","@id":"https://ohrana.tech/#organization","name":"ООО ЧОО «Рускорпорация охрана и консалтинг»","url":"https://ohrana.tech/","logo":{"@type":"ImageObject","url":"https://ohrana.tech/images/schit.png"}}'
+
+          for name in names:
+            p=Path('stati')/name
+            s=p.read_text(encoding='utf-8')
+            desc=re.search(r'<meta\s+name="description"\s+content="([^"]+)"', s, re.I)
+            can=re.search(r'<link\s+rel="canonical"\s+href="([^"]+)"', s, re.I)
+            if not desc or not can:
+              raise SystemExit(f'missing description/canonical in {p}')
+            description=desc.group(1)
+            canonical=can.group(1)
+
+            if 'name="robots"' not in s.lower():
+              s=s.replace(desc.group(0), desc.group(0)+'<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">', 1)
+            if 'property="og:description"' not in s.lower():
+              marker=re.search(r'<meta\s+property="og:title"\s+content="[^"]+">', s, re.I)
+              if marker:
+                s=s.replace(marker.group(0), marker.group(0)+f'<meta property="og:description" content="{description}">', 1)
+            if 'property="og:url"' not in s.lower():
+              marker=re.search(r'<meta\s+property="og:description"\s+content="[^"]+">', s, re.I)
+              if marker:
+                s=s.replace(marker.group(0), marker.group(0)+f'<meta property="og:url" content="{canonical}">', 1)
+            if 'property="og:locale"' not in s.lower():
+              marker=re.search(r'<meta\s+property="og:type"\s+content="article">', s, re.I)
+              if marker:
+                s=s.replace(marker.group(0), marker.group(0)+'<meta property="og:locale" content="ru_RU">', 1)
+            if 'name="twitter:card"' not in s.lower():
+              marker=re.search(r'<meta\s+property="og:image"\s+content="[^"]+">', s, re.I)
+              if marker:
+                s=s.replace(marker.group(0), marker.group(0)+'<meta name="twitter:card" content="summary_large_image">', 1)
+
+            s=s.replace(publisher_old, publisher_new)
+            s=s.replace('"dateModified":"2026-09-24"', '"dateModified":"2026-09-25"')
+            p.write_text(s, encoding='utf-8')
+
+          sp=Path('sitemap.xml')
+          sm=sp.read_text(encoding='utf-8')
+          for name in names:
+            url=f'https://ohrana.tech/stati/{name}'
+            pat=rf'(<url><loc>{re.escape(url)}</loc><lastmod>)\d{{4}}-\d{{2}}-\d{{2}}(</lastmod></url>)'
+            sm,n=re.subn(pat, rf'\g<1>2026-09-25\g<2>', sm)
+            if n != 1:
+              raise SystemExit(f'sitemap entry missing or duplicated: {url}')
+          sp.write_text(sm, encoding='utf-8')
+          PY
+
+      - name: Commit normalized metadata
+        shell: bash
+        run: |
+          git config user.name "JARVIS KODA"
+          git config user.email "actions@users.noreply.github.com"
+          git add stati sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No SEO changes needed"
+            exit 0
+          fi
+          git commit -m "Normalize SEO metadata for 25 new articles"
+          git push
