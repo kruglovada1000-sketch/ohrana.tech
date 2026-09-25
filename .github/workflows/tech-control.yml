@@ -1,0 +1,127 @@
+name: Tech control ohrana.tech
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '20 3 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tech-control-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-audit:
+    name: Static audit + links
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+
+      - name: Our static audit
+        run: node tech-control.mjs
+
+      - name: Broken links (Lychee)
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --root-dir "$(pwd)"
+            --no-progress
+            --exclude-mail
+            --max-retries 2
+            './**/*.html'
+          fail: false
+          jobSummary: true
+          output: lychee-report.md
+
+      - name: Upload link report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tech-control-links
+          path: lychee-report.md
+          if-no-files-found: ignore
+
+  browser-smoke:
+    name: Browser smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-package-lock @playwright/test@latest
+          npx playwright install --with-deps chromium
+
+      - name: Start local copy of site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/ohrana-http.log 2>&1 &
+          echo $! > /tmp/ohrana-http.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/ohrana-http.log
+          exit 1
+
+      - name: Playwright checks
+        run: npx playwright test --config=playwright.config.mjs
+
+      - name: Upload browser report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tech-control-browser-failure
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  live-lighthouse:
+    name: Nightly live Lighthouse
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+
+      - name: Full-site Unlighthouse scan
+        continue-on-error: true
+        run: npx --yes unlighthouse-ci --site https://ohrana.tech --budget 70 --desktop --output-path .unlighthouse
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tech-control-lighthouse
+          path: .unlighthouse/
+          if-no-files-found: ignore
+          retention-days: 14
