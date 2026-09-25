@@ -42,40 +42,61 @@ html[data-theme="light"] .form-panel .field label{color:#34312D!important}
   html[data-theme="light"] .site-header .header-theme-toggle{background:#fff!important;color:#171717!important;border-color:rgba(23,23,23,.16)!important}
 }
 
-/* homepage-about-visual-size-v7 */
+/* homepage-about-balance-v8 */
 #about .about-grid{
-  grid-template-columns:minmax(0,.74fr) minmax(0,1.26fr)!important;
-  gap:28px!important;
-  align-items:start!important;
+  grid-template-columns:minmax(0,1.12fr) minmax(420px,.88fr)!important;
+  gap:48px!important;
+  align-items:center!important;
 }
-#about .about-visual-wrap{
+#about .about-copy{
   width:100%!important;
   max-width:none!important;
+  margin-bottom:0!important;
+}
+#about .about-copy h2{max-width:760px!important}
+#about .about-copy p{max-width:720px!important}
+#about .about-visual-wrap{
+  width:100%!important;
+  max-width:580px!important;
+  margin-left:auto!important;
   padding-top:0!important;
 }
 #about .about-visual{
   width:100%!important;
+  aspect-ratio:4/3!important;
   padding:0!important;
+  border:1px solid rgba(232,200,122,.78)!important;
   border-radius:24px!important;
+  background:var(--panel)!important;
+  box-shadow:0 22px 56px rgba(0,0,0,.24)!important;
   overflow:hidden!important;
 }
+#about .about-visual::before{display:none!important}
 #about .about-visual img{
   display:block!important;
-  width:108%!important;
+  width:100%!important;
+  height:100%!important;
   max-width:none!important;
-  height:auto!important;
-  margin-left:-4%!important;
-  object-fit:contain!important;
-  object-position:center!important;
+  max-height:none!important;
+  margin:0!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+}
+@media(max-width:1100px) and (min-width:961px){
+  #about .about-grid{
+    grid-template-columns:minmax(0,1.08fr) minmax(380px,.92fr)!important;
+    gap:38px!important;
+  }
+  #about .about-visual-wrap{max-width:520px!important}
 }
 @media(max-width:960px){
   #about .about-grid{grid-template-columns:1fr!important;gap:30px!important}
-  #about .about-visual-wrap{width:min(100%,820px)!important;margin:0 auto!important}
-  #about .about-visual img{width:104%!important;margin-left:-2%!important}
+  #about .about-copy h2,#about .about-copy p{max-width:none!important}
+  #about .about-visual-wrap{width:min(100%,680px)!important;max-width:680px!important;margin:0 auto!important}
 }
 @media(max-width:560px){
-  #about .about-visual{border-radius:18px!important}
-  #about .about-visual img{width:100%!important;margin-left:0!important}
+  #about .about-grid{gap:24px!important}
+  #about .about-visual{aspect-ratio:4/3!important;border-radius:18px!important}
 }
 
 /* homepage-services-underline-v2 — same baseline/thickness as every other nav item */
