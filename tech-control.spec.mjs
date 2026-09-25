@@ -74,6 +74,37 @@ test('Статьи: раскрытие работает и обложка не �
   expect(contentMotion.animation).toBe('none');
 });
 
+test('Статья: картинка вписана в скруглённую золотую рамку без стелса', async ({ page }) => {
+  const response = await page.goto('/stati/zhurnaly-i-dokumenty-na-postu-ohrany.html', { waitUntil: 'networkidle' });
+  expect(response?.ok()).toBeTruthy();
+
+  const frame = page.locator('.shield-box');
+  const image = page.locator('.shield-box .shield-active');
+  await expect(frame).toBeVisible();
+  await expect(image).toBeVisible();
+
+  const visual = await image.evaluate(el => {
+    const imgStyle = getComputedStyle(el);
+    const frameStyle = getComputedStyle(el.parentElement);
+    const rect = el.getBoundingClientRect();
+    return {
+      frameRadius: parseFloat(frameStyle.borderTopLeftRadius),
+      imageRadius: parseFloat(imgStyle.borderTopLeftRadius),
+      overflow: frameStyle.overflow,
+      animation: imgStyle.animationName,
+      naturalAspect: el.naturalWidth / el.naturalHeight,
+      renderedAspect: rect.width / rect.height
+    };
+  });
+
+  expect(visual.frameRadius).toBeGreaterThanOrEqual(18);
+  expect(visual.imageRadius).toBeGreaterThanOrEqual(16);
+  expect(visual.overflow).toBe('hidden');
+  expect(visual.animation).toBe('none');
+  expect(Math.abs(visual.naturalAspect - visual.renderedAspect)).toBeLessThan(0.03);
+  await expect(page.locator('.shield-ghost,.shield-scan,.shield-status')).toHaveCount(0);
+});
+
 test('переключатель темы реально меняет тему', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
   const toggle = page.locator('#themeToggle');
