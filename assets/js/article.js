@@ -3,14 +3,18 @@
 
 /* Статьи: одна спокойная обложка — без стелс-мигания, призрака и скан-линий. */
 var style=document.createElement('style');
-style.id='article-cover-fix-v2';
+style.id='article-cover-fix-v3';
 style.textContent='\
-.shield-wrap{max-width:400px!important}\
-.shield-wrap::before{inset:-12px!important;border-radius:32px!important;background:linear-gradient(135deg,rgba(245,227,179,.16),rgba(232,200,122,.06))!important;filter:blur(34px)!important}\
-.shield-box{position:relative!important;width:100%!important;aspect-ratio:3/4!important;border-radius:26px!important;overflow:hidden!important;border:2px solid transparent!important;background:linear-gradient(#090b10,#090b10) padding-box,linear-gradient(135deg,#f5e3b3 0%,#e8c87a 48%,#a97f2f 100%) border-box!important;box-shadow:0 24px 70px rgba(0,0,0,.48),0 0 30px rgba(232,200,122,.13)!important}\
-.shield-box .shield-active{display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:10px!important;border-radius:23px!important;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;transform:none!important;animation:none!important;transition:none!important;background:#090b10!important}\
+.shield-wrap{max-width:420px!important}\
+.shield-wrap::before{inset:-12px!important;border-radius:34px!important;background:linear-gradient(135deg,rgba(245,227,179,.16),rgba(232,200,122,.06))!important;filter:blur(34px)!important}\
+.shield-box{position:relative!important;width:100%!important;aspect-ratio:auto!important;border-radius:26px!important;overflow:hidden!important;border:2px solid transparent!important;background:linear-gradient(#090b10,#090b10) padding-box,linear-gradient(135deg,#f5e3b3 0%,#e8c87a 48%,#a97f2f 100%) border-box!important;box-shadow:0 24px 70px rgba(0,0,0,.48),0 0 30px rgba(232,200,122,.13)!important}\
+.shield-box .shield-active{display:block!important;position:relative!important;inset:auto!important;width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;padding:0!important;border-radius:23px!important;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;transform:none!important;animation:none!important;transition:none!important;background:#090b10!important}\
 .shield-box .shield-ghost,.shield-box .shield-scan,.shield-box .shield-status{display:none!important;opacity:0!important;animation:none!important}\
-@media(max-width:680px){.shield-wrap{max-width:300px!important}.shield-box{border-radius:22px!important}.shield-box .shield-active{padding:7px!important;border-radius:19px!important}}';
+.article-body>img,.article-body figure:has(>img){border:1px solid rgba(232,200,122,.76)!important;border-radius:20px!important;overflow:hidden!important;background:#090b10!important;box-shadow:0 16px 42px rgba(0,0,0,.28)!important}\
+.article-body>img,.article-body figure>img{display:block!important;max-width:100%!important;height:auto!important;border-radius:inherit!important}\
+.article-body :where(.avatar,.author-photo,.round-image,.circle-image):has(>img){border-radius:50%!important;aspect-ratio:1/1!important;overflow:hidden!important}\
+.article-body :where(.avatar,.author-photo,.round-image,.circle-image)>img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}\
+@media(max-width:680px){.shield-wrap{max-width:320px!important}.shield-box{border-radius:22px!important}.shield-box .shield-active{border-radius:19px!important}.article-body>img,.article-body figure:has(>img){border-radius:16px!important}}';
 document.head.appendChild(style);
 
 var coverMap={
