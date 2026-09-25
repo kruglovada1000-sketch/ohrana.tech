@@ -6,7 +6,7 @@
  if(!document.querySelector('link[data-visual-fixes="20260924"]')){
   var visualFixes=document.createElement('link');
   visualFixes.rel='stylesheet';
-  visualFixes.href='/css/visual-fixes-20260924.css?v=20260925-2';
+  visualFixes.href='/css/visual-fixes-20260924.css?v=20260925-3';
   visualFixes.dataset.visualFixes='20260924';
   document.head.appendChild(visualFixes);
  }
