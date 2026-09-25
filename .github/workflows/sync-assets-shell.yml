@@ -1,0 +1,32 @@
+name: Sync assets shell
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/sync-assets-shell.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync shared shell files
+        run: |
+          cp css/site-shell.css assets/css/site-shell.css
+          cp js/site.js assets/js/site.js
+
+      - name: Commit synced assets shell
+        run: |
+          rm .github/workflows/sync-assets-shell.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/css/site-shell.css assets/js/site.js .github/workflows/sync-assets-shell.yml
+          git commit -m "UI: sync assets shell with shared theme toggle [skip ci]"
+          git push
