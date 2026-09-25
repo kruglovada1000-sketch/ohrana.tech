@@ -81,7 +81,7 @@ footer{border-top:1px solid var(--line);padding:70px 0 0;background:var(--footer
   background-size:contain!important;
   transform:translateY(-1px) rotate(0deg)!important;
   transform-origin:50% 50%!important;
-  transition:transform .55s cubic-bezier(.22,.61,.36,1)!important;
+  transition:transform .72s cubic-bezier(.22,.61,.36,1)!important;
   will-change:transform;
 }
 html[data-theme="light"] .theme-yinyang{
@@ -92,8 +92,5 @@ html[data-theme="light"] .theme-yinyang{
 }
 @media(max-width:420px){
   .theme-yinyang{width:26px!important;height:26px!important}
-}
-@media(prefers-reduced-motion:reduce){
-  .theme-yinyang{transition:none!important}
 }
 
