@@ -112,3 +112,9 @@ html[data-theme="light"] .theme-yinyang{
   #themeToggle .theme-yinyang{width:26px!important;height:26px!important}
 }
 
+
+/* nav-home-underline-alignment-v1 */
+@media(min-width:1101px){
+  nav.nav .wrap>a:first-child{padding-left:16px!important}
+  nav.nav .wrap>a:first-child::after{left:16px!important;right:16px!important;bottom:6px!important;height:1px!important}
+}
