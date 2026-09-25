@@ -12,6 +12,26 @@
   document.head.appendChild(visualFixes);
  }
 
+ // Header navigation refinement: full-width top + bottom gold lines on hover/active.
+ // Kept here so the correction applies consistently to every page using the shared menu script.
+ if(!document.getElementById('header-nav-v3')){
+  var navStyle=document.createElement('style');
+  navStyle.id='header-nav-v3';
+  navStyle.textContent='\
+@media(min-width:1101px){\
+ #siteNav>.wrap>a{position:relative!important;overflow:visible!important}\
+ #siteNav>.wrap>a::before,#siteNav>.wrap>a::after,#siteNav .services-nav>a.services-nav-link::before,#siteNav .services-nav>a.services-nav-link::after{content:""!important;display:block!important;position:absolute!important;height:2px!important;border-radius:2px!important;background:var(--gold,#E8C87A)!important;transform:scaleX(0)!important;transform-origin:center!important;transition:transform .28s var(--ease,cubic-bezier(.16,1,.3,1))!important;pointer-events:none!important}\
+ #siteNav>.wrap>a::before{left:0!important;right:0!important;top:-6px!important}\
+ #siteNav>.wrap>a::after{left:0!important;right:0!important;bottom:-6px!important}\
+ #siteNav .services-nav>a.services-nav-link::before{left:0!important;right:-31px!important;top:-6px!important}\
+ #siteNav .services-nav>a.services-nav-link::after{left:0!important;right:-31px!important;bottom:-6px!important}\
+ #siteNav>.wrap>a:hover::before,#siteNav>.wrap>a:hover::after,#siteNav>.wrap>a:focus-visible::before,#siteNav>.wrap>a:focus-visible::after,#siteNav>.wrap>a.active::before,#siteNav>.wrap>a.active::after,#siteNav .services-nav:hover>a.services-nav-link::before,#siteNav .services-nav:hover>a.services-nav-link::after,#siteNav .services-nav:focus-within>a.services-nav-link::before,#siteNav .services-nav:focus-within>a.services-nav-link::after,#siteNav .services-nav.services-open>a.services-nav-link::before,#siteNav .services-nav.services-open>a.services-nav-link::after{transform:scaleX(1)!important}\
+ #siteNav .services-panel::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px;background:transparent;pointer-events:auto}\
+}\
+';
+  document.head.appendChild(navStyle);
+ }
+
  // Restore the real company photograph on homepage section 01.
  if(location.pathname==='/'||location.pathname==='/index.html'){
   var aboutImage=document.querySelector('#about .about-visual img');
@@ -36,14 +56,35 @@
  var panel=group.querySelector('.services-panel');
  var nav=document.getElementById('siteNav');
  var mq=window.matchMedia('(min-width:1101px)');
- function setOpen(open){button.setAttribute('aria-expanded',String(open));panel.hidden=!open;}
+ var closeTimer=null;
+
+ function cancelClose(){
+  if(closeTimer){clearTimeout(closeTimer);closeTimer=null;}
+ }
+ function setOpen(open){
+  cancelClose();
+  button.setAttribute('aria-expanded',String(open));
+  panel.hidden=!open;
+  group.classList.toggle('services-open',open);
+ }
+ function scheduleClose(){
+  cancelClose();
+  closeTimer=setTimeout(function(){
+   closeTimer=null;
+   if(mq.matches&&!group.matches(':hover')&&!panel.matches(':hover')&&!group.contains(document.activeElement))setOpen(false);
+  },520);
+ }
+
  button.addEventListener('click',function(){setOpen(panel.hidden);});
- group.addEventListener('mouseenter',function(){if(mq.matches)setOpen(true);});
- group.addEventListener('mouseleave',function(){if(mq.matches&&!group.contains(document.activeElement))setOpen(false);});
- group.addEventListener('focusout',function(){setTimeout(function(){if(!group.contains(document.activeElement))setOpen(false);},0);});
+ group.addEventListener('mouseenter',function(){if(mq.matches){cancelClose();setOpen(true);}});
+ group.addEventListener('mouseleave',function(){if(mq.matches)scheduleClose();});
+ panel.addEventListener('mouseenter',function(){if(mq.matches)cancelClose();});
+ panel.addEventListener('mouseleave',function(){if(mq.matches)scheduleClose();});
+ group.addEventListener('focusin',cancelClose);
+ group.addEventListener('focusout',function(){setTimeout(function(){if(!group.contains(document.activeElement))scheduleClose();},0);});
  group.addEventListener('keydown',function(e){
   if(e.key==='Escape'){e.preventDefault();setOpen(false);button.focus();}
-  if(e.key==='ArrowDown'&&e.target!==panel&& !panel.contains(e.target)){e.preventDefault();setOpen(true);panel.querySelector('a').focus();}
+  if(e.key==='ArrowDown'&&e.target!==panel&&!panel.contains(e.target)){e.preventDefault();setOpen(true);panel.querySelector('a').focus();}
  });
  document.addEventListener('click',function(e){if(!group.contains(e.target))setOpen(false);});
  panel.addEventListener('click',function(e){if(e.target.closest('a'))setOpen(false);});
