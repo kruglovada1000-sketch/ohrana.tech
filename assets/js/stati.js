@@ -3,18 +3,19 @@
 
 /* 25 новых статей: нормальные компактные превью без reveal-мигания. */
 var style=document.createElement('style');
-style.id='article-catalog-fix-v2';
+style.id='article-catalog-fix-v3';
 style.textContent='\
 .accordion-container .accordion-item[data-reveal]{opacity:1!important;transform:none!important;transition:border-color .35s!important}\
 .accordion-featured{display:grid!important;grid-template-columns:124px minmax(0,1fr)!important;gap:18px!important;align-items:center!important;padding:8px 24px 10px!important}\
 .accordion-featured>a{display:block!important;width:124px!important;max-width:124px!important;aspect-ratio:2/3!important;overflow:hidden!important;border-radius:18px!important;border:2px solid transparent!important;background:linear-gradient(var(--panel),var(--panel)) padding-box,var(--gold-grad) border-box!important;box-shadow:0 10px 30px rgba(232,200,122,.16)!important}\
-.accordion-featured img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:0!important;border-radius:15px!important;opacity:1!important;transform:none!important;filter:none!important;animation:none!important;transition:none!important;background:#090b10!important}\
+.accordion-featured img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:0!important;border-radius:15px!important;opacity:1!important;transform:none!important;filter:none!important;animation:none!important;transition:none!important;background:#090b10!important;backface-visibility:hidden!important}\
+.accordion-content,.accordion-content.active,.accordion-content img,.accordion-item.open .accordion-featured img{animation:none!important}\
 .accordion-featured .accordion-trailer{padding:0!important;margin:0!important;align-self:center!important}\
 @media(max-width:540px){.accordion-featured{grid-template-columns:92px minmax(0,1fr)!important;gap:12px!important;align-items:start!important;padding:8px 20px 10px!important}.accordion-featured>a{width:92px!important;max-width:92px!important;border-radius:15px!important}.accordion-featured img{border-radius:12px!important}.accordion-featured .accordion-trailer{font-size:.86rem!important;line-height:1.5!important}}';
 document.head.appendChild(style);
 
-/* В новых 25 статьях ставим более качественные тематические изображения,
-   которые уже лежат в /images и используются на сайте. */
+/* Тематические обложки для новых 25 статей. Источник меняем только после
+   полной загрузки и декодирования картинки, чтобы раскрытие карточки не мигало. */
 var coverMap={
   'chto-delat-esli-ohrannik-ne-vyshel-na-smenu.html':'/images/fizohrana-dva.jpg',
   'srok-zapuska-ohrany-novogo-obekta.html':'/images/tarif-post-fizicheskoy-ohrany.webp',
@@ -43,6 +44,39 @@ var coverMap={
   'chop-choo-vnevedomstvennaya-ohrana-raznica.html':'/images/chop-company.jpg'
 };
 
+function installCover(img,target){
+  if(!img||!target)return;
+  img.loading='eager';
+  img.decoding='async';
+  img.removeAttribute('srcset');
+  if(img.getAttribute('src')===target)return;
+
+  var preload=new Image();
+  preload.decoding='async';
+  preload.src=target;
+
+  var applied=false;
+  function apply(){
+    if(applied)return;
+    applied=true;
+    img.src=target;
+    img.removeAttribute('srcset');
+    img.style.opacity='1';
+    img.style.visibility='visible';
+  }
+
+  if(typeof preload.decode==='function'){
+    preload.decode().then(apply).catch(function(){
+      if(preload.complete&&preload.naturalWidth)apply();
+      else preload.onload=apply;
+    });
+  }else if(preload.complete&&preload.naturalWidth){
+    apply();
+  }else{
+    preload.onload=apply;
+  }
+}
+
 document.querySelectorAll('.accordion-item').forEach(function(item){
   item.removeAttribute('data-reveal');
   item.style.opacity='1';
@@ -51,10 +85,7 @@ document.querySelectorAll('.accordion-item').forEach(function(item){
   var img=item.querySelector('.accordion-featured img');
   if(!link||!img)return;
   var file=(link.getAttribute('href')||'').split('/').pop();
-  if(coverMap[file]){
-    img.src=coverMap[file];
-    img.removeAttribute('srcset');
-  }
+  if(coverMap[file])installCover(img,coverMap[file]);
 });
 
 var items=Array.prototype.slice.call(document.querySelectorAll('.accordion-item'));if(!items.length)return;
