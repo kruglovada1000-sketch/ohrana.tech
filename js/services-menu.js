@@ -3,33 +3,12 @@
  'use strict';
 
  // Shared visual regression fixes for the current site shell.
- // This stylesheet is intentionally scoped to the affected visuals only.
  if(!document.querySelector('link[data-visual-fixes="20260924"]')){
   var visualFixes=document.createElement('link');
   visualFixes.rel='stylesheet';
   visualFixes.href='/css/visual-fixes-20260924.css?v=20260924-1';
   visualFixes.dataset.visualFixes='20260924';
   document.head.appendChild(visualFixes);
- }
-
- // Header navigation refinement: full-width top + bottom gold lines on hover/active.
- // Kept here so the correction applies consistently to every page using the shared menu script.
- if(!document.getElementById('header-nav-v3')){
-  var navStyle=document.createElement('style');
-  navStyle.id='header-nav-v3';
-  navStyle.textContent='\
-@media(min-width:1101px){\
- #siteNav>.wrap>a{position:relative!important;overflow:visible!important}\
- #siteNav>.wrap>a::before,#siteNav>.wrap>a::after,#siteNav .services-nav>a.services-nav-link::before,#siteNav .services-nav>a.services-nav-link::after{content:""!important;display:block!important;position:absolute!important;height:2px!important;border-radius:2px!important;background:var(--gold,#E8C87A)!important;transform:scaleX(0)!important;transform-origin:center!important;transition:transform .28s var(--ease,cubic-bezier(.16,1,.3,1))!important;pointer-events:none!important}\
- #siteNav>.wrap>a::before{left:0!important;right:0!important;top:-6px!important}\
- #siteNav>.wrap>a::after{left:0!important;right:0!important;bottom:-6px!important}\
- #siteNav .services-nav>a.services-nav-link::before{left:0!important;right:-31px!important;top:-6px!important}\
- #siteNav .services-nav>a.services-nav-link::after{left:0!important;right:-31px!important;bottom:-6px!important}\
- #siteNav>.wrap>a:hover::before,#siteNav>.wrap>a:hover::after,#siteNav>.wrap>a:focus-visible::before,#siteNav>.wrap>a:focus-visible::after,#siteNav>.wrap>a.active::before,#siteNav>.wrap>a.active::after,#siteNav .services-nav:hover>a.services-nav-link::before,#siteNav .services-nav:hover>a.services-nav-link::after,#siteNav .services-nav:focus-within>a.services-nav-link::before,#siteNav .services-nav:focus-within>a.services-nav-link::after,#siteNav .services-nav.services-open>a.services-nav-link::before,#siteNav .services-nav.services-open>a.services-nav-link::after{transform:scaleX(1)!important}\
- #siteNav .services-panel::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px;background:transparent;pointer-events:auto}\
-}\
-';
-  document.head.appendChild(navStyle);
  }
 
  // Restore the real company photograph on homepage section 01.
@@ -41,9 +20,8 @@
   }
  }
 
- // Price carousel uses the transparent brand shield, never the baked-background version.
- var tariffShields=document.querySelectorAll('.price-tariffs .tariff-shield');
- tariffShields.forEach(function(shield){
+ // Price carousel uses the transparent brand shield.
+ document.querySelectorAll('.price-tariffs .tariff-shield').forEach(function(shield){
   shield.src='/images/schit.png';
   shield.removeAttribute('width');
   shield.removeAttribute('height');
@@ -51,46 +29,113 @@
 
  var group=document.querySelector('#siteNav .services-nav');
  if(!group||group.dataset.servicesBound)return;
- group.dataset.servicesBound='1';
+
  var button=group.querySelector('.services-nav-toggle');
  var panel=group.querySelector('.services-panel');
  var nav=document.getElementById('siteNav');
+ if(!button||!panel||!nav)return;
+
+ group.dataset.servicesBound='1';
+
  var mq=window.matchMedia('(min-width:1101px)');
  var closeTimer=null;
+ var overGroup=false;
+ var overPanel=false;
 
  function cancelClose(){
-  if(closeTimer){clearTimeout(closeTimer);closeTimer=null;}
+  if(closeTimer!==null){
+   clearTimeout(closeTimer);
+   closeTimer=null;
+  }
  }
+
  function setOpen(open){
   cancelClose();
-  button.setAttribute('aria-expanded',String(open));
+  button.setAttribute('aria-expanded',open?'true':'false');
   panel.hidden=!open;
   group.classList.toggle('services-open',open);
  }
+
  function scheduleClose(){
   cancelClose();
   closeTimer=setTimeout(function(){
    closeTimer=null;
-   if(mq.matches&&!group.matches(':hover')&&!panel.matches(':hover')&&!group.contains(document.activeElement))setOpen(false);
-  },520);
+   var focusInside=group.contains(document.activeElement);
+   if(!overGroup&&!overPanel&&!focusInside){
+    setOpen(false);
+   }
+  },650);
  }
 
- button.addEventListener('click',function(){setOpen(panel.hidden);});
- group.addEventListener('mouseenter',function(){if(mq.matches){cancelClose();setOpen(true);}});
- group.addEventListener('mouseleave',function(){if(mq.matches)scheduleClose();});
- panel.addEventListener('mouseenter',function(){if(mq.matches)cancelClose();});
- panel.addEventListener('mouseleave',function(){if(mq.matches)scheduleClose();});
- group.addEventListener('focusin',cancelClose);
- group.addEventListener('focusout',function(){setTimeout(function(){if(!group.contains(document.activeElement))scheduleClose();},0);});
- group.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){e.preventDefault();setOpen(false);button.focus();}
-  if(e.key==='ArrowDown'&&e.target!==panel&&!panel.contains(e.target)){e.preventDefault();setOpen(true);panel.querySelector('a').focus();}
+ // Desktop: hover opens; leaving gives enough time to reach the dropdown.
+ group.addEventListener('mouseenter',function(){
+  overGroup=true;
+  if(mq.matches)setOpen(true);
  });
- document.addEventListener('click',function(e){if(!group.contains(e.target))setOpen(false);});
- panel.addEventListener('click',function(e){if(e.target.closest('a'))setOpen(false);});
- new MutationObserver(function(){if(!mq.matches&&!nav.classList.contains('open'))setOpen(false);}).observe(nav,{attributes:true,attributeFilter:['class']});
- if(mq.addEventListener)mq.addEventListener('change',function(){setOpen(false);});
- else mq.addListener(function(){setOpen(false);});
+ group.addEventListener('mouseleave',function(){
+  overGroup=false;
+  if(mq.matches)scheduleClose();
+ });
+ panel.addEventListener('mouseenter',function(){
+  overPanel=true;
+  if(mq.matches){cancelClose();setOpen(true);}
+ });
+ panel.addEventListener('mouseleave',function(){
+  overPanel=false;
+  if(mq.matches)scheduleClose();
+ });
+
+ // Click/touch remains available on desktop and mobile.
+ button.addEventListener('click',function(e){
+  e.preventDefault();
+  setOpen(panel.hidden);
+ });
+
+ group.addEventListener('focusin',function(){
+  cancelClose();
+  if(mq.matches)setOpen(true);
+ });
+ group.addEventListener('focusout',function(){
+  setTimeout(function(){
+   if(!group.contains(document.activeElement))scheduleClose();
+  },0);
+ });
+
+ group.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+   e.preventDefault();
+   setOpen(false);
+   button.focus();
+  }
+  if(e.key==='ArrowDown'&&!panel.contains(e.target)){
+   var firstLink=panel.querySelector('a');
+   if(firstLink){
+    e.preventDefault();
+    setOpen(true);
+    firstLink.focus();
+   }
+  }
+ });
+
+ document.addEventListener('click',function(e){
+  if(!group.contains(e.target))setOpen(false);
+ });
+ panel.addEventListener('click',function(e){
+  if(e.target.closest('a'))setOpen(false);
+ });
+
+ new MutationObserver(function(){
+  if(!mq.matches&&!nav.classList.contains('open'))setOpen(false);
+ }).observe(nav,{attributes:true,attributeFilter:['class']});
+
+ function handleModeChange(){
+  overGroup=false;
+  overPanel=false;
+  setOpen(false);
+ }
+ if(mq.addEventListener)mq.addEventListener('change',handleModeChange);
+ else mq.addListener(handleModeChange);
+
  setOpen(false);
 
  // Service-specific hero images while service pages are being completed.
