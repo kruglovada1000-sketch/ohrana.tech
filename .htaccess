@@ -17,6 +17,9 @@ RewriteRule ^$ / [R=301,L,QSD]
 
 # Legacy article URL -> current canonical article.
 Redirect 301 /kompleksnaja-ohrana/ https://ohrana.tech/stati/kompleksnaya-ohrana.html
+Redirect 301 /stati/nochnaya-ohrana.html https://ohrana.tech/stati/nochnaya-ohrana-obektov.html
+Redirect 301 /stati/ohrana-meropriyatiy-v-moskve.html https://ohrana.tech/ohrana-meropriyatiy-v-moskve/
+Redirect 301 /soprovozhdenie-gruzov/ https://ohrana.tech/stati/soprovozhdenie-gruzov.html
 
 Redirect 301 /uslugi/ohrana-skladov/ https://ohrana.tech/ohrana-skladov/
 Redirect 301 /uslugi/ohrana-magazinov/ https://ohrana.tech/ohrana-magazinov/
