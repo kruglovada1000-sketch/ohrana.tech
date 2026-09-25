@@ -1,0 +1,40 @@
+name: Fix company start year
+
+on:
+  push:
+    paths:
+      - ".github/workflows/fix-company-start-year.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Replace start year safely
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          data = p.read_bytes()
+          old = 'Профессиональная охрана объектов и физических лиц с 2018 года.'.encode('utf-8')
+          new = 'Профессиональная охрана объектов и физических лиц с 2007 года.'.encode('utf-8')
+          count = data.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly 1 occurrence, found {count}')
+          p.write_bytes(data.replace(old, new, 1))
+          PY
+
+      - name: Remove one-time workflow and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/fix-company-start-year.yml
+          git add index.html
+          git commit -m "Fix homepage company start year to 2007"
+          git push origin main
