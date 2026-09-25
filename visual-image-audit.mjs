@@ -10,6 +10,17 @@ const SKIP_DIRS = new Set(['.git', 'node_modules', 'visual-qa', 'playwright-repo
 const MAX_SHOTS = 50;
 const CROP_WARN = 0.12;
 
+// Проверенные вручную художественные кадрирования. Исключение привязано к
+// конкретной странице и блоку, поэтому такое же кадрирование в новом месте
+// всё равно попадёт в тревогу.
+const INTENTIONAL = [
+  { route: '/kontakty/', parent: 'operator-frame' },
+  { route: '/', parent: 'about-visual' },
+  { route: '/css/', parent: 'card-face front' },
+  { route: '/ohrana-ofisov/', parent: 'card-face front' },
+  { route: '/fizicheskaya-ohrana/', parent: 'card-face front' }
+];
+
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(SHOTS, { recursive: true });
 
@@ -34,11 +45,15 @@ function safeName(value) {
   return value.replace(/^\/+/, '').replace(/[^a-zA-Z0-9а-яА-ЯёЁ._-]+/g, '_').slice(0, 120) || 'home';
 }
 
+function isIntentional(route, img) {
+  const parent = String(img.parentClass || '').trim().replace(/\s+/g, ' ');
+  return INTENTIONAL.some(rule => rule.route === route && parent === rule.parent);
+}
+
 const files = walk(ROOT).sort();
 const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
 
-// Для геометрии локального сайта нам не нужны метрика, шрифты и прочие внешние запросы.
 await context.route('**/*', async route => {
   try {
     const u = new URL(route.request().url());
@@ -50,6 +65,7 @@ await context.route('**/*', async route => {
 });
 
 const findings = [];
+const intentionalCrops = [];
 const pageErrors = [];
 let shotCount = 0;
 
@@ -105,6 +121,10 @@ for (const file of files) {
       if (img.objectFit !== 'cover' || img.crop < CROP_WARN) continue;
 
       const finding = { route, file: path.relative(ROOT, file).split(path.sep).join('/'), ...img };
+      if (isIntentional(route, img)) {
+        intentionalCrops.push(finding);
+        continue;
+      }
       findings.push(finding);
 
       if (shotCount < MAX_SHOTS) {
@@ -129,26 +149,44 @@ for (const file of files) {
 await browser.close();
 
 findings.sort((a, b) => b.crop - a.crop);
-const json = { generatedAt: new Date().toISOString(), pagesScanned: files.length, threshold: CROP_WARN, findings, pageErrors };
+intentionalCrops.sort((a, b) => b.crop - a.crop);
+const json = {
+  generatedAt: new Date().toISOString(),
+  pagesScanned: files.length,
+  threshold: CROP_WARN,
+  findings,
+  intentionalCrops,
+  pageErrors
+};
 fs.writeFileSync(path.join(OUT, 'image-crop-report.json'), JSON.stringify(json, null, 2));
 
 const md = [];
 md.push('# Visual image crop audit');
 md.push('');
 md.push(`Проверено HTML-страниц: **${files.length}**.`);
-md.push(`Подозрительно обрезанных изображений (object-fit: cover, потеря > ${Math.round(CROP_WARN * 100)}%): **${findings.length}**.`);
+md.push(`Требуют внимания: **${findings.length}**.`);
+md.push(`Проверенные намеренные кадрирования: **${intentionalCrops.length}**.`);
 md.push('');
 md.push('Это диагностический отчёт: он ничего автоматически не ломает и не меняет на сайте.');
 md.push('');
 
 if (!findings.length) {
-  md.push('✅ Подозрительных обрезок не найдено.');
+  md.push('✅ Новых подозрительных обрезок не найдено.');
 } else {
   md.push('| Обрезка | Страница | Картинка | Блок | Натуральный → показанный размер | Скрин |');
   md.push('|---:|---|---|---|---|---|');
   for (const f of findings) {
     const block = [f.id ? `#${f.id}` : '', f.className ? `.${f.className.trim().replace(/\s+/g, '.')}` : '', f.parentClass ? `parent:${String(f.parentClass).trim().replace(/\s+/g, '.')}` : ''].filter(Boolean).join(' ');
     md.push(`| ${Math.round(f.crop * 100)}% | \`${f.route}\` | \`${String(f.src).replace(/\|/g, '%7C')}\` | \`${block || 'img'}\` | ${f.naturalWidth}×${f.naturalHeight} → ${f.renderedWidth}×${f.renderedHeight} | ${f.screenshot ? `[png](${f.screenshot})` : '—'} |`);
+  }
+}
+
+if (intentionalCrops.length) {
+  md.push('');
+  md.push('## Намеренные кадрирования');
+  md.push('Эти конкретные блоки проверены визуально и не считаются регрессией:');
+  for (const f of intentionalCrops) {
+    md.push(`- \`${f.route}\` — \`${f.parentClass}\`, геометрическая обрезка ${Math.round(f.crop * 100)}%.`);
   }
 }
 
@@ -159,4 +197,4 @@ if (pageErrors.length) {
 }
 
 fs.writeFileSync(path.join(OUT, 'image-crop-report.md'), md.join('\n') + '\n');
-console.log(`Visual QA: ${files.length} pages, ${findings.length} suspicious cropped images, ${pageErrors.length} page errors.`);
+console.log(`Visual QA: ${files.length} pages, ${findings.length} actionable crops, ${intentionalCrops.length} intentional crops, ${pageErrors.length} page errors.`);
