@@ -26,26 +26,25 @@ jobs:
           text = path.read_text(encoding='utf-8')
           marker = 'mobile-yinyang-match-home-v1'
           block = r'''
-
-/* mobile-yinyang-match-home-v1 */
-#themeToggle .theme-yinyang{
-  transform:translateY(-1px) rotate(0deg)!important;
-  transform-origin:50% 50%!important;
-  transition:transform .72s cubic-bezier(.22,.61,.36,1)!important;
-}
-#themeToggle[aria-pressed="true"] .theme-yinyang{
-  transform:translateY(-1px) rotate(180deg)!important;
-}
-@media(max-width:640px){
-  #themeToggle{width:42px!important;height:42px!important;min-width:42px!important;flex:0 0 42px!important}
-  #themeToggle .theme-yinyang{width:27px!important;height:27px!important}
-}
-@media(max-width:420px){
-  #themeToggle .theme-yinyang{width:26px!important;height:26px!important}
-}
-'''
+          /* mobile-yinyang-match-home-v1 */
+          #themeToggle .theme-yinyang{
+            transform:translateY(-1px) rotate(0deg)!important;
+            transform-origin:50% 50%!important;
+            transition:transform .72s cubic-bezier(.22,.61,.36,1)!important;
+          }
+          #themeToggle[aria-pressed="true"] .theme-yinyang{
+            transform:translateY(-1px) rotate(180deg)!important;
+          }
+          @media(max-width:640px){
+            #themeToggle{width:42px!important;height:42px!important;min-width:42px!important;flex:0 0 42px!important}
+            #themeToggle .theme-yinyang{width:27px!important;height:27px!important}
+          }
+          @media(max-width:420px){
+            #themeToggle .theme-yinyang{width:26px!important;height:26px!important}
+          }
+          '''
           if marker not in text:
-              path.write_text(text.rstrip() + block + '\n', encoding='utf-8')
+              path.write_text(text.rstrip() + '\n\n' + block + '\n', encoding='utf-8')
 
           out = path.read_text(encoding='utf-8')
           if out.count(marker) != 1:
@@ -64,5 +63,3 @@ jobs:
           git add css/site-shell.css .github/workflows/fix-mobile-yinyang-common.yml
           git commit -m "UI: match mobile yin-yang to homepage [skip ci]"
           git push
-
-# trigger existing workflow
