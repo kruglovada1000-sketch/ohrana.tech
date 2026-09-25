@@ -2,3 +2,6 @@ node_modules/
 visual-qa/
 __pycache__/
 *.pyc
+.unlighthouse/
+playwright-report/
+test-results/
