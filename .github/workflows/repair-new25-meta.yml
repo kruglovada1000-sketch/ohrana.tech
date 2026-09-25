@@ -1,0 +1,64 @@
+name: Repair new article meta formatting
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/repair-new25-meta.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+      - name: Repair malformed description/robots boundary
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          changed=0
+          for p in Path('stati').glob('*.html'):
+            s=p.read_text(encoding='utf-8')
+            n=re.sub(r'(<meta\s+name="description"\s+content="[^"]+")(<meta\s+name="robots"\s+content="[^"]+">)>', r'\1>\2', s, flags=re.I)
+            if n != s:
+              p.write_text(n,encoding='utf-8')
+              changed += 1
+          print(f'Repaired {changed} files')
+          if changed != 25:
+            raise SystemExit(f'Expected 25 repaired files, got {changed}')
+          PY
+      - name: Validate the 25 article heads
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          bad=[]
+          for p in Path('stati').glob('*.html'):
+            s=p.read_text(encoding='utf-8')
+            if 'datePublished":"2026-09-24"' not in s:
+              continue
+            if not re.search(r'<meta\s+name="description"\s+content="[^"]+">',s,re.I): bad.append(str(p)+': description')
+            if not re.search(r'<meta\s+name="robots"\s+content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">',s,re.I): bad.append(str(p)+': robots')
+            if not re.search(r'<link\s+rel="canonical"\s+href="https://ohrana\.tech/stati/[^"]+">',s,re.I): bad.append(str(p)+': canonical')
+            if not re.search(r'<meta\s+property="og:description"\s+content="[^"]+">',s,re.I): bad.append(str(p)+': og:description')
+            if not re.search(r'<meta\s+property="og:url"\s+content="https://ohrana\.tech/stati/[^"]+">',s,re.I): bad.append(str(p)+': og:url')
+          if bad:
+            print('\n'.join(bad))
+            raise SystemExit(1)
+          print('Validation passed')
+          PY
+      - name: Commit repair
+        shell: bash
+        run: |
+          git config user.name "JARVIS KODA"
+          git config user.email "actions@users.noreply.github.com"
+          git add stati
+          git commit -m "Repair SEO meta tag formatting"
+          git push
