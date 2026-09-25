@@ -138,3 +138,95 @@
 .hero-image{
   overflow:hidden!important;
 }
+
+/* ===== Smart gold media frames — sitewide, only for real content imagery =====
+   Logos, shields and tiny UI icons are intentionally excluded. */
+main :where(
+  .hero-frame,
+  .article-frame .v-in,
+  .hero-fig,
+  .hero-img,
+  .hero-image,
+  .service-photo-slot,
+  .about-visual,
+  .photo-frame,
+  .media-frame,
+  .image-frame,
+  .feature-image,
+  .article-image
+){
+  border:1px solid rgba(232,200,122,.78)!important;
+  border-radius:22px!important;
+  overflow:hidden!important;
+  background:var(--panel,#090b10)!important;
+  box-shadow:0 20px 54px rgba(0,0,0,.30),0 0 0 1px rgba(245,227,179,.035) inset!important;
+}
+
+main :where(
+  .hero-frame,
+  .article-frame .v-in,
+  .hero-fig,
+  .hero-img,
+  .hero-image,
+  .service-photo-slot,
+  .about-visual,
+  .photo-frame,
+  .media-frame,
+  .image-frame,
+  .feature-image,
+  .article-image
+)>img:not(.tariff-shield):not([src*="schit"]):not([src*="logo"]){
+  display:block!important;
+  max-width:100%!important;
+  border-radius:inherit!important;
+}
+
+/* Stand-alone editorial photographs inside article text. */
+main .article-body>img,
+main .article-body figure:has(>img){
+  border:1px solid rgba(232,200,122,.76)!important;
+  border-radius:20px!important;
+  overflow:hidden!important;
+  background:var(--panel,#090b10)!important;
+  box-shadow:0 16px 42px rgba(0,0,0,.28)!important;
+}
+main .article-body>img,
+main .article-body figure>img{
+  display:block!important;
+  max-width:100%!important;
+  height:auto!important;
+  border-radius:inherit!important;
+}
+
+/* A circular photo must keep a circular frame. */
+main :where(.avatar,.avatar-photo,.author-photo,.team-photo,.round-image,.circle-image,.round-photo,.circle-photo):has(>img){
+  aspect-ratio:1/1!important;
+  border:1px solid rgba(232,200,122,.82)!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  background:var(--panel,#090b10)!important;
+}
+main :where(.avatar,.avatar-photo,.author-photo,.team-photo,.round-image,.circle-image,.round-photo,.circle-photo)>img,
+main img:is(.avatar,.avatar-photo,.author-photo,.team-photo,.round-image,.circle-image,.round-photo,.circle-photo){
+  width:100%!important;
+  height:100%!important;
+  aspect-ratio:1/1!important;
+  object-fit:cover!important;
+  border:1px solid rgba(232,200,122,.82)!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+}
+
+/* Price-card photo keeps one shared rounded outline; the transparent shield is untouched. */
+.price-tariffs .tariff-pair>.tariff-image-card{
+  border:1px solid rgba(232,200,122,.72)!important;
+}
+.price-tariffs .tariff-pair>.tariff-image-card .tariff-scene{
+  border-radius:21px 21px 0 0!important;
+}
+
+@media(max-width:700px){
+  main :where(.hero-frame,.article-frame .v-in,.hero-fig,.hero-img,.hero-image,.service-photo-slot,.about-visual,.photo-frame,.media-frame,.image-frame,.feature-image,.article-image){border-radius:18px!important}
+  main .article-body>img,main .article-body figure:has(>img){border-radius:16px!important}
+  .price-tariffs .tariff-pair>.tariff-image-card .tariff-scene{border-radius:17px 17px 0 0!important}
+}
