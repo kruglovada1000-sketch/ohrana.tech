@@ -110,3 +110,31 @@
   .hero-fig:has(>img[src$="/ohrana-yuridicheskih-lic.jpg"]),
   .hero-fig .fig-frame:has(>img[src$="/pultovaya-ohrana.webp"]){border-radius:18px!important}
 }
+
+/* ===== Sitewide article/service hero anti-crop =====
+   Many older pages forced landscape photos into nearly square 4:3/480px frames.
+   Keep the real source aspect ratio instead of cutting heads/edges with cover. */
+.hero-frame>img,
+.article-frame .v-in>img,
+.hero-fig>img,
+.hero-img>img,
+.hero-image>img{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+}
+
+/* Keep rounded/gold containers clipping only the outer corners, not the photo itself. */
+.hero-frame,
+.article-frame .v-in,
+.hero-fig,
+.hero-img,
+.hero-image{
+  overflow:hidden!important;
+}
