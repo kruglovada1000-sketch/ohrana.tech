@@ -64,3 +64,5 @@ jobs:
           git add css/site-shell.css .github/workflows/fix-mobile-yinyang-common.yml
           git commit -m "UI: match mobile yin-yang to homepage [skip ci]"
           git push
+
+# trigger existing workflow
