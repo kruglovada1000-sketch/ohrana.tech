@@ -14,38 +14,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Patch homepage theme toggle animation
         shell: python
         run: |
           from pathlib import Path
-
           path = Path('index.html')
           data = path.read_bytes()
           marker = b'homepage-yinyang-direct-animation-v1'
           if marker not in data:
-              block = r'''
-
-/* homepage-yinyang-direct-animation-v1 */
-#themeToggle .theme-yinyang{
-  transform:translateY(-1px) rotate(0deg)!important;
-  transform-origin:50% 50%!important;
-  transition:transform .72s cubic-bezier(.22,.61,.36,1)!important;
-}
-#themeToggle[aria-pressed="true"] .theme-yinyang{
-  transform:translateY(-1px) rotate(180deg)!important;
-}
-'''
+              lines = [
+                  '',
+                  '/* homepage-yinyang-direct-animation-v1 */',
+                  '#themeToggle .theme-yinyang{',
+                  '  transform:translateY(-1px) rotate(0deg)!important;',
+                  '  transform-origin:50% 50%!important;',
+                  '  transition:transform .72s cubic-bezier(.22,.61,.36,1)!important;',
+                  '}',
+                  '#themeToggle[aria-pressed="true"] .theme-yinyang{',
+                  '  transform:translateY(-1px) rotate(180deg)!important;',
+                  '}',
+                  ''
+              ]
               nl = '\r\n' if b'\r\n' in data else '\n'
-              encoded = block.replace('\n', nl).encode('utf-8')
+              encoded = nl.join(lines).encode('utf-8')
               pos = data.rfind(b'</style>')
               if pos < 0:
                   raise SystemExit('Closing style tag not found')
-              data = data[:pos] + encoded + data[pos:]
-              path.write_bytes(data)
-
+              path.write_bytes(data[:pos] + encoded + data[pos:])
           out = path.read_bytes()
           if out.count(marker) != 1:
               raise SystemExit('Homepage animation marker missing or duplicated')
