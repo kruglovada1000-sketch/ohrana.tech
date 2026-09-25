@@ -1,73 +1,32 @@
-/* Shared services navigation; deliberately independent of the home header. */
+/* Shared services navigation */
 #siteNav .wrap{position:relative}
 #siteNav .services-nav{display:flex;align-items:center;flex-wrap:wrap;min-width:0}
 #siteNav .services-nav>a.services-nav-link{padding:12px 4px 12px 16px;text-decoration:none;position:relative}
-/* Match the standard nav underline exactly: same height, vertical position and animation.
-   Left/right offsets follow the link padding, so the line is only as wide as the word «Услуги». */
-#siteNav .services-nav>a.services-nav-link::after{
- content:""!important;
- display:block!important;
- position:absolute!important;
- left:16px!important;
- right:4px!important;
- bottom:6px!important;
- height:1px!important;
- background:var(--gold,#e8c87a)!important;
- transform:scaleX(0)!important;
- transform-origin:left!important;
- transition:transform .4s var(--ease,cubic-bezier(.16,1,.3,1))!important;
-}
-#siteNav .services-nav>a.services-nav-link:hover,
-#siteNav .services-nav>a.services-nav-link:focus-visible,
-#siteNav .services-nav>a.services-nav-link.active{color:var(--gold2,#f5e3b3);text-decoration:none}
-#siteNav .services-nav>a.services-nav-link:hover::after,
-#siteNav .services-nav>a.services-nav-link:focus-visible::after,
-#siteNav .services-nav>a.services-nav-link.active::after{transform:scaleX(1)!important}
 #siteNav .services-nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:36px;min-height:44px;border:0;background:transparent;color:var(--ink,#eee);cursor:pointer;border-radius:8px}
 #siteNav .services-nav-toggle svg{width:14px;height:14px;transition:transform .2s}
 #siteNav .services-nav-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
 #siteNav .services-nav-toggle:hover{background:var(--panel2,#171b23)}
 #siteNav .services-panel[hidden]{display:none!important}
-#siteNav .services-panel{position:absolute;top:100%;left:0;right:0;z-index:10;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:22px;background:var(--panel,#11151b);border:1px solid var(--line,rgba(255,255,255,.15));border-top:2px solid var(--gold,#e8c87a);border-radius:0 0 18px 18px;box-shadow:0 24px 48px rgba(0,0,0,.25)}
+#siteNav .services-panel{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:40;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:22px;background:var(--panel,#11151b);border:1px solid var(--line,rgba(255,255,255,.15));border-top:2px solid var(--gold,#e8c87a);border-radius:0 0 18px 18px;box-shadow:0 24px 48px rgba(0,0,0,.25)}
+/* Invisible hover bridge between the Services button and dropdown. */
+#siteNav .services-panel::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px;background:transparent;pointer-events:auto}
 #siteNav .services-panel>a{display:flex;flex-direction:column;white-space:normal;gap:8px;padding:18px!important;border:1px solid var(--line,rgba(255,255,255,.15));border-radius:10px;background:var(--bg2,#0a0d13);color:var(--ink,#eee);font-size:.88rem;letter-spacing:0;line-height:1.5}
-#siteNav .services-panel>a::after{display:none}
+#siteNav .services-panel>a::before,#siteNav .services-panel>a::after{display:none!important}
 #siteNav .services-panel>a:hover,#siteNav .services-panel>a:focus-visible{border-color:var(--gold,#e8c87a)}
 #siteNav .services-panel strong{font-weight:700}
 #siteNav .services-panel span{color:var(--mut,#a4a8b0);font-weight:400;font-size:.78rem}
 #siteNav .services-panel .services-panel-all{justify-content:center;background:var(--gold-grad,linear-gradient(120deg,#f5e3b3,#c59e52));color:#171003!important}
 #siteNav .services-panel .services-panel-all span{color:#30250f}
 #siteNav .services-nav :focus-visible{outline:2px solid var(--gold,#e8c87a);outline-offset:3px}
-@media(min-width:1101px){
- .site-header #siteNav{overflow:visible!important}
- #siteNav>.wrap>a{padding-left:10px;padding-right:10px;font-size:.78rem;letter-spacing:.01em}
- #siteNav .services-nav>a.services-nav-link{padding-left:10px;font-size:.78rem;letter-spacing:.01em}
- #siteNav .services-nav>a.services-nav-link::after{left:10px!important;right:4px!important}
-}
-@media(max-width:1100px){
- #siteNav .services-nav{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 44px}
- #siteNav .services-nav>a.services-nav-link{padding:15px 4px;font-size:1rem}
- #siteNav .services-nav>a.services-nav-link::after{display:none!important}
- #siteNav .services-nav-toggle{width:44px;border-bottom:1px solid var(--line)}
- #siteNav .services-panel{position:static;grid-column:1/-1;grid-template-columns:1fr;padding:10px 0 16px;gap:8px;box-shadow:none;border:0;border-radius:0;background:transparent}
- #siteNav .services-panel>a{padding:14px!important;font-size:.88rem}
- .site-header #siteNav.open{max-height:calc(100dvh - 76px);overflow-y:auto;overscroll-behavior:contain;background:var(--bg,#07090D);padding-bottom:70px}
-}
-@media(prefers-reduced-motion:reduce){#siteNav .services-nav-toggle svg{transition:none}}
 
-/* ============================================================
-   HEADER NAV V2 — larger labels, calculator-style gold pills,
-   one underline exactly as wide as the label text.
-   ============================================================ */
+/* Header buttons */
 .site-header{border-bottom:0!important}
 .site-header #siteNav{border-top:0!important}
 
 @media(min-width:1101px){
- #siteNav>.wrap{
-  align-items:center;
-  gap:7px!important;
-  padding-top:8px;
-  padding-bottom:10px;
- }
+ .site-header #siteNav{overflow:visible!important}
+ #siteNav>.wrap{align-items:center;gap:7px!important;padding-top:8px;padding-bottom:10px}
+
  #siteNav>.wrap>a,
  #siteNav .services-nav{
   border:1px solid rgba(232,200,122,.42);
@@ -75,7 +34,9 @@
   background:var(--gold-grad,linear-gradient(115deg,#F5E3B3 0%,#E8C87A 45%,#B98F3E 100%));
   box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 5px 16px rgba(232,200,122,.12);
  }
+
  #siteNav>.wrap>a{
+  position:relative;
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -87,8 +48,10 @@
   letter-spacing:.01em!important;
   line-height:1!important;
   white-space:nowrap;
+  overflow:visible!important;
   transition:transform .25s var(--ease,cubic-bezier(.16,1,.3,1)),box-shadow .25s,border-color .25s!important;
  }
+
  #siteNav>.wrap>a:hover,
  #siteNav>.wrap>a:focus-visible,
  #siteNav>.wrap>a.active{
@@ -96,15 +59,15 @@
   border-color:rgba(245,227,179,.9);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.36),0 8px 22px rgba(232,200,122,.2);
  }
+
+ #siteNav .services-nav{flex-wrap:nowrap;min-height:38px}
  #siteNav .services-nav:hover,
- #siteNav .services-nav:focus-within{
+ #siteNav .services-nav:focus-within,
+ #siteNav .services-nav.services-open{
   border-color:rgba(245,227,179,.9);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.36),0 8px 22px rgba(232,200,122,.2);
  }
- #siteNav .services-nav{
-  flex-wrap:nowrap;
-  min-height:38px;
- }
+
  #siteNav .services-nav>a.services-nav-link{
   display:inline-flex;
   align-items:center;
@@ -116,96 +79,68 @@
   letter-spacing:.01em!important;
   line-height:1!important;
   white-space:nowrap;
+  position:relative;
+  overflow:visible!important;
  }
- #siteNav .services-nav-toggle{
-  width:31px;
-  min-height:36px;
-  color:#171003!important;
-  border-radius:999px;
- }
+ #siteNav .services-nav-toggle{width:31px;min-height:36px;color:#171003!important;border-radius:999px}
  #siteNav .services-nav-toggle:hover{background:rgba(23,16,3,.10)}
 
- /* One active/hover line only. Its width equals the text area (button padding excluded). */
+ /* TWO gold lines: full button width, one above and one below. */
+ #siteNav>.wrap>a::before,
  #siteNav>.wrap>a::after,
+ #siteNav .services-nav>a.services-nav-link::before,
  #siteNav .services-nav>a.services-nav-link::after{
   content:""!important;
   display:block!important;
   position:absolute!important;
-  left:10px!important;
-  right:10px!important;
-  bottom:-6px!important;
   height:2px!important;
   border-radius:2px!important;
   background:var(--gold,#E8C87A)!important;
   transform:scaleX(0)!important;
   transform-origin:center!important;
   transition:transform .28s var(--ease,cubic-bezier(.16,1,.3,1))!important;
+  pointer-events:none!important;
  }
- #siteNav .services-nav>a.services-nav-link::after{right:5px!important}
+
+ /* Normal buttons: line equals the whole gold button width. */
+ #siteNav>.wrap>a::before{left:0!important;right:0!important;top:-6px!important}
+ #siteNav>.wrap>a::after{left:0!important;right:0!important;bottom:-6px!important}
+
+ /* Services: extend across text + arrow = the whole gold button width. */
+ #siteNav .services-nav>a.services-nav-link::before{left:0!important;right:-31px!important;top:-6px!important}
+ #siteNav .services-nav>a.services-nav-link::after{left:0!important;right:-31px!important;bottom:-6px!important}
+
+ #siteNav>.wrap>a:hover::before,
  #siteNav>.wrap>a:hover::after,
+ #siteNav>.wrap>a:focus-visible::before,
  #siteNav>.wrap>a:focus-visible::after,
+ #siteNav>.wrap>a.active::before,
  #siteNav>.wrap>a.active::after,
- #siteNav .services-nav>a.services-nav-link:hover::after,
- #siteNav .services-nav>a.services-nav-link:focus-visible::after,
- #siteNav .services-nav>a.services-nav-link.active::after{
+ #siteNav .services-nav:hover>a.services-nav-link::before,
+ #siteNav .services-nav:hover>a.services-nav-link::after,
+ #siteNav .services-nav:focus-within>a.services-nav-link::before,
+ #siteNav .services-nav:focus-within>a.services-nav-link::after,
+ #siteNav .services-nav.services-open>a.services-nav-link::before,
+ #siteNav .services-nav.services-open>a.services-nav-link::after{
   transform:scaleX(1)!important;
  }
 }
 
 @media(max-width:1100px){
- .site-header #siteNav.open>.wrap{
-  display:grid!important;
-  grid-template-columns:1fr;
-  gap:9px!important;
-  padding-top:12px;
-  padding-bottom:18px;
- }
- #siteNav.open>.wrap>a,
- #siteNav.open .services-nav{
-  width:100%;
-  border:1px solid rgba(232,200,122,.42);
-  border-radius:16px;
-  background:var(--gold-grad,linear-gradient(115deg,#F5E3B3 0%,#E8C87A 45%,#B98F3E 100%));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 5px 15px rgba(232,200,122,.10);
- }
- #siteNav.open>.wrap>a{
-  display:flex;
-  align-items:center;
-  min-height:48px;
-  padding:13px 16px!important;
-  color:#171003!important;
-  font-size:1.08rem!important;
-  font-weight:800!important;
-  line-height:1.2!important;
- }
- #siteNav.open>.wrap>a::after{display:none!important}
- #siteNav.open .services-nav{
-  grid-template-columns:minmax(0,1fr) 48px;
-  overflow:visible;
- }
- #siteNav.open .services-nav>a.services-nav-link{
-  min-height:48px;
-  padding:13px 8px 13px 16px!important;
-  color:#171003!important;
-  font-size:1.08rem!important;
-  font-weight:800!important;
-  line-height:1.2!important;
- }
- #siteNav.open .services-nav>a.services-nav-link::after{display:none!important}
- #siteNav.open .services-nav-toggle{
-  width:48px;
-  min-height:48px;
-  color:#171003!important;
-  border-bottom:0!important;
-  border-left:1px solid rgba(23,16,3,.16)!important;
-  border-radius:0 16px 16px 0;
- }
+ #siteNav .services-nav{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 48px}
+ .site-header #siteNav.open>.wrap{display:grid!important;grid-template-columns:1fr;gap:9px!important;padding-top:12px;padding-bottom:18px}
+ #siteNav.open>.wrap>a,#siteNav.open .services-nav{width:100%;border:1px solid rgba(232,200,122,.42);border-radius:16px;background:var(--gold-grad,linear-gradient(115deg,#F5E3B3 0%,#E8C87A 45%,#B98F3E 100%));box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 5px 15px rgba(232,200,122,.10)}
+ #siteNav.open>.wrap>a{display:flex;align-items:center;min-height:48px;padding:13px 16px!important;color:#171003!important;font-size:1.08rem!important;font-weight:800!important;line-height:1.2!important}
+ #siteNav.open>.wrap>a::before,#siteNav.open>.wrap>a::after{display:none!important}
+ #siteNav.open .services-nav{overflow:visible}
+ #siteNav.open .services-nav>a.services-nav-link{min-height:48px;padding:13px 8px 13px 16px!important;color:#171003!important;font-size:1.08rem!important;font-weight:800!important;line-height:1.2!important}
+ #siteNav.open .services-nav>a.services-nav-link::before,#siteNav.open .services-nav>a.services-nav-link::after{display:none!important}
+ #siteNav.open .services-nav-toggle{width:48px;min-height:48px;color:#171003!important;border-bottom:0!important;border-left:1px solid rgba(23,16,3,.16)!important;border-radius:0 16px 16px 0}
  #siteNav.open .services-nav-toggle:hover{background:rgba(23,16,3,.08)}
- #siteNav.open .services-panel{
-  margin-top:7px;
-  padding:8px;
-  border:1px solid var(--line,rgba(255,255,255,.15));
-  border-radius:14px;
-  background:var(--panel,#11151b);
- }
+ #siteNav .services-panel{position:static;grid-column:1/-1;grid-template-columns:1fr;margin-top:7px;padding:8px;gap:8px;box-shadow:none;border:1px solid var(--line,rgba(255,255,255,.15));border-radius:14px;background:var(--panel,#11151b)}
+ #siteNav .services-panel::before{display:none}
+ #siteNav .services-panel>a{padding:14px!important;font-size:.88rem}
+ .site-header #siteNav.open{max-height:calc(100dvh - 76px);overflow-y:auto;overscroll-behavior:contain;background:var(--bg,#07090D);padding-bottom:70px}
 }
+
+@media(prefers-reduced-motion:reduce){#siteNav .services-nav-toggle svg{transition:none}}
