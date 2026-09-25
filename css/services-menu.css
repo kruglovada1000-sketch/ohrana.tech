@@ -1,8 +1,23 @@
 /* Shared services navigation; deliberately independent of the home header. */
 #siteNav .wrap{position:relative}
 #siteNav .services-nav{display:flex;align-items:center;flex-wrap:wrap;min-width:0}
-#siteNav .services-nav>a.services-nav-link{padding:12px 4px 12px 16px}
-#siteNav .services-nav>a.services-nav-link::after{left:16px;right:4px;height:2px}
+#siteNav .services-nav>a.services-nav-link{
+ padding:12px 4px 12px 16px;
+ text-decoration:none;
+ text-decoration-color:var(--gold,#e8c87a);
+ text-decoration-thickness:2px;
+ text-underline-offset:7px;
+ text-decoration-skip-ink:none;
+}
+/* The generic nav pseudo-line used to drift because the Services link has a separate arrow button.
+   Use a real text underline here so the gold line is exactly as wide as the word «Услуги». */
+#siteNav .services-nav>a.services-nav-link::after{display:none!important}
+#siteNav .services-nav>a.services-nav-link:hover,
+#siteNav .services-nav>a.services-nav-link:focus-visible,
+#siteNav .services-nav>a.services-nav-link.active{
+ color:var(--gold2,#f5e3b3);
+ text-decoration-line:underline;
+}
 #siteNav .services-nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:36px;min-height:44px;border:0;background:transparent;color:var(--ink,#eee);cursor:pointer;border-radius:8px}
 #siteNav .services-nav-toggle svg{width:14px;height:14px;transition:transform .2s}
 #siteNav .services-nav-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
@@ -20,12 +35,12 @@
 @media(min-width:1101px){.site-header #siteNav{overflow:visible!important}}
 @media(max-width:1100px){
  #siteNav .services-nav{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 44px}
- #siteNav .services-nav>a.services-nav-link{padding:15px 4px;font-size:1rem}
+ #siteNav .services-nav>a.services-nav-link{padding:15px 4px;font-size:1rem;text-underline-offset:6px}
  #siteNav .services-nav-toggle{width:44px;border-bottom:1px solid var(--line)}
  #siteNav .services-panel{position:static;grid-column:1/-1;grid-template-columns:1fr;padding:10px 0 16px;gap:8px;box-shadow:none;border:0;border-radius:0;background:transparent}
  #siteNav .services-panel>a{padding:14px!important;font-size:.88rem}
  .site-header #siteNav.open{max-height:calc(100dvh - 76px);overflow-y:auto;overscroll-behavior:contain}
 }
 @media(prefers-reduced-motion:reduce){#siteNav .services-nav-toggle svg{transition:none}}
-@media(min-width:1101px){#siteNav>.wrap>a{padding-left:10px;padding-right:10px;font-size:.78rem;letter-spacing:.01em}#siteNav .services-nav>a.services-nav-link{padding-left:10px;font-size:.78rem;letter-spacing:.01em}#siteNav .services-nav>a.services-nav-link::after{left:10px;right:4px}}
+@media(min-width:1101px){#siteNav>.wrap>a{padding-left:10px;padding-right:10px;font-size:.78rem;letter-spacing:.01em}#siteNav .services-nav>a.services-nav-link{padding-left:10px;font-size:.78rem;letter-spacing:.01em}}
 @media(max-width:1100px){.site-header #siteNav.open{background:var(--bg,#07090D);padding-bottom:70px}}
