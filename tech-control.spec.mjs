@@ -23,10 +23,10 @@ test('Услуги: меню раскрывается и не исчезает �
   await expect(panel).toBeVisible();
 });
 
-test('Статьи: раскрытие работает, обложка не меняется после открытия', async ({ page }) => {
+test('Статьи: раскрытие работает и обложка не мерцает', async ({ page }) => {
   const response = await page.goto('/stati/', { waitUntil: 'networkidle' });
   expect(response?.ok()).toBeTruthy();
-  await page.waitForTimeout(900);
+  await page.waitForTimeout(600);
 
   const item = page.locator('.accordion-item').filter({ has: page.locator('.accordion-featured img') }).first();
   const header = item.locator('.accordion-header');
@@ -38,16 +38,40 @@ test('Статьи: раскрытие работает, обложка не м�
   await header.click();
   await expect(content).toHaveClass(/active/);
   await expect(content).toBeVisible();
-  await page.waitForTimeout(900);
-  const after = await image.getAttribute('src');
-  expect(after).toBe(before);
 
-  const motion = await image.evaluate(el => {
+  const samples = [];
+  for (let i = 0; i < 5; i++) {
+    samples.push(await image.getAttribute('src'));
+    await page.waitForTimeout(180);
+  }
+  expect(new Set(samples).size).toBe(1);
+  expect(samples[0]).toBe(before);
+
+  const imageMotion = await image.evaluate(el => {
     const s = getComputedStyle(el);
-    return { animation: s.animationName, transition: s.transitionDuration };
+    return {
+      animation: s.animationName,
+      transitionDuration: s.transitionDuration,
+      opacity: s.opacity,
+      visibility: s.visibility
+    };
   });
-  expect(motion.animation).toBe('none');
-  expect(motion.transition === '0s' || motion.transition === '0s, 0s').toBeTruthy();
+  expect(imageMotion.animation).toBe('none');
+  expect(imageMotion.transitionDuration === '0s' || imageMotion.transitionDuration === '0s, 0s').toBeTruthy();
+  expect(imageMotion.opacity).toBe('1');
+  expect(imageMotion.visibility).toBe('visible');
+
+  const contentMotion = await content.evaluate(el => {
+    const s = getComputedStyle(el);
+    return {
+      transitionProperty: s.transitionProperty,
+      opacity: s.opacity,
+      animation: s.animationName
+    };
+  });
+  expect(contentMotion.transitionProperty.split(',').map(v => v.trim())).not.toContain('opacity');
+  expect(contentMotion.opacity).toBe('1');
+  expect(contentMotion.animation).toBe('none');
 });
 
 test('переключатель темы реально меняет тему', async ({ page }) => {
