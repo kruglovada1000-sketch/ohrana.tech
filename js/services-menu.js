@@ -2,6 +2,12 @@
 (function(){
  'use strict';
 
+ // Always pull the current shared header CSS after a deployment.
+ var servicesCss=document.querySelector('link[href^="/css/services-menu.css"],link[href*="/css/services-menu.css?"]');
+ if(servicesCss){
+  servicesCss.href='/css/services-menu.css?v=20260925-yy2';
+ }
+
  // Shared visual regression fixes for the current site shell.
  if(!document.querySelector('link[data-visual-fixes="20260924"]')){
   var visualFixes=document.createElement('link');
