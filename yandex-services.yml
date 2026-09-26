@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services_feed date="2026-09-26T13:30:00+03:00">
+  <source>
+    <name>ЧОО «Рускорпорация»</name>
+    <url>https://ohrana.tech/</url>
+    <favicon>https://ohrana.tech/favicon-32x32.png</favicon>
+    <locale>ru</locale>
+    <redirect_service>1</redirect_service>
+  </source>
+  <executors>
+    <executor>
+      <persistent_id>ruskorporatsiya</persistent_id>
+      <url>https://ohrana.tech/uslugi/</url>
+      <is_organization>1</is_organization>
+      <name>ЧОО «Рускорпорация»</name>
+      <description>Физическая и пультовая охрана объектов, бизнеса и частных лиц в Москве и Московской области. Опыт команды с 2007 года.</description>
+      <contacts>
+        <phones>
+          <phone is_primary="1">+79250474225</phone>
+        </phones>
+        <sites>
+          <site>https://ohrana.tech/</site>
+        </sites>
+      </contacts>
+      <availability>
+        <working_hours>
+          <weekdays>00:00-23:59</weekdays>
+          <weekends>00:00-23:59</weekends>
+        </working_hours>
+        <b2b>1</b2b>
+      </availability>
+      <trust>
+        <contract>1</contract>
+      </trust>
+      <services>
+        <service>
+          <persistent_id>physical-security</persistent_id>
+          <name>Физическая охрана объектов</name>
+          <url>https://ohrana.tech/fizicheskaya-ohrana/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Посты физической охраны, пропускной и внутриобъектовый режим, обходы территории и контроль имущества.</description>
+        </service>
+        <service>
+          <persistent_id>remote-security</persistent_id>
+          <name>Пультовая охрана</name>
+          <url>https://ohrana.tech/ohrana-pult/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Охранная сигнализация, мониторинг тревог и реагирование мобильной группы.</description>
+        </service>
+        <service>
+          <persistent_id>commercial-security</persistent_id>
+          <name>Охрана коммерческих объектов</name>
+          <url>https://ohrana.tech/uslugi/ohrana-kommercheskih-obektov/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Охрана складов, офисов, магазинов, бизнес-центров и других коммерческих объектов.</description>
+        </service>
+        <service>
+          <persistent_id>residential-security</persistent_id>
+          <name>Охрана жилой недвижимости</name>
+          <url>https://ohrana.tech/uslugi/ohrana-zhiloy-nedvizhimosti/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Охрана жилых комплексов, домов, коттеджей и поселков, контроль въезда и обход территории.</description>
+        </service>
+        <service>
+          <persistent_id>social-security</persistent_id>
+          <name>Охрана социальных объектов</name>
+          <url>https://ohrana.tech/uslugi/ohrana-socialnyh-obektov/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Охрана образовательных, медицинских, культурных и других общественных объектов.</description>
+        </service>
+        <service>
+          <persistent_id>special-security</persistent_id>
+          <name>Охрана специальных объектов</name>
+          <url>https://ohrana.tech/uslugi/ohrana-specialnyh-obektov/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Охрана производств, строительных площадок, открытых территорий и объектов со специальным режимом.</description>
+        </service>
+        <service>
+          <persistent_id>personal-security</persistent_id>
+          <name>Личная охрана</name>
+          <url>https://ohrana.tech/ohrana-fizicheskih-lic/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Персональная защита физических лиц и сопровождение с учетом маршрута, графика и уровня рисков.</description>
+        </service>
+        <service>
+          <persistent_id>event-security</persistent_id>
+          <name>Охрана мероприятий</name>
+          <url>https://ohrana.tech/ohrana-meropriyatiy-v-moskve/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Контроль доступа, охрана гостей, персонала и территории на деловых и массовых мероприятиях.</description>
+        </service>
+        <service>
+          <persistent_id>video-surveillance</persistent_id>
+          <name>Видеонаблюдение</name>
+          <url>https://ohrana.tech/uslugi/videonablyudenie/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Проектирование и применение видеонаблюдения как части комплексной системы безопасности объекта.</description>
+        </service>
+        <service>
+          <persistent_id>access-control</persistent_id>
+          <name>Контроль доступа и СКУД</name>
+          <url>https://ohrana.tech/uslugi/kontrol-dostupa-skud/</url>
+          <where>at_customer</where>
+          <price><is_negotiable>1</is_negotiable></price>
+          <description>Организация пропускного режима и систем контроля доступа для сотрудников, посетителей и транспорта.</description>
+        </service>
+      </services>
+    </executor>
+  </executors>
+</services_feed>
