@@ -8,6 +8,11 @@ RewriteEngine On
   AddType application/xml .yml
 </IfModule>
 
+# Extra safeguard for this exact feed even if the generic .yml MIME mapping is overridden.
+<Files "yandex-services.yml">
+  ForceType application/xml
+</Files>
+
 # Remove Yandex Metrika debug parameter from the homepage URL.
 # Example: /?_ym_debug=1 -> /
 RewriteCond %{QUERY_STRING} (^|&)_ym_debug=[^&]*(&|$) [NC]
