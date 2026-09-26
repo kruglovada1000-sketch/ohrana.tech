@@ -72,3 +72,57 @@
 }
 
 @media(prefers-reduced-motion:reduce){#siteNav .services-nav-toggle svg{transition:none}#themeToggle.theme-toggle,.theme-toggle{transition:none!important}}
+
+/* ============================================================
+   MOBILE CTA BUTTON SAFETY — inner pages
+   Prevents long labels from escaping rounded buttons.
+   ============================================================ */
+@media(max-width:640px){
+  main .btn{
+    min-width:0!important;
+    min-height:62px!important;
+    height:auto!important;
+    padding:12px 14px!important;
+    white-space:normal!important;
+    text-align:center!important;
+    line-height:1.18!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+    hyphens:none!important;
+    letter-spacing:.025em!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+
+  main .doc-actions,
+  main .cta-btns,
+  main .hero-actions,
+  main .actions-row,
+  main .offer-actions{
+    align-items:stretch!important;
+  }
+
+  main .doc-actions .btn,
+  main .cta-btns .btn,
+  main .hero-actions .btn,
+  main .actions-row .btn,
+  main .offer-actions .btn{
+    flex:1 1 0!important;
+    max-width:100%!important;
+  }
+
+  /* Specifically the two hero buttons on "Охрана физических лиц":
+     the long gold label may wrap neatly to two lines. */
+  main .doc-actions .btn-gold{
+    line-height:1.12!important;
+  }
+}
+
+@media(max-width:390px){
+  main .btn{
+    font-size:.80rem!important;
+    padding-left:11px!important;
+    padding-right:11px!important;
+  }
+}
