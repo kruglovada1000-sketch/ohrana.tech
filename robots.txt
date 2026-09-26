@@ -11,6 +11,7 @@ User-agent: *
 Crawl-delay: 2
 Clean-param: _ym_debug
 Allow: /
+Allow: /yandex-services.yml
 Allow: /uslugi/
 Allow: /fizicheskaya-ohrana/
 Allow: /ohrana-fizicheskih-lic/
