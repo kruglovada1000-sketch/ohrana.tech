@@ -13,6 +13,11 @@ RewriteRule ^$ / [R=301,L,QSD]
 <IfModule mod_headers.c>
   SetEnvIf Request_URI "^/$" IS_HOME=1
   Header set Link "<https://ohrana.tech/>; rel=\"canonical\"" env=IS_HOME
+
+  # Correct canonical signal for the jewelry-security article.
+  # The HTML page historically contained a misspelled /yuvelirnyh/ URL.
+  SetEnvIf Request_URI "^/stati/ohrana-uvelirnyh-magazinov\.html$" IS_JEWELRY_ARTICLE=1
+  Header set Link "<https://ohrana.tech/stati/ohrana-uvelirnyh-magazinov.html>; rel=\"canonical\"" env=IS_JEWELRY_ARTICLE
 </IfModule>
 
 # Legacy article URL -> current canonical article.
@@ -22,6 +27,11 @@ Redirect 301 /stati/ohrana-meropriyatiy-v-moskve.html https://ohrana.tech/ohrana
 Redirect 301 /soprovozhdenie-gruzov/ https://ohrana.tech/stati/soprovozhdenie-gruzov.html
 Redirect 301 /stati/ohrana-restoranov.html https://ohrana.tech/ohrana-restoranov/
 Redirect 301 /stati/ohrana-restoranov/ https://ohrana.tech/ohrana-restoranov/
+
+# Yandex 404 fix: old/misspelled jewelry article URLs -> real article file.
+Redirect 301 /stati/ohrana-yuvelirnyh-magazinov/ https://ohrana.tech/stati/ohrana-uvelirnyh-magazinov.html
+Redirect 301 /stati/ohrana-yuvelirnyh-magazinov.html https://ohrana.tech/stati/ohrana-uvelirnyh-magazinov.html
+Redirect 301 /stati/ohrana-uvelirnyh-magazinov/ https://ohrana.tech/stati/ohrana-uvelirnyh-magazinov.html
 
 Redirect 301 /uslugi/ohrana-skladov/ https://ohrana.tech/ohrana-skladov/
 Redirect 301 /uslugi/ohrana-magazinov/ https://ohrana.tech/ohrana-magazinov/
