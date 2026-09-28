@@ -1,0 +1,94 @@
+name: SEO optimize heavy JPEGs once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/seo-optimize-jpegs-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  optimize-jpegs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+
+      - name: Install Sharp
+        run: npm install --no-save --no-package-lock sharp@0.34.4
+
+      - name: Re-encode heavy JPG/JPEG files safely
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const sharp = require('sharp');
+          const LIMIT = 400 * 1024;
+          const TARGET = 390 * 1024;
+          const qualities = [84, 80, 76, 72, 68, 64, 60, 56, 52];
+          function walk(dir) {
+            return fs.readdirSync(dir, {withFileTypes:true}).flatMap(e => {
+              const p = path.join(dir,e.name);
+              return e.isDirectory() ? walk(p) : [p];
+            });
+          }
+          (async () => {
+            const files = walk('images').filter(f => /\.jpe?g$/i.test(f) && fs.statSync(f).size > LIMIT);
+            let changed = 0;
+            let skippedAlpha = 0;
+            let stillHeavy = 0;
+            for (const file of files) {
+              const original = fs.readFileSync(file);
+              const meta = await sharp(original).metadata();
+              const oldKB = Math.round(original.length / 1024);
+              if (meta.hasAlpha) {
+                console.log(`SKIP_ALPHA ${oldKB} KB ${meta.width}x${meta.height} ${file}`);
+                skippedAlpha++;
+                continue;
+              }
+              let best = original;
+              let usedQuality = null;
+              for (const quality of qualities) {
+                const candidate = await sharp(original)
+                  .jpeg({quality, mozjpeg:true, chromaSubsampling:'4:2:0'})
+                  .toBuffer();
+                if (candidate.length < best.length) {
+                  best = candidate;
+                  usedQuality = quality;
+                }
+                if (candidate.length <= TARGET) break;
+              }
+              if (best.length < original.length) {
+                fs.writeFileSync(file, best);
+                changed++;
+                console.log(`OPTIMIZED ${oldKB} -> ${Math.round(best.length/1024)} KB q=${usedQuality} ${meta.width}x${meta.height} ${file}`);
+              }
+              if (best.length > LIMIT) {
+                stillHeavy++;
+                console.log(`STILL_HEAVY ${Math.round(best.length/1024)} KB ${file}`);
+              }
+            }
+            console.log(`SUMMARY changed=${changed} skippedAlpha=${skippedAlpha} stillHeavy=${stillHeavy}`);
+          })().catch(e => { console.error(e); process.exit(1); });
+          NODE
+
+      - name: Commit optimized images
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- images; then
+            echo "No image changes"
+            exit 0
+          fi
+          git add images
+          git commit -m "SEO: optimize heavy JPEG images"
+          git push
