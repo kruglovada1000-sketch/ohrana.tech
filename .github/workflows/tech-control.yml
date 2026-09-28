@@ -40,6 +40,7 @@ jobs:
             --root-dir "$(pwd)"
             --no-progress
             --max-retries 2
+            --exclude '^https://formspree\.io/'
             './**/*.html'
           fail: false
           jobSummary: true
