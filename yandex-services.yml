@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<services_feed date="2026-09-28T17:30:00+03:00">
+<services_feed date="2026-09-28T14:58:00Z">
   <source>
     <name>ЧОО «Рускорпорация»</name>
     <url>https://ohrana.tech/</url>
@@ -10,10 +10,10 @@
   <executors>
     <executor>
       <persistent_id>ruskorporatsiya</persistent_id>
-      <url>https://ohrana.tech/uslugi/</url>
+      <url>https://ohrana.tech/kontakty/</url>
       <is_organization>1</is_organization>
       <name>ЧОО «Рускорпорация»</name>
-      <description>Физическая и пультовая охрана объектов, бизнеса и частных лиц в Москве и Московской области. Опыт команды с 2007 года.</description>
+      <description>Физическая и пультовая охрана объектов, бизнеса и частных лиц в Москве, Московской области, Перми, Санкт-Петербурге и Сочи. Опыт команды с 2007 года.</description>
       <contacts>
         <phones>
           <phone is_primary="1">+79250474225</phone>
@@ -29,9 +29,21 @@
         </working_hours>
         <b2b>1</b2b>
       </availability>
+      <geo_info>
+        <service_areas>
+          <area><text>Москва</text></area>
+          <area><text>Московская область</text></area>
+          <area><text>Пермь</text></area>
+          <area><text>Санкт-Петербург</text></area>
+          <area><text>Сочи</text></area>
+        </service_areas>
+      </geo_info>
       <trust>
         <contract>1</contract>
       </trust>
+      <photos>
+        <avatar_photo_url>https://ohrana.tech/images/schit.png</avatar_photo_url>
+      </photos>
       <services>
         <service>
           <persistent_id>physical-security</persistent_id>
