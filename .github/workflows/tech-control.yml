@@ -39,7 +39,6 @@ jobs:
           args: >-
             --root-dir "$(pwd)"
             --no-progress
-            --exclude-mail
             --max-retries 2
             './**/*.html'
           fail: false
