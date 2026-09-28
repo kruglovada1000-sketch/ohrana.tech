@@ -1,0 +1,55 @@
+name: SEO image audit once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/seo-image-audit-once.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+
+      - name: Install Sharp
+        run: npm install --no-save --no-package-lock sharp@0.34.4
+
+      - name: Report images over 400 KB
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const sharp = require('sharp');
+          const ROOT = 'images';
+          const LIMIT = 400 * 1024;
+          const extOk = new Set(['.jpg','.jpeg','.png','.webp','.avif']);
+          function walk(dir) {
+            return fs.readdirSync(dir, {withFileTypes:true}).flatMap(e => {
+              const p = path.join(dir,e.name);
+              return e.isDirectory() ? walk(p) : [p];
+            });
+          }
+          (async () => {
+            const files = walk(ROOT).filter(f => extOk.has(path.extname(f).toLowerCase()) && fs.statSync(f).size > LIMIT);
+            const rows = [];
+            for (const f of files) {
+              const st = fs.statSync(f);
+              const m = await sharp(f).metadata();
+              rows.push({file:f, kb:Math.round(st.size/1024), width:m.width, height:m.height, format:m.format, alpha:!!m.hasAlpha});
+            }
+            rows.sort((a,b)=>b.kb-a.kb);
+            console.log(`HEAVY_IMAGES=${rows.length}`);
+            for (const r of rows) console.log(`${r.kb} KB\t${r.width}x${r.height}\t${r.format}\talpha=${r.alpha}\t${r.file}`);
+          })().catch(e => { console.error(e); process.exit(1); });
+          NODE
