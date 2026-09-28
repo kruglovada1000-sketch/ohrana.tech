@@ -69,9 +69,10 @@ function resolveSiteUrl(raw) {
     if (u.origin !== SITE_ORIGIN) return null;
     let pathname = u.pathname;
     try { pathname = decodeURIComponent(pathname); } catch {}
-    let candidate = pathname === '/'
-      ? path.join(ROOT, 'index.html')
-      : path.join(ROOT, pathname.replace(/^\/+/, ''));
+
+    if (pathname === '/') return path.join(ROOT, 'index.html');
+
+    let candidate = path.join(ROOT, pathname.replace(/^\/+/, ''));
     if (pathname.endsWith('/')) candidate = path.join(candidate, 'index.html');
     if (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) candidate = path.join(candidate, 'index.html');
     return candidate;
