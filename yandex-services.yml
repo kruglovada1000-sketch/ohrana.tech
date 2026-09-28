@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<services_feed date="2026-09-26T13:30:00+03:00">
+<services_feed date="2026-09-28T17:30:00+03:00">
   <source>
     <name>ЧОО «Рускорпорация»</name>
     <url>https://ohrana.tech/</url>
@@ -38,7 +38,7 @@
           <name>Физическая охрана объектов</name>
           <url>https://ohrana.tech/fizicheskaya-ohrana/</url>
           <where>at_customer</where>
-          <price><is_negotiable>1</is_negotiable></price>
+          <price><from><value>190000</value><currency>RUB</currency></from><unit>месяц</unit></price>
           <description>Посты физической охраны, пропускной и внутриобъектовый режим, обходы территории и контроль имущества.</description>
         </service>
         <service>
@@ -46,7 +46,7 @@
           <name>Пультовая охрана</name>
           <url>https://ohrana.tech/ohrana-pult/</url>
           <where>at_customer</where>
-          <price><is_negotiable>1</is_negotiable></price>
+          <price><from><value>5000</value><currency>RUB</currency></from><unit>месяц</unit></price>
           <description>Охранная сигнализация, мониторинг тревог и реагирование мобильной группы.</description>
         </service>
         <service>
@@ -54,16 +54,16 @@
           <name>Охрана коммерческих объектов</name>
           <url>https://ohrana.tech/uslugi/ohrana-kommercheskih-obektov/</url>
           <where>at_customer</where>
-          <price><is_negotiable>1</is_negotiable></price>
-          <description>Охрана складов, офисов, магазинов, бизнес-центров и других коммерческих объектов.</description>
+          <price><from><value>190000</value><currency>RUB</currency></from><unit>месяц</unit></price>
+          <description>Физическая охрана складов от 190 000 ₽ в месяц. Охрана офисов, магазинов и других коммерческих объектов рассчитывается индивидуально.</description>
         </service>
         <service>
           <persistent_id>residential-security</persistent_id>
           <name>Охрана жилой недвижимости</name>
           <url>https://ohrana.tech/uslugi/ohrana-zhiloy-nedvizhimosti/</url>
           <where>at_customer</where>
-          <price><is_negotiable>1</is_negotiable></price>
-          <description>Охрана жилых комплексов, домов, коттеджей и поселков, контроль въезда и обход территории.</description>
+          <price><from><value>5000</value><currency>RUB</currency></from><unit>месяц</unit></price>
+          <description>Охрана дач и коттеджей от 5 000 ₽ в месяц. Охрана жилых комплексов, поселков и парковок рассчитывается индивидуально.</description>
         </service>
         <service>
           <persistent_id>social-security</persistent_id>
@@ -86,7 +86,7 @@
           <name>Личная охрана</name>
           <url>https://ohrana.tech/ohrana-fizicheskih-lic/</url>
           <where>at_customer</where>
-          <price><is_negotiable>1</is_negotiable></price>
+          <price><from><value>35000</value><currency>RUB</currency></from><unit>8 часов</unit></price>
           <description>Персональная защита физических лиц и сопровождение с учетом маршрута, графика и уровня рисков.</description>
         </service>
         <service>
@@ -94,7 +94,7 @@
           <name>Охрана мероприятий</name>
           <url>https://ohrana.tech/ohrana-meropriyatiy-v-moskve/</url>
           <where>at_customer</where>
-          <price><is_negotiable>1</is_negotiable></price>
+          <price><from><value>25000</value><currency>RUB</currency></from><unit>мероприятие</unit></price>
           <description>Контроль доступа, охрана гостей, персонала и территории на деловых и массовых мероприятиях.</description>
         </service>
         <service>
