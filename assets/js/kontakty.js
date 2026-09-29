@@ -49,7 +49,7 @@ function toast(message){
   el.textContent=message;el.style.opacity='1';el.style.transform='translate(-50%,0)';
   clearTimeout(el._timer);el._timer=setTimeout(function(){el.style.opacity='0';el.style.transform='translate(-50%,16px)';},2600);
 }
-var text='ООО ЧОП «Рускорпорация»\n'+
+var text='ООО ЧОО «Рускорпорация»\n'+
   'ИНН: 5902050810 | КПП: 590501001\n'+
   'ОГРН: 1185958064665\n'+
   'Лицензия № Л056-00106-59/00033018 от 29.11.2018\n'+
