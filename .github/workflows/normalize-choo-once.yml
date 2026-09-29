@@ -1,4 +1,4 @@
-name: Normalize Ruskorporatsiya legal form once
+name: Restore CHOO runtime fallback mappings once
 
 on:
   push:
@@ -10,101 +10,43 @@ permissions:
   contents: write
 
 jobs:
-  normalize-choo:
+  restore-runtime-fallback:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Replace branded CHOP references with CHOO
+      - name: Restore old-to-new fallback pairs
         shell: bash
         run: |
           python3 <<'PY'
           from pathlib import Path
-
-          exts = {'.html', '.xml', '.json', '.yml', '.yaml', '.js', '.mjs', '.txt'}
-          replacements = [
-              ('ООО ЧОП «Рускорпорация охрана и консалтинг»', 'ООО ЧОО «Рускорпорация охрана и консалтинг»'),
-              ('ООО ЧОП «Рускорпорация»', 'ООО ЧОО «Рускорпорация»'),
-              ('ЧОП «Рускорпорация охрана и консалтинг»', 'ЧОО «Рускорпорация охрана и консалтинг»'),
-              ('ЧОП «Рускорпорация»', 'ЧОО «Рускорпорация»'),
-              ('ЧОП «РУСКОРПОРАЦИЯ»', 'ЧОО «РУСКОРПОРАЦИЯ»'),
-              ('ЧОП <em>«Рускорпорация»</em>', 'ЧОО <em>«Рускорпорация»</em>'),
-              ('ООО ЧОП "Рускорпорация охрана и консалтинг"', 'ООО ЧОО "Рускорпорация охрана и консалтинг"'),
-              ('ООО ЧОП "Рускорпорация"', 'ООО ЧОО "Рускорпорация"'),
-              ('ЧОП "Рускорпорация охрана и консалтинг"', 'ЧОО "Рускорпорация охрана и консалтинг"'),
-              ('ЧОП "Рускорпорация"', 'ЧОО "Рускорпорация"'),
-              ('ООО ЧОП Рускорпорация', 'ООО ЧОО Рускорпорация'),
-              ('ЧОП Рускорпорация', 'ЧОО Рускорпорация'),
-              ('ООО&nbsp;ЧОП&nbsp;«Рускорпорация', 'ООО&nbsp;ЧОО&nbsp;«Рускорпорация'),
-              ('ЧОП&nbsp;«Рускорпорация', 'ЧОО&nbsp;«Рускорпорация'),
-              ('Лицензированное ЧОП — профессиональная охрана', 'Лицензированное ЧОО — профессиональная охрана'),
-              ('Лицензированное ЧОП - профессиональная охрана', 'Лицензированное ЧОО - профессиональная охрана'),
-              ('частная охранная организация (ЧОП)', 'частная охранная организация (ЧОО)'),
+          fixes = [
+              ("['ООО ЧОО «Рускорпорация охрана и консалтинг»','ООО ЧОО «Рускорпорация охрана и консалтинг»']", "['ООО ЧОП «Рускорпорация охрана и консалтинг»','ООО ЧОО «Рускорпорация охрана и консалтинг»']"),
+              ("['ООО ЧОО «Рускорпорация»','ООО ЧОО «Рускорпорация»']", "['ООО ЧОП «Рускорпорация»','ООО ЧОО «Рускорпорация»']"),
+              ("['ЧОО Рускорпорация','ЧОО Рускорпорация']", "['ЧОП Рускорпорация','ЧОО Рускорпорация']"),
+              ("['Лицензированное ЧОО — профессиональная охрана','Лицензированное ЧОО — профессиональная охрана']", "['Лицензированное ЧОП — профессиональная охрана','Лицензированное ЧОО — профессиональная охрана']"),
           ]
-
-          changed = []
-          counts = {}
-          for p in Path('.').rglob('*'):
-              if not p.is_file() or '.git' in p.parts or p.suffix.lower() not in exts:
+          for name in ('js/site.js','assets/js/site.js'):
+              p = Path(name)
+              if not p.exists():
                   continue
-              try:
-                  text = p.read_text(encoding='utf-8')
-              except UnicodeDecodeError:
-                  continue
+              text = p.read_text(encoding='utf-8')
               new = text
-              file_count = 0
-              for old, repl in replacements:
-                  n = new.count(old)
-                  if n:
-                      new = new.replace(old, repl)
-                      file_count += n
+              for old, repl in fixes:
+                  new = new.replace(old, repl)
               if new != text:
                   p.write_text(new, encoding='utf-8')
-                  changed.append(str(p))
-                  counts[str(p)] = file_count
-
-          print(f'CHANGED_FILES={len(changed)}')
-          print(f'REPLACEMENTS={sum(counts.values())}')
-          for p in changed:
-              print(f'{counts[p]:3d}  {p}')
+                  print('FIXED', name)
           PY
-
-      - name: Show remaining branded CHOP references
-        shell: bash
-        run: |
-          python3 <<'PY'
-          from pathlib import Path
-          import re
-          exts = {'.html', '.xml', '.json', '.yml', '.yaml', '.js', '.mjs', '.txt'}
-          rx = re.compile(r'(?:ЧОП.{0,100}Рускорпорац|Рускорпорац.{0,100}ЧОП)', re.I)
-          found = 0
-          for p in Path('.').rglob('*'):
-              if not p.is_file() or '.git' in p.parts or p.suffix.lower() not in exts:
-                  continue
-              try:
-                  lines = p.read_text(encoding='utf-8').splitlines()
-              except UnicodeDecodeError:
-                  continue
-              for i, line in enumerate(lines, 1):
-                  if rx.search(line):
-                      found += 1
-                      print(f'{p}:{i}: {line[:300]}')
-          print(f'REMAINING_BRANDED_CHOP_LINES={found}')
-          PY
-
-      - name: Commit corrected source files
+      - name: Commit fallback repair
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git reset -- .github/workflows/normalize-choo-once.yml
+          git add js/site.js assets/js/site.js
           if git diff --cached --quiet; then
-            echo "No source changes needed"
+            echo "No fallback repair needed"
             exit 0
           fi
-          git commit -m "Fix Ruskorporatsiya legal form: CHOP to CHOO"
+          git commit -m "Restore CHOO naming fallback mappings"
           git push
