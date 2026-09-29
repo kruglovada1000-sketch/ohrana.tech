@@ -52,6 +52,38 @@ if(themePlacementMq){
   else if(themePlacementMq.addListener)themePlacementMq.addListener(onThemePlacementChange);
 }
 
+/* Company naming normalization: only our legal/entity name, generic SEO term "ЧОП" is left untouched. */
+function normalizeCompanyNaming(){
+  var pairs=[
+    ['ООО ЧОП «Рускорпорация охрана и консалтинг»','ООО ЧОО «Рускорпорация охрана и консалтинг»'],
+    ['ООО ЧОП «Рускорпорация»','ООО ЧОО «Рускорпорация»'],
+    ['ЧОП Рускорпорация','ЧОО Рускорпорация'],
+    ['Лицензированное ЧОП — профессиональная охрана','Лицензированное ЧОО — профессиональная охрана']
+  ];
+  function fix(value){
+    var out=value||'';
+    pairs.forEach(function(pair){out=out.split(pair[0]).join(pair[1]);});
+    return out;
+  }
+  if(document.body&&document.createTreeWalker){
+    var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+    var node;
+    while((node=walker.nextNode())){
+      var next=fix(node.nodeValue);
+      if(next!==node.nodeValue)node.nodeValue=next;
+    }
+  }
+  document.querySelectorAll('[alt],[title],[aria-label],meta[content]').forEach(function(el){
+    ['alt','title','aria-label','content'].forEach(function(attr){
+      if(!el.hasAttribute(attr))return;
+      var oldValue=el.getAttribute(attr)||'';
+      var newValue=fix(oldValue);
+      if(newValue!==oldValue)el.setAttribute(attr,newValue);
+    });
+  });
+}
+normalizeCompanyNaming();
+
 /* contacts-visual-restore-v2: scope emergency contact fixes to the Contacts page only. */
 var cleanPath=location.pathname.replace(/\/+$/,'')||'/';
 if(cleanPath==='/kontakty'){
@@ -75,10 +107,10 @@ document.querySelectorAll('.flip').forEach(function(card){if(card.dataset.shared
 var chatBtn=document.getElementById('chatBtn'),chatPanel=document.getElementById('chatPanel');if(chatBtn&&chatPanel){chatBtn.addEventListener('click',function(e){e.stopPropagation();chatPanel.classList.toggle('open');});document.addEventListener('click',function(e){if(!chatPanel.contains(e.target)&&!chatBtn.contains(e.target))chatPanel.classList.remove('open');});}
 var filter=document.getElementById('priceFilter');if(filter){filter.addEventListener('input',function(){var q=(filter.value||'').trim().toLowerCase();document.querySelectorAll('[data-price-row]').forEach(function(row){var text=(row.textContent||'').toLowerCase();row.hidden=!!q&&text.indexOf(q)===-1;});});}
 var typeSelect=document.getElementById('priceType');if(typeSelect){typeSelect.addEventListener('change',function(){var v=typeSelect.value;document.querySelectorAll('[data-price-row]').forEach(function(row){row.hidden=!!v&&row.dataset.kind!==v;});});}
+/* SEO-safe counters: final values stay in the DOM at all times. */
 var counters=document.querySelectorAll('[data-value]');
 function setCounterValue(el,value){var suffix=el.getAttribute('data-suffix')||'';var decimals=(String(el.getAttribute('data-value')||'').split('.')[1]||'').length;var text=decimals?Number(value).toFixed(decimals):Math.round(Number(value)).toLocaleString('ru-RU');el.textContent=text+suffix;}
-function runCounter(el){if(el.dataset.counterDone==='1')return;el.dataset.counterDone='1';var target=Number(el.getAttribute('data-value'));if(!Number.isFinite(target)){return;}if(rm){setCounterValue(el,target);return;}var start=performance.now(),duration=1100;function tick(now){var p=Math.min(1,(now-start)/duration);var eased=1-Math.pow(1-p,3);setCounterValue(el,target*eased);if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);}
-if(counters.length){if('IntersectionObserver'in window&&!rm){var counterIo=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){runCounter(entry.target);counterIo.unobserve(entry.target);}});},{threshold:.35});counters.forEach(function(el){counterIo.observe(el);});}else{counters.forEach(runCounter);}}
+if(counters.length){counters.forEach(function(el){var target=Number(el.getAttribute('data-value'));if(Number.isFinite(target))setCounterValue(el,target);});}
 function nativeSubmit(form){try{HTMLFormElement.prototype.submit.call(form);}catch(e){form.submit();}}
 function successNodeFor(form){var local=form.parentElement&&form.parentElement.querySelector('.form-ok,.form-success,[data-form-success]');var ok=document.getElementById('formOk')||local;if(ok)return ok;ok=document.createElement('div');ok.className='form-ok shared-form-ok';ok.setAttribute('role','status');ok.setAttribute('aria-live','polite');var heading=document.createElement('h3');heading.textContent='Заявка отправлена!';var text=document.createElement('p');text.textContent='Спасибо. Мы получили заявку и свяжемся с вами.';ok.appendChild(heading);ok.appendChild(text);(form.parentElement||form).appendChild(ok);return ok;}
 document.querySelectorAll('form[action*="formspree.io"]').forEach(function(form){if(form.dataset.sharedFormBound==='1')return;form.dataset.sharedFormBound='1';form.addEventListener('submit',function(e){e.preventDefault();var button=form.querySelector('button[type="submit"],input[type="submit"]');var oldText=button?(button.tagName==='INPUT'?button.value:button.textContent):'';if(button){button.disabled=true;if(button.tagName==='INPUT')button.value='Отправляем…';else button.textContent='Отправляем…';}var data=new FormData(form);fetch(form.action,{method:'POST',body:data,headers:{'Accept':'application/json'}}).then(function(res){if(!res.ok){if(button){button.disabled=false;if(button.tagName==='INPUT')button.value=oldText;else button.textContent=oldText;}nativeSubmit(form);return;}goal('form_submit');goal('lead_form_ok');form.style.display='none';var ok=successNodeFor(form);ok.style.display='block';ok.hidden=false;}).catch(function(){if(button){button.disabled=false;if(button.tagName==='INPUT')button.value=oldText;else button.textContent=oldText;}nativeSubmit(form);});});});
