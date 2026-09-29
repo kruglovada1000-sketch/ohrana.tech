@@ -1,0 +1,69 @@
+name: Update sitemap lastmod once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-sitemap-lastmod-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-sitemap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Update lastmod for pages changed today
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import subprocess, re
+
+          base='6390c99be1448b0061425f105a8e71977a7dc414'
+          today='2026-09-29'
+          files=subprocess.check_output(['git','diff','--name-only',base,'HEAD'],text=True).splitlines()
+
+          urls=[]
+          for f in files:
+              if not f.endswith(('.html','.htm')):
+                  continue
+              if f == 'index.html':
+                  url='https://ohrana.tech/'
+              elif f.endswith('/index.html'):
+                  url='https://ohrana.tech/' + f[:-10]
+              else:
+                  url='https://ohrana.tech/' + f
+              urls.append(url)
+
+          p=Path('sitemap.xml')
+          text=p.read_text(encoding='utf-8')
+          changed=0
+          for url in sorted(set(urls)):
+              pat=re.compile(r'(<url><loc>'+re.escape(url)+r'</loc><lastmod>)([^<]+)(</lastmod></url>)')
+              text,n=pat.subn(r'\g<1>'+today+r'\g<3>',text)
+              changed+=n
+
+          if changed:
+              p.write_text(text,encoding='utf-8')
+          print('HTML_CHANGED=',len(set(urls)))
+          print('SITEMAP_UPDATED=',changed)
+          PY
+
+      - name: Commit sitemap
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No sitemap changes needed"
+            exit 0
+          fi
+          git commit -m "SEO: refresh sitemap lastmod after site updates"
+          git push
