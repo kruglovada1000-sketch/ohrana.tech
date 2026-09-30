@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Apply conservative site-wide fixes and audit
+      - name: Apply final site-wide fixes and audit
         shell: bash
         run: |
           set -euo pipefail
@@ -21,16 +21,12 @@ jobs:
           import re, xml.etree.ElementTree as ET
           from collections import defaultdict
 
-          root=Path('.')
-          changed=set()
-          report=[]
+          changed=set(); report=[]
+          def save(p, old, new):
+              if new!=old:
+                  p.write_text(new,encoding='utf-8'); changed.add(str(p))
 
-          def write_if_changed(p, old, new):
-              if new != old:
-                  p.write_text(new, encoding='utf-8')
-                  changed.add(str(p))
-
-          # Company naming: change only phrases that explicitly refer to Ruskorporatsiya
+          html_files=[p for p in Path('.').rglob('*.html') if '.git' not in p.parts]
           exact={
               'ООО ЧОП «Рускорпорация»':'ООО ЧОО «Рускорпорация»',
               'ЧОП «Рускорпорация»':'ЧОО «Рускорпорация»',
@@ -40,140 +36,88 @@ jobs:
               'лицензированное частное охранное предприятие «Рускорпорация»':'лицензированная частная охранная организация «Рускорпорация»',
           }
 
-          html_files=[p for p in root.rglob('*.html') if '.git' not in p.parts]
           for p in html_files:
-              s=p.read_text(encoding='utf-8')
-              n=s
-              for a,b in exact.items():
-                  n=n.replace(a,b)
+              s=p.read_text(encoding='utf-8'); n=s
+              for a,b in exact.items(): n=n.replace(a,b)
+              # Correct company GБР timing in any textual form: 5-10 -> 10-15, only close to the token GБР.
+              n=re.sub(r'(ГБР(?:(?!<).){0,50}?)(5\s*[–—-]\s*10)(?=\s*(?:мин|минут))', lambda m:m.group(1)+'10–15', n, flags=re.I)
+              n=re.sub(r'(ГБР(?:(?!<).){0,50}?)(5\s*[–—-]\s*10)(?=\s*(?:мин|минут))', lambda m:m.group(1)+'10–15', n, flags=re.I)
+              # Raw HTML counters must show their real target value, not zero.
+              n=re.sub(r'(<(?:b|span|strong)[^>]*\bdata-(?:target|count)=["\'])(\d+)(["\'][^>]*>)0(?=\s*</(?:b|span|strong)>)', lambda m:m.group(1)+m.group(2)+m.group(3), n, flags=re.I)
+              save(p,s,n)
 
-              # Normalize GБР response timing everywhere it is explicitly written as 5–10.
-              repls={
-                  'ГБР 5–10 мин':'ГБР 10–15 мин',
-                  'ГБР 5-10 мин':'ГБР 10–15 мин',
-                  'ГБР — 5–10 мин':'ГБР — 10–15 мин',
-                  'ГБР — 5-10 мин':'ГБР — 10–15 мин',
-                  'ГБР: 5–10 мин':'ГБР: 10–15 мин',
-                  'ГБР: 5-10 мин':'ГБР: 10–15 мин',
-                  'ГБР 5–10 минут':'ГБР 10–15 минут',
-                  'ГБР 5-10 минут':'ГБР 10–15 минут',
-                  'ГБР — 5–10 минут':'ГБР — 10–15 минут',
-                  'ГБР — 5-10 минут':'ГБР — 10–15 минут',
-                  'прибытие ГБР 5–10 мин':'прибытие ГБР 10–15 мин',
-                  'прибытие ГБР 5-10 мин':'прибытие ГБР 10–15 мин',
-                  'прибытие ГБР — 5–10 мин':'прибытие ГБР — 10–15 мин',
-                  'прибытие ГБР — 5-10 мин':'прибытие ГБР — 10–15 мин',
-                  'до 5–10 минут по Москве':'до 10–15 минут по Москве',
-                  'до 5-10 минут по Москве':'до 10–15 минут по Москве',
-              }
-              for a,b in repls.items(): n=n.replace(a,b)
-
-              # If animated counters expose literal zero in raw HTML, expose their real target value instead.
-              # JS can still animate the element, but crawlers no longer see "0 лет / 0 объектов".
-              def counter(m):
-                  return m.group(1)+m.group(2)+m.group(3)
-              n=re.sub(r'(<(?:b|span|strong)[^>]*\bdata-(?:target|count)=["\'])(\d+)(["\'][^>]*>)0(?=\s*</(?:b|span|strong)>)', counter, n, flags=re.I)
-
-              write_if_changed(p,s,n)
-
-          # Event-service pricing: one guardrail — 4,000 RUB/hour per guard.
-          event_paths=[Path('ohrana-meropriyatiy/index.html'),Path('ohrana-meropriyatiy-v-moskve/index.html')]
-          for p in event_paths:
+          # Event pages: 4,000 RUB/hour per one guard.
+          for p in [Path('ohrana-meropriyatiy/index.html'),Path('ohrana-meropriyatiy-v-moskve/index.html')]:
               if not p.exists(): continue
               s=p.read_text(encoding='utf-8'); n=s
-              # Human-visible legacy per-shift tariffs on the event sales pages.
               n=re.sub(r'от\s+(?:8|10|12|14|15|18|20)\s*000\s*₽\s*/\s*смен[ау]', 'от 4 000 ₽/час', n, flags=re.I)
               n=re.sub(r'(?:8|10|12|14|15|18|20)\s*000\s*₽\s*/\s*смен[ау]', '4 000 ₽/час', n, flags=re.I)
-              # Structured data legacy values only where unitText is a shift/hour tariff on these event pages.
               n=re.sub(r'("minPrice"\s*:\s*")(?:8000|10000|12000|14000|15000|18000|20000)("\s*,\s*"priceCurrency"\s*:\s*"RUB"\s*,\s*"unitText"\s*:\s*")(?:смена|час)(")', r'\g<1>4000\g<2>час за 1 охранника\g<3>', n)
-              # Standardise all three displayed package starting prices if page has package cards.
-              n=re.sub(r'(Стандарт[^<]{0,80}</span>\s*<b>)от\s*[\d\s]+₽[^<]*(</b>)', r'\1от 4 000 ₽/час\2', n, flags=re.I)
-              n=re.sub(r'(Премиум[^<]{0,80}</span>\s*<b>)от\s*[\d\s]+₽[^<]*(</b>)', r'\1от 4 000 ₽/час\2', n, flags=re.I)
-              n=re.sub(r'(VIP[^<]{0,80}</span>\s*<b>)от\s*[\d\s]+₽[^<]*(</b>)', r'\1от 4 000 ₽/час\2', n, flags=re.I)
-              write_if_changed(p,s,n)
+              n=re.sub(r'(Стандарт[^<]{0,100}</span>\s*<b>)от\s*[\d\s]+₽[^<]*(</b>)', r'\1от 4 000 ₽/час\2', n, flags=re.I)
+              n=re.sub(r'(Премиум[^<]{0,100}</span>\s*<b>)от\s*[\d\s]+₽[^<]*(</b>)', r'\1от 4 000 ₽/час\2', n, flags=re.I)
+              n=re.sub(r'(VIP[^<]{0,100}</span>\s*<b>)от\s*[\d\s]+₽[^<]*(</b>)', r'\1от 4 000 ₽/час\2', n, flags=re.I)
+              save(p,s,n)
 
-          # Price catalogue schema already has event offers; make them consistent if a stale value survived.
+          # Price catalogue structured data guardrail.
           p=Path('ceny/index.html')
           if p.exists():
               s=p.read_text(encoding='utf-8'); n=s
-              # Only Offers whose name starts with "Охрана мероприятия".
-              def fix_offer(m):
-                  block=m.group(0)
-                  block=re.sub(r'"minPrice"\s*:\s*"\d+"','"minPrice":"4000"',block)
-                  block=re.sub(r'"unitText"\s*:\s*"[^"]+"','"unitText":"час за 1 охранника"',block)
-                  return block
-              n=re.sub(r'\{"@type":"Offer","name":"Охрана мероприятия[^}]+\}\}', fix_offer, n)
-              write_if_changed(p,s,n)
+              def fix_event_offer(m):
+                  b=m.group(0)
+                  b=re.sub(r'"minPrice"\s*:\s*"\d+"','"minPrice":"4000"',b)
+                  b=re.sub(r'"unitText"\s*:\s*"[^"]+"','"unitText":"час за 1 охранника"',b)
+                  return b
+              n=re.sub(r'\{"@type":"Offer","name":"Охрана мероприятия[^}]+\}\}',fix_event_offer,n)
+              save(p,s,n)
 
-          # Sitemap: validate XML, remove URLs that are now local redirect stubs, remove duplicates.
+          # Sitemap cleanup: remove local redirect stubs and duplicates; keep canonical destinations only.
           sp=Path('sitemap.xml')
           if sp.exists():
-              ss=sp.read_text(encoding='utf-8')
-              ET.fromstring(ss)
+              ss=sp.read_text(encoding='utf-8'); rt=ET.fromstring(ss); tree=ET.ElementTree(rt)
+              ns=rt.tag.split('}')[0]+'}' if rt.tag.startswith('{') else ''
               stubs=set()
               for p in html_files:
-                  try: txt=p.read_text(encoding='utf-8')
-                  except: continue
-                  if 'http-equiv="refresh"' in txt.lower() and '<link rel="canonical"' in txt.lower():
+                  txt=p.read_text(encoding='utf-8').lower()
+                  if 'http-equiv="refresh"' in txt and '<link rel="canonical"' in txt:
                       rel='/' if str(p)=='index.html' else ('/'+str(p.parent).replace('\\','/')+'/' if p.name=='index.html' else '/'+str(p).replace('\\','/'))
                       stubs.add('https://ohrana.tech'+rel)
-              tree=ET.ElementTree(ET.fromstring(ss)); rt=tree.getroot()
-              ns=''
-              if rt.tag.startswith('{'): ns=rt.tag.split('}')[0]+'}'
               seen=set(); removed=[]
               for u in list(rt.findall(ns+'url')):
-                  loc=u.find(ns+'loc')
-                  if loc is None or not loc.text: continue
-                  url=loc.text.strip()
-                  if url in seen or url in stubs:
-                      removed.append(url); rt.remove(u)
-                  else: seen.add(url)
+                  loc=u.find(ns+'loc'); url=(loc.text or '').strip() if loc is not None else ''
+                  if url and (url in seen or url in stubs): removed.append(url); rt.remove(u)
+                  elif url: seen.add(url)
               if removed:
-                  ET.indent(tree, space='  ')
-                  tree.write(sp, encoding='unicode', xml_declaration=True)
-                  changed.add(str(sp))
-                  report.append('Sitemap removed redirect/duplicate URLs: '+str(len(removed)))
-              report.append('Sitemap canonical URL count: '+str(len(seen)))
+                  ET.indent(tree,space='  '); tree.write(sp,encoding='unicode',xml_declaration=True); changed.add(str(sp))
+              report.append('Sitemap URLs: '+str(len(seen))+'; removed redirects/duplicates: '+str(len(removed)))
 
-          # Audit only: do not blindly rewrite these items.
-          missing_canonical=[]; noindex=[]; h1_bad=[]; stale_gbr=[]; zero_stats=[]; company_chop=[]
-          canon_map=defaultdict(list)
+          # Audit remaining SEO structure. These lists are printed for manual review; critical consistency must be zero.
+          missing=[]; noindex=[]; h1bad=[]; stale=[]; zeros=[]; chop=[]; cmap=defaultdict(list)
           for p in html_files:
-              txt=p.read_text(encoding='utf-8')
-              low=txt.lower()
+              txt=p.read_text(encoding='utf-8'); low=txt.lower()
               cans=re.findall(r'<link\s+rel=["\']canonical["\']\s+href=["\']([^"\']+)',txt,re.I)
               if cans:
-                  for c in cans: canon_map[c].append(str(p))
-              elif '<head' in low and 'http-equiv="refresh"' not in low and p.name!='404.html':
-                  missing_canonical.append(str(p))
+                  for c in cans: cmap[c].append(str(p))
+              elif '<head' in low and 'http-equiv="refresh"' not in low and p.name!='404.html': missing.append(str(p))
               if re.search(r'<meta[^>]+name=["\']robots["\'][^>]+content=["\'][^"\']*noindex',txt,re.I): noindex.append(str(p))
-              h1=len(re.findall(r'<h1\b',txt,re.I))
-              if h1!=1 and 'http-equiv="refresh"' not in low and p.name!='404.html': h1_bad.append((str(p),h1))
-              if re.search(r'ГБР[^<\n]{0,40}5\s*[–—-]\s*10',txt,re.I): stale_gbr.append(str(p))
-              if re.search(r'data-(?:target|count)=["\']\d+["\'][^>]*>\s*0\s*<',txt,re.I): zero_stats.append(str(p))
-              if 'ЧОП «Рускорпорация»' in txt or 'ООО ЧОП «Рускорпорация»' in txt: company_chop.append(str(p))
-
-          dup_canon={c:ps for c,ps in canon_map.items() if len(ps)>1}
-          report += [
-              'HTML files audited: '+str(len(html_files)),
-              'Missing canonical (audit only): '+str(len(missing_canonical)),
-              'Noindex pages (audit only): '+str(len(noindex)),
-              'Pages with H1 count != 1 (audit only): '+str(len(h1_bad)),
-              'Duplicate canonical targets (audit only): '+str(len(dup_canon)),
-              'Remaining stale GБР 5-10 patterns: '+str(len(stale_gbr)),
-              'Remaining raw zero animated stats: '+str(len(zero_stats)),
-              'Remaining company-specific ЧОП naming: '+str(len(company_chop)),
-          ]
-          print('\n'.join('FINAL_AUDIT '+x for x in report))
-          if stale_gbr or zero_stats or company_chop:
-              print('STALE_GBR',stale_gbr)
-              print('ZERO_STATS',zero_stats)
-              print('COMPANY_CHOP',company_chop)
+              hc=len(re.findall(r'<h1\b',txt,re.I))
+              if hc!=1 and 'http-equiv="refresh"' not in low and p.name!='404.html': h1bad.append((str(p),hc))
+              if re.search(r'ГБР(?:(?!<).){0,50}?5\s*[–—-]\s*10\s*(?:мин|минут)',txt,re.I): stale.append(str(p))
+              if re.search(r'data-(?:target|count)=["\']\d+["\'][^>]*>\s*0\s*<',txt,re.I): zeros.append(str(p))
+              if 'ЧОП «Рускорпорация»' in txt or 'ООО ЧОП «Рускорпорация»' in txt: chop.append(str(p))
+          dups={k:v for k,v in cmap.items() if len(v)>1}
+          print('FINAL_AUDIT HTML',len(html_files))
+          print('FINAL_AUDIT missing canonical',missing)
+          print('FINAL_AUDIT noindex',noindex)
+          print('FINAL_AUDIT H1 count != 1',h1bad)
+          print('FINAL_AUDIT duplicate canonicals',dups)
+          print('FINAL_AUDIT stale GБР',stale)
+          print('FINAL_AUDIT zero stats',zeros)
+          print('FINAL_AUDIT company ЧОП',chop)
+          print('CHANGED_FILES',sorted(changed))
+          if stale or zeros or chop:
               raise SystemExit('Critical consistency checks still fail')
-          print('CHANGED_FILES')
-          for x in sorted(changed): print(' -',x)
           PY
-      - name: Commit all final fixes and remove one-off workflow
+      - name: Commit final package and remove one-off workflow
         shell: bash
         run: |
           rm -f .github/workflows/final-site-pass-20260930.yml
