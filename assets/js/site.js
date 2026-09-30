@@ -16,7 +16,7 @@ function placeThemeToggle(){
   var navWrap=document.querySelector('#siteNav .wrap');
   var hdRight=document.querySelector('.site-header .hd-right');
   var burger=document.getElementById('burger');
-  var compact=!!(themePlacementMq&&themePlacementMq.matches);
+  var compact=!!((themePlacementMq&&themePlacementMq.matches)||!navWrap);
   var target=compact&&hdRight?hdRight:navWrap;
   if(!target)return btn;
   if(!btn){btn=document.createElement('button');btn.type='button';btn.id='themeToggle';btn.className='theme-toggle';}
