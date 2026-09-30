@@ -44,7 +44,7 @@
       <offer id="physical-security-offer">
         <name>ЧОО «Рускорпорация»</name>
         <url>https://ohrana.tech/fizicheskaya-ohrana/</url>
-        <price from="true">4000</price>
+        <price from="true">190000</price>
         <currencyId>RUR</currencyId>
         <categoryId>27</categoryId>
         <set-ids>physical-security</set-ids>
@@ -57,7 +57,7 @@
         <param name="Конверсия">1</param>
         <param name="Организация">true</param>
         <param name="Выполняется по адресу заказчика">true</param>
-        <sales_notes>Цена от 4 000 ₽ в час за 1 охранника</sales_notes>
+        <sales_notes>Цена от 190 000 ₽ в месяц за пост охраны</sales_notes>
       </offer>
 
       <offer id="remote-security-offer">

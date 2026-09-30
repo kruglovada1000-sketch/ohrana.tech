@@ -1263,7 +1263,7 @@ html[data-theme="light"] .theme-yinyang{
 <div class="cursor-ring" aria-hidden="true"></div>
 
 <!-- ШАПКА -->
-<header class="site-header"><link rel="stylesheet" href="/css/services-menu.css?v=20260923"><script src="/js/services-menu.js?v=20260923" defer></script>
+<header class="site-header"><link rel="stylesheet" href="/css/services-menu.css?v=20261001-fix1"><script src="/js/services-menu.js?v=20261001-fix1" defer></script>
   <div class="wrap hd-in">
     <a class="brand" href="/" aria-label="Рускорпорация — на главную">
       <span class="brand-ic">
@@ -2049,17 +2049,21 @@ window.addEventListener('scroll', function(){
 
 /* МЕНЮ */
 var burger = document.getElementById('burger'), nav = document.getElementById('siteNav');
+function setMenuOpen(open){nav.classList.toggle('open',open);burger.classList.toggle('open',open);burger.setAttribute('aria-expanded',String(open));burger.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');}
+burger.setAttribute('aria-controls','siteNav');
 burger.addEventListener('click', function(){
-  var open = nav.classList.toggle('open');
-  burger.classList.toggle('open', open);
-  burger.setAttribute('aria-expanded', open);
+  setMenuOpen(!nav.classList.contains('open'));
 });
 nav.querySelectorAll('a').forEach(function(a){
   a.addEventListener('click', function(){
-    nav.classList.remove('open'); burger.classList.remove('open');
-    burger.setAttribute('aria-expanded','false');
+    setMenuOpen(false);
   });
 });
+document.addEventListener('click',function(e){if(!nav.contains(e.target)&&!burger.contains(e.target))setMenuOpen(false);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!e.defaultPrevented&&nav.classList.contains('open')){setMenuOpen(false);burger.focus();}});
+var menuMq=window.matchMedia('(max-width:1100px)');
+function resetMenu(){if(!menuMq.matches)setMenuOpen(false);}
+if(menuMq.addEventListener)menuMq.addEventListener('change',resetMenu);else if(menuMq.addListener)menuMq.addListener(resetMenu);
 
 /* REVEAL */
 function initReveal() {
@@ -2348,19 +2352,26 @@ if (objGrid) {
     faqList.querySelectorAll('.faq-item').forEach(function(it){
       it.classList.remove('open');
       it.querySelector('.faq-a').style.maxHeight = null;
+      it.querySelector('.faq-a').setAttribute('aria-hidden','true');
+      it.querySelector('.faq-a').inert = true;
       it.querySelector('.faq-q').setAttribute('aria-expanded','false');
     });
     if (!open){
       item.classList.add('open');
       a.style.maxHeight = a.scrollHeight + 'px';
+      a.setAttribute('aria-hidden','false');
+      a.inert = false;
       item.querySelector('.faq-q').setAttribute('aria-expanded','true');
     }
   }
   faqList.querySelectorAll('.faq-q').forEach(function(q){
     q.addEventListener('click', function(){ setFaq(q.parentElement); });
   });
-  var first = faqList.querySelector('.faq-item.open .faq-a');
-  if (first) first.style.maxHeight = first.scrollHeight + 'px';
+  faqList.querySelectorAll('.faq-item').forEach(function(item){var open=item.classList.contains('open'),answer=item.querySelector('.faq-a');answer.setAttribute('aria-hidden',String(!open));answer.inert=!open;});
+  function resizeFaq(){faqList.querySelectorAll('.faq-item.open .faq-a').forEach(function(answer){answer.style.maxHeight=answer.scrollHeight+'px';});}
+  resizeFaq();
+  window.addEventListener('resize',resizeFaq,{passive:true});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(resizeFaq);
 })();
 
 /* FORMSPREE */
@@ -2377,20 +2388,29 @@ function initFormspree(form){
   form.dataset.spreeBound = '1';
   form.addEventListener('submit', function(e){
     e.preventDefault();
-    goal('form_submit');
+    if(form.dataset.submitting==='1'||!form.reportValidity())return;
+    form.dataset.submitting='1';
+    form.setAttribute('aria-busy','true');
     var btn = form.querySelector('button[type="submit"]');
     var original = btn ? btn.textContent : '';
+    var status=form.querySelector('[data-form-error]');
+    if(!status){status=document.createElement('p');status.className='form-note form-error';status.dataset.formError='1';status.setAttribute('role','alert');status.setAttribute('aria-live','assertive');form.appendChild(status);}
+    status.hidden=true;
     if (btn) { btn.disabled = true; btn.textContent = 'Отправляем…'; }
-    fetch(form.action, {
+    var controller=typeof AbortController==='function'?new AbortController():null;
+    var timeout=setTimeout(function(){if(controller)controller.abort();},20000);
+    function finish(){clearTimeout(timeout);form.dataset.submitting='0';form.setAttribute('aria-busy','false');if(btn){btn.disabled=false;btn.textContent=original;}}
+    var options={
       method: 'POST',
       body: new FormData(form),
       headers: { 'Accept': 'application/json' }
-    }).then(function(res){
-      if (res.ok) { form.innerHTML = FORMSPREE_OK; return; }
-      if (btn) { btn.disabled = false; btn.textContent = original; }
-      HTMLFormElement.prototype.submit.call(form);
+    };
+    if(controller)options.signal=controller.signal;
+    fetch(form.action,options).then(function(res){
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      finish();goal('form_submit');goal('lead_form_ok');form.innerHTML=FORMSPREE_OK;
     }).catch(function(){
-      HTMLFormElement.prototype.submit.call(form);
+      finish();status.textContent='Не удалось подтвердить отправку заявки. Данные сохранены. Попробуйте ещё раз или позвоните: +7 (925) 047-42-25.';status.hidden=false;
     });
   });
 }

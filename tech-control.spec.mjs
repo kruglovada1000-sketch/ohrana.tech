@@ -1,5 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/*', route => {
+    const host = new URL(route.request().url()).hostname;
+    return host === '127.0.0.1' || host === 'localhost' ? route.continue() : route.abort();
+  });
+});
+
 test('главная открывается и ключевые элементы на месте', async ({ page }) => {
   const response = await page.goto('/', { waitUntil: 'domcontentloaded' });
   expect(response?.ok()).toBeTruthy();
