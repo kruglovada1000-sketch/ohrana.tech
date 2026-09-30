@@ -18,6 +18,11 @@ RewriteEngine On
 RewriteCond %{QUERY_STRING} (^|&)_ym_debug=[^&]*(&|$) [NC]
 RewriteRule ^$ / [R=301,L,QSD]
 
+# Hard canonical redirect for the old Complex Security URL.
+# Use mod_rewrite here instead of relying only on mod_alias Redirect.
+RewriteRule ^kompleksnaja-ohrana/?$ /stati/kompleksnaya-ohrana.html [R=301,L,NE]
+RewriteRule ^kompleksnaja-ohrana/index\.html$ /stati/kompleksnaya-ohrana.html [R=301,L,NE]
+
 # Canonical URL for the homepage without editing the large index.html.
 # Yandex supports rel=canonical in an HTTP Link header.
 <IfModule mod_headers.c>
@@ -31,7 +36,6 @@ RewriteRule ^$ / [R=301,L,QSD]
 </IfModule>
 
 # Legacy article URL -> current canonical article.
-Redirect 301 /kompleksnaja-ohrana/ https://ohrana.tech/stati/kompleksnaya-ohrana.html
 Redirect 301 /stati/nochnaya-ohrana.html https://ohrana.tech/stati/nochnaya-ohrana-obektov.html
 Redirect 301 /stati/ohrana-meropriyatiy-v-moskve.html https://ohrana.tech/ohrana-meropriyatiy-v-moskve/
 Redirect 301 /soprovozhdenie-gruzov/ https://ohrana.tech/stati/soprovozhdenie-gruzov.html
