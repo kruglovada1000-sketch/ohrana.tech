@@ -5,7 +5,8 @@ export default defineConfig({
   testMatch: ['tech-control.spec.mjs', 'site-regression.spec.mjs'],
   timeout: 30_000,
   expect: { timeout: 7_000 },
-  fullyParallel: false,
+  fullyParallel: true,
+  workers: process.env.CI ? 2 : undefined,
   retries: 1,
   reporter: [
     ['list'],

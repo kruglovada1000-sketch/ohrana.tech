@@ -151,3 +151,8 @@ html[data-theme="light"] .theme-yinyang{
     -webkit-transition:-webkit-transform .72s cubic-bezier(.22,.61,.36,1)!important;
   }
 }
+
+/* Compact article headers keep the phone and theme control visible. */
+@media(max-width:640px){
+  .site-header .hd-right>.hd-phone{font-size:.72rem;line-height:1.25;white-space:normal;max-width:104px;text-align:right}
+}

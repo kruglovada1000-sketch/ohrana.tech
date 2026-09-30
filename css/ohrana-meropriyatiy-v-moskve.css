@@ -140,3 +140,11 @@
     .mbar{ display:flex; }
     body{ padding-bottom:calc(70px + env(safe-area-inset-bottom)); }
   }
+
+/* Keep service and price text inside the mobile table. */
+@media(max-width:640px){
+  table.prices{table-layout:fixed}
+  table.prices th:last-child{width:45%}
+  table.prices td:last-child{white-space:normal}
+  table.prices th,table.prices td{overflow-wrap:break-word}
+}

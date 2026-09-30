@@ -70,7 +70,7 @@ test('Услуги закрываются Escape при фокусе внутр�
 });
 
 for (const url of ['/', '/kontakty/', '/ohrana-moskovskaya-oblast/', '/uslugi/ohrana-lombardov/']) {
-  test(`мобильное меню ${url}: Escape и клик вне шапки`, async ({ page }) => {
+  test(`мобильное меню ${url}: Escape и клик вне меню`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(url);
     const burger = page.locator('#burger'), nav = page.locator('#siteNav');
@@ -80,7 +80,7 @@ for (const url of ['/', '/kontakty/', '/ohrana-moskovskaya-oblast/', '/uslugi/oh
     await expect(nav).not.toHaveClass(/open/);
     await expect(burger).toBeFocused();
     await burger.click();
-    await page.locator('h1').click();
+    await page.locator('.hd-in').click({ position: { x: 5, y: 5 } });
     await expect(nav).not.toHaveClass(/open/);
   });
 }
@@ -174,4 +174,19 @@ test('манифесты читаются в UTF-8 и все иконки дос
     expect(manifest.name).toContain('Рускорпорация');
     for (const icon of manifest.icons) expect((await request.get(icon.src)).ok()).toBeTruthy();
   }
+});
+
+
+test('узкая шапка статьи: телефон и переключатель темы остаются доступными', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto('/stati/srok-zapuska-ohrany-novogo-obekta.html');
+  for (const selector of ['.hd-right > .hd-phone', '#themeToggle']) {
+    const rect = await page.locator(selector).boundingBox();
+    expect(rect).not.toBeNull();
+    expect(rect.x).toBeGreaterThanOrEqual(0);
+    expect(rect.x + rect.width).toBeLessThanOrEqual(320);
+  }
+  const before = await page.locator('html').getAttribute('data-theme');
+  await page.locator('#themeToggle').click();
+  expect(await page.locator('html').getAttribute('data-theme')).not.toBe(before);
 });
