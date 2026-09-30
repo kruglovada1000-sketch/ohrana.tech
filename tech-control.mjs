@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = process.cwd();
-const SKIP = new Set(['.git', 'node_modules', '.unlighthouse', 'playwright-report', 'test-results']);
+const ROOT = path.dirname(fileURLToPath(import.meta.url));
+const SKIP = new Set(['.git', 'node_modules', '.unlighthouse', 'playwright-report', 'test-results', 'visual-qa', '.openai']);
 const IMAGE_EXT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif']);
 const WARN_IMAGE_BYTES = 400 * 1024;
 const FORM_ENDPOINT = 'https://formspree.io/f/mvkpbvnb';
@@ -50,7 +51,11 @@ function isIgnoredUrl(u) {
 }
 
 function resolveLocal(fromFile, raw) {
-  const clean = stripUrl(raw);
+  let clean = stripUrl(raw);
+  if (/^https?:/i.test(clean)) {
+    try { const url = new URL(clean); if (url.origin !== SITE_ORIGIN) return null; clean = url.pathname; }
+    catch { return null; }
+  }
   if (isIgnoredUrl(clean)) return null;
   let decoded = clean;
   try { decoded = decodeURIComponent(clean); } catch {}
@@ -93,6 +98,10 @@ function tagValue(xml, tag) {
 
 for (const file of htmlFiles) {
   const src = fs.readFileSync(file, 'utf8');
+
+  for (const match of src.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+    try { JSON.parse(match[1]); } catch (err) { error(file, `некорректный JSON-LD: ${err.message}`); }
+  }
 
   const ids = [...src.matchAll(/\bid\s*=\s*["']([^"']+)["']/gi)].map(m => m[1]);
   const seen = new Set();
@@ -180,82 +189,60 @@ if (fs.existsSync(sitemapFile)) {
   if (sitemapUrls.size === 0) error(sitemapFile, 'не найдено ни одного <loc>');
 }
 
+// Yandex YML services/provider feed: shop, categories, sets and offers.
+// Official format: https://yandex.ru/support/webmaster/ru/search-appearance/services
 const feedFile = path.join(ROOT, 'yandex-services.yml');
 if (fs.existsSync(feedFile)) {
   const xml = fs.readFileSync(feedFile, 'utf8');
   if (!/^\s*<\?xml\b/i.test(xml)) error(feedFile, 'нет XML-декларации');
-  if (!/<services_feed\b[^>]*>[\s\S]*<\/services_feed>/i.test(xml)) error(feedFile, 'нет корневого services_feed');
-
-  const source = xml.match(/<source>\s*([\s\S]*?)\s*<\/source>/i)?.[1] || '';
-  if (!source) error(feedFile, 'нет обязательного блока source');
-  else {
-    for (const tag of ['name', 'url', 'favicon', 'locale']) {
-      if (!tagValue(source, tag)) error(feedFile, `source/${tag} обязателен`);
-    }
-    if (tagValue(source, 'locale') && tagValue(source, 'locale') !== 'ru') {
-      error(feedFile, `source/locale должен быть ru, сейчас: ${tagValue(source, 'locale')}`);
-    }
-    for (const tag of ['url', 'favicon']) {
-      const raw = tagValue(source, tag);
-      if (!raw) continue;
-      const target = resolveSiteUrl(raw);
-      if (target && !fs.existsSync(target)) warn(feedFile, `source/${tag} ведёт на отсутствующий локальный файл: ${raw}`);
-    }
+  if (!/<yml_catalog\b[^>]*>[\s\S]*<\/yml_catalog>/i.test(xml)) error(feedFile, 'нет корневого yml_catalog');
+  const shop = xml.match(/<shop>\s*([\s\S]*?)\s*<\/shop>/i)?.[1] || '';
+  if (!shop) error(feedFile, 'нет обязательного shop');
+  for (const tag of ['name', 'company', 'url']) if (!tagValue(shop, tag)) error(feedFile, `shop/${tag} обязателен`);
+  const currencies = new Set([...shop.matchAll(/<currency\b([^>]*)\/?\s*>/gi)].map(m => attrValue(m[1], 'id')));
+  const categories = new Set([...shop.matchAll(/<category\b([^>]*)>[\s\S]*?<\/category>/gi)].map(m => attrValue(m[1], 'id')));
+  if (!currencies.size) error(feedFile, 'нет currencies/currency');
+  if (!categories.size) error(feedFile, 'нет categories/category');
+  const sets = new Set();
+  function checkFeedUrl(raw, label) {
+    const target = resolveSiteUrl(raw);
+    if (!target || !fs.existsSync(target)) error(feedFile, `${label}: URL не имеет локальной страницы/файла: ${raw}`);
   }
-
-  const executors = [...xml.matchAll(/<executor>\s*([\s\S]*?)\s*<\/executor>/gi)].map(m => m[1]);
-  if (executors.length === 0) error(feedFile, 'нет ни одного executor');
-  const executorIds = new Set();
-
-  for (const [i, executor] of executors.entries()) {
-    const n = i + 1;
-    for (const tag of ['url', 'is_organization', 'name']) {
-      if (!tagValue(executor, tag)) error(feedFile, `executor #${n}: отсутствует ${tag}`);
-    }
-    const executorId = tagValue(executor, 'persistent_id');
-    if (executorId) {
-      if (executorIds.has(executorId)) error(feedFile, `дублирующий persistent_id исполнителя: ${executorId}`);
-      executorIds.add(executorId);
-    }
-
-    const servicesBlock = executor.match(/<services>\s*([\s\S]*?)\s*<\/services>/i)?.[1] || '';
-    const services = [...servicesBlock.matchAll(/<service>\s*([\s\S]*?)\s*<\/service>/gi)].map(m => m[1]);
-    if (services.length === 0) error(feedFile, `executor #${n}: нет ни одной service`);
-
-    const serviceIds = new Set();
-    const serviceNames = new Set();
-    for (const [j, service] of services.entries()) {
-      const sn = `${n}.${j + 1}`;
-      const name = tagValue(service, 'name');
-      if (!name) error(feedFile, `service #${sn}: отсутствует name`);
-      else if (serviceNames.has(name)) error(feedFile, `executor #${n}: повтор названия услуги "${name}"`);
-      else serviceNames.add(name);
-
-      const id = tagValue(service, 'persistent_id');
-      if (id) {
-        if (serviceIds.has(id)) error(feedFile, `executor #${n}: повтор persistent_id услуги ${id}`);
-        serviceIds.add(id);
-      }
-
-      const where = tagValue(service, 'where');
-      if (where && !new Set(['at_customer', 'at_executor', 'online', 'both']).has(where)) {
-        warn(feedFile, `service #${sn}: неизвестный where=${where}`);
-      }
-
-      const price = service.match(/<price>\s*([\s\S]*?)\s*<\/price>/i)?.[1] || '';
-      if (price) {
-        const priceTypes = ['is_negotiable', 'is_free', 'exact', 'from'].filter(tag => new RegExp(`<${tag}(?:\\s|>)`, 'i').test(price));
-        if (priceTypes.length > 1) warn(feedFile, `service #${sn}: одновременно несколько типов цены: ${priceTypes.join(', ')}`);
-      }
-
-      const serviceUrl = tagValue(service, 'url');
-      if (serviceUrl) {
-        const target = resolveSiteUrl(serviceUrl);
-        if (target && !fs.existsSync(target)) warn(feedFile, `service #${sn}: URL не имеет локальной страницы: ${serviceUrl}`);
-        if (sitemapUrls.size && !sitemapUrls.has(serviceUrl)) warn(feedFile, `service #${sn}: URL отсутствует в sitemap: ${serviceUrl}`);
-      }
-    }
+  for (const match of shop.matchAll(/<set\b([^>]*)>([\s\S]*?)<\/set>/gi)) {
+    const id = attrValue(match[1], 'id');
+    if (!id || sets.has(id)) error(feedFile, `пустой или повторяющийся set id=${id}`);
+    sets.add(id);
+    if (!tagValue(match[2], 'name')) error(feedFile, `set ${id}: отсутствует name`);
+    checkFeedUrl(tagValue(match[2], 'url'), `set ${id}`);
   }
+  if (!sets.size) error(feedFile, 'нет sets/set');
+  const offerIds = new Set();
+  for (const match of shop.matchAll(/<offer\b([^>]*)>([\s\S]*?)<\/offer>/gi)) {
+    const id = attrValue(match[1], 'id'), offer = match[2];
+    if (!id || offerIds.has(id)) error(feedFile, `пустой или повторяющийся offer id=${id}`);
+    offerIds.add(id);
+    if (!tagValue(offer, 'name')) error(feedFile, `offer ${id}: отсутствует name`);
+    const price = Number(tagValue(offer, 'price'));
+    if (!Number.isFinite(price) || price <= 0) error(feedFile, `offer ${id}: некорректная price`);
+    if (!currencies.has(tagValue(offer, 'currencyId'))) error(feedFile, `offer ${id}: неизвестная currencyId`);
+    if (!categories.has(tagValue(offer, 'categoryId'))) error(feedFile, `offer ${id}: неизвестная categoryId`);
+    const ids = tagValue(offer, 'set-ids').split(',').map(v => v.trim());
+    for (const setId of ids) if (!sets.has(setId)) error(feedFile, `offer ${id}: неизвестный set-ids=${setId}`);
+    checkFeedUrl(tagValue(offer, 'url'), `offer ${id}`);
+    for (const picture of offer.matchAll(/<picture>\s*([^<]+)\s*<\/picture>/gi)) checkFeedUrl(picture[1].trim(), `offer ${id}/picture`);
+  }
+  if (!offerIds.size) error(feedFile, 'нет offers/offer');
+}
+
+for (const name of ['manifest.json', 'site.webmanifest']) {
+  const file = path.join(ROOT, name);
+  try {
+    const manifest = JSON.parse(fs.readFileSync(file, 'utf8'));
+    for (const icon of manifest.icons || []) {
+      const target = resolveLocal(file, icon.src);
+      if (!target || !fs.existsSync(target)) error(file, `не найден значок: ${icon.src}`);
+    }
+  } catch (err) { error(file, `некорректный UTF-8 JSON: ${err.message}`); }
 }
 
 console.log(`\n=== ТЕХКОНТРОЛЬ ohrana.tech ===`);
@@ -271,6 +258,4 @@ console.log(`Критических замечаний: ${errors.length}\n`);
 for (const msg of warnings) console.log(`::warning::${msg}`);
 for (const msg of errors) console.log(`::error::${msg}`);
 
-const missingCore = ['index.html', 'stati/index.html', 'sitemap.xml', 'robots.txt', 'yandex-services.yml']
-  .some(f => !fs.existsSync(path.join(ROOT, f)));
-if (missingCore) process.exit(1);
+if (errors.length) process.exitCode = 1;

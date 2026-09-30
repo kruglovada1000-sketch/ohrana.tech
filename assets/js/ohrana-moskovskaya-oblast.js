@@ -7,7 +7,7 @@ function setRegionsFaqState(item,open){
   var arrow=item.querySelector('.faq-arrow');
   item.classList.toggle('open',!!open);
   if(q)q.setAttribute('aria-expanded',String(!!open));
-  if(answer)answer.style.maxHeight=open?answer.scrollHeight+'px':'';
+  if(answer){answer.style.maxHeight=open?answer.scrollHeight+'px':'';answer.setAttribute('aria-hidden',String(!open));answer.inert=!open;}
   if(arrow){arrow.textContent=open?'↓':'←';arrow.style.transform='none';}
 }
 document.querySelectorAll('#faq .faq-item').forEach(function(item){

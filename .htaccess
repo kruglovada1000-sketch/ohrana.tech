@@ -35,6 +35,14 @@ RewriteRule ^kompleksnaja-ohrana/index\.html$ /stati/kompleksnaya-ohrana.html [R
   Header set Link "<https://ohrana.tech/stati/ohrana-uvelirnyh-magazinov.html>; rel=\"canonical\"" env=IS_JEWELRY_ARTICLE
 </IfModule>
 
+# Historical canonical addresses that returned 404 -> existing article files.
+RewriteRule ^stati/pochemu-luchshe-nanyat-chop/?$ /stati/pochemu-luchshe-nanyat-chop.html [R=301,L,NE]
+RewriteRule ^stati/obyazannosti-ohrannika-na-obekte/?$ /stati/obyazannosti-ohrannika-na-obekte.html [R=301,L,NE]
+RewriteRule ^stati/kak-vybrat-chop-dlya-ohrany-obekta/?$ /stati/kak-vybrat-chop-dlya-ohrany-obekta.html [R=301,L,NE]
+RewriteRule ^stati/5-priznakov-nenadyozhnoj-ohrannoj-firmy/?$ /stati/5-priznakov-nenadyozhnoj-ohrannoj-firmy.html [R=301,L,NE]
+RewriteRule ^stati/ohrana-spasaet-biznes/?$ /stati/ohrana-spasaet-biznes.html [R=301,L,NE]
+RewriteRule ^stoimost-bezopasnosti/?$ /stati/stoimost-bezopasnosti.html [R=301,L,NE]
+
 # Legacy article URL -> current canonical article.
 Redirect 301 /stati/nochnaya-ohrana.html https://ohrana.tech/stati/nochnaya-ohrana-obektov.html
 Redirect 301 /stati/ohrana-meropriyatiy-v-moskve.html https://ohrana.tech/ohrana-meropriyatiy-v-moskve/

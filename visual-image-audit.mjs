@@ -81,6 +81,7 @@ for (const file of files) {
     }
     await page.waitForTimeout(180);
 
+    const resolvedRoute = new URL(page.url()).pathname;
     const images = await page.locator('img').evaluateAll(nodes => nodes.map((img, index) => {
       const s = getComputedStyle(img);
       const r = img.getBoundingClientRect();
@@ -120,8 +121,8 @@ for (const file of files) {
       if (!img.visible || img.naturalWidth < 2 || img.naturalHeight < 2) continue;
       if (img.objectFit !== 'cover' || img.crop < CROP_WARN) continue;
 
-      const finding = { route, file: path.relative(ROOT, file).split(path.sep).join('/'), ...img };
-      if (isIntentional(route, img)) {
+      const finding = { route: resolvedRoute, sourceRoute: route, file: path.relative(ROOT, file).split(path.sep).join('/'), ...img };
+      if (isIntentional(resolvedRoute, img)) {
         intentionalCrops.push(finding);
         continue;
       }

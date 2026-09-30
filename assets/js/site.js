@@ -16,7 +16,7 @@ function placeThemeToggle(){
   var navWrap=document.querySelector('#siteNav .wrap');
   var hdRight=document.querySelector('.site-header .hd-right');
   var burger=document.getElementById('burger');
-  var compact=!!(themePlacementMq&&themePlacementMq.matches);
+  var compact=!!((themePlacementMq&&themePlacementMq.matches)||!navWrap);
   var target=compact&&hdRight?hdRight:navWrap;
   if(!target)return btn;
   if(!btn){btn=document.createElement('button');btn.type='button';btn.id='themeToggle';btn.className='theme-toggle';}
@@ -96,24 +96,63 @@ var metrikaId=Number(body&&body.dataset?body.dataset.metrikaId:0)||111882478;
 function goal(name){try{if(typeof ym==='function')ym(metrikaId,'reachGoal',name);}catch(e){}}
 document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var href=a.getAttribute('href')||'';if(href.indexOf('tel:')===0)goal('click_phone');if(href.indexOf('wa.me')>-1)goal('click_whatsapp');if(href.indexOf('t.me')>-1)goal('click_telegram');});
 var progress=document.getElementById('progress');if(progress){window.addEventListener('scroll',function(){var h=root;var d=h.scrollHeight-h.clientHeight;progress.style.width=(d>0?(h.scrollTop/d*100):0)+'%';},{passive:true});}
-var burger=document.getElementById('burger'),nav=document.getElementById('siteNav');if(burger&&nav){burger.addEventListener('click',function(){var open=nav.classList.toggle('open');burger.classList.toggle('open',open);burger.setAttribute('aria-expanded',String(open));});nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){nav.classList.remove('open');burger.classList.remove('open');burger.setAttribute('aria-expanded','false');});});}
+var burger=document.getElementById('burger'),nav=document.getElementById('siteNav');
+if(burger&&nav){
+  function setMenuOpen(open){nav.classList.toggle('open',open);burger.classList.toggle('open',open);burger.setAttribute('aria-expanded',String(open));burger.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');}
+  burger.setAttribute('aria-controls','siteNav');
+  burger.addEventListener('click',function(){setMenuOpen(!nav.classList.contains('open'));});
+  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){setMenuOpen(false);});});
+  document.addEventListener('click',function(e){if(!nav.contains(e.target)&&!burger.contains(e.target))setMenuOpen(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!e.defaultPrevented&&nav.classList.contains('open')){setMenuOpen(false);burger.focus();}});
+  if(themePlacementMq){var resetMenu=function(){if(!themePlacementMq.matches)setMenuOpen(false);};if(themePlacementMq.addEventListener)themePlacementMq.addEventListener('change',resetMenu);else if(themePlacementMq.addListener)themePlacementMq.addListener(resetMenu);}
+}
 if(nav){var path=location.pathname.replace(/index\.html$/,'');nav.querySelectorAll('a').forEach(function(a){var href=(a.getAttribute('href')||'').replace(/index\.html$/,'');if(href==='/'?path==='/':path.indexOf(href)===0)a.classList.add('active');});}
 var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;var reveal=document.querySelectorAll('[data-reveal]');if('IntersectionObserver'in window&&!rm){var io=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('in');io.unobserve(entry.target);}});},{threshold:.1});reveal.forEach(function(el){io.observe(el);});setTimeout(function(){reveal.forEach(function(el){el.classList.add('in');});},2000);}else{reveal.forEach(function(el){el.classList.add('in');});}
-function setFaqState(item,open){if(!item)return;var q=item.querySelector('.faq-q'),answer=item.querySelector('.faq-a');item.classList.toggle('open',!!open);if(q)q.setAttribute('aria-expanded',String(!!open));if(answer)answer.style.maxHeight=open?answer.scrollHeight+'px':'';}
+function setFaqState(item,open){if(!item)return;var q=item.querySelector('.faq-q'),answer=item.querySelector('.faq-a');item.classList.toggle('open',!!open);if(q)q.setAttribute('aria-expanded',String(!!open));if(answer){answer.style.maxHeight=open?answer.scrollHeight+'px':'';answer.setAttribute('aria-hidden',String(!open));answer.inert=!open;}}
 document.querySelectorAll('.faq-item').forEach(function(item){setFaqState(item,item.classList.contains('open'));});
 var faq=document.querySelectorAll('.faq-item .faq-q');faq.forEach(function(q){if(q.dataset.sharedFaqBound==='1')return;q.dataset.sharedFaqBound='1';q.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();var item=q.closest('.faq-item');var shouldOpen=!!item&&!item.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(function(openItem){if(openItem!==item)setFaqState(openItem,false);});setFaqState(item,shouldOpen);},true);});
+function resizeFaq(){document.querySelectorAll('.faq-item.open .faq-a').forEach(function(answer){answer.style.maxHeight=answer.scrollHeight+'px';});}
+window.addEventListener('resize',resizeFaq,{passive:true});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(resizeFaq);
 var finePointer=window.matchMedia&&window.matchMedia('(hover:hover) and (pointer:fine)').matches;
 document.querySelectorAll('.flip').forEach(function(card){if(card.dataset.sharedFlipBound==='1')return;card.dataset.sharedFlipBound='1';if(!finePointer){card.addEventListener('click',function(e){if(e.target.closest('a,button,input,select,textarea,label'))return;card.classList.toggle('flipped');});}card.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){if(e.target!==card)return;e.preventDefault();card.classList.toggle('flipped');}});});
 var chatBtn=document.getElementById('chatBtn'),chatPanel=document.getElementById('chatPanel');if(chatBtn&&chatPanel){chatBtn.addEventListener('click',function(e){e.stopPropagation();chatPanel.classList.toggle('open');});document.addEventListener('click',function(e){if(!chatPanel.contains(e.target)&&!chatBtn.contains(e.target))chatPanel.classList.remove('open');});}
-var filter=document.getElementById('priceFilter');if(filter){filter.addEventListener('input',function(){var q=(filter.value||'').trim().toLowerCase();document.querySelectorAll('[data-price-row]').forEach(function(row){var text=(row.textContent||'').toLowerCase();row.hidden=!!q&&text.indexOf(q)===-1;});});}
-var typeSelect=document.getElementById('priceType');if(typeSelect){typeSelect.addEventListener('change',function(){var v=typeSelect.value;document.querySelectorAll('[data-price-row]').forEach(function(row){row.hidden=!!v&&row.dataset.kind!==v;});});}
+var filter=document.getElementById('priceFilter'),typeSelect=document.getElementById('priceType');
+function filterPrices(){var q=filter?(filter.value||'').trim().toLowerCase():'',kind=typeSelect?typeSelect.value:'';document.querySelectorAll('[data-price-row]').forEach(function(row){row.hidden=(!!q&&(row.textContent||'').toLowerCase().indexOf(q)===-1)||(!!kind&&row.dataset.kind!==kind);});}
+if(filter)filter.addEventListener('input',filterPrices);
+if(typeSelect)typeSelect.addEventListener('change',filterPrices);
 /* SEO-safe counters: final values stay in the DOM at all times. */
 var counters=document.querySelectorAll('[data-value]');
 function setCounterValue(el,value){var suffix=el.getAttribute('data-suffix')||'';var decimals=(String(el.getAttribute('data-value')||'').split('.')[1]||'').length;var text=decimals?Number(value).toFixed(decimals):Math.round(Number(value)).toLocaleString('ru-RU');el.textContent=text+suffix;}
 if(counters.length){counters.forEach(function(el){var target=Number(el.getAttribute('data-value'));if(Number.isFinite(target))setCounterValue(el,target);});}
-function nativeSubmit(form){try{HTMLFormElement.prototype.submit.call(form);}catch(e){form.submit();}}
-function successNodeFor(form){var local=form.parentElement&&form.parentElement.querySelector('.form-ok,.form-success,[data-form-success]');var ok=document.getElementById('formOk')||local;if(ok)return ok;ok=document.createElement('div');ok.className='form-ok shared-form-ok';ok.setAttribute('role','status');ok.setAttribute('aria-live','polite');var heading=document.createElement('h3');heading.textContent='Заявка отправлена!';var text=document.createElement('p');text.textContent='Спасибо. Мы получили заявку и свяжемся с вами.';ok.appendChild(heading);ok.appendChild(text);(form.parentElement||form).appendChild(ok);return ok;}
-document.querySelectorAll('form[action*="formspree.io"]').forEach(function(form){if(form.dataset.sharedFormBound==='1')return;form.dataset.sharedFormBound='1';form.addEventListener('submit',function(e){e.preventDefault();var button=form.querySelector('button[type="submit"],input[type="submit"]');var oldText=button?(button.tagName==='INPUT'?button.value:button.textContent):'';if(button){button.disabled=true;if(button.tagName==='INPUT')button.value='Отправляем…';else button.textContent='Отправляем…';}var data=new FormData(form);fetch(form.action,{method:'POST',body:data,headers:{'Accept':'application/json'}}).then(function(res){if(!res.ok){if(button){button.disabled=false;if(button.tagName==='INPUT')button.value=oldText;else button.textContent=oldText;}nativeSubmit(form);return;}goal('form_submit');goal('lead_form_ok');form.style.display='none';var ok=successNodeFor(form);ok.style.display='block';ok.hidden=false;}).catch(function(){if(button){button.disabled=false;if(button.tagName==='INPUT')button.value=oldText;else button.textContent=oldText;}nativeSubmit(form);});});});
+function successNodeFor(form){var local=form.parentElement&&form.parentElement.querySelector('.form-ok,.form-success,[data-form-success]');var ok=local;if(ok)return ok;ok=document.createElement('div');ok.className='form-ok shared-form-ok';ok.setAttribute('role','status');ok.setAttribute('aria-live','polite');var heading=document.createElement('h3');heading.textContent='Заявка отправлена!';var text=document.createElement('p');text.textContent='Спасибо. Мы получили заявку и свяжемся с вами.';ok.appendChild(heading);ok.appendChild(text);(form.parentElement||form).appendChild(ok);return ok;}
+document.querySelectorAll('form[action*="formspree.io"]').forEach(function(form){
+  if(form.dataset.sharedFormBound==='1')return;
+  form.dataset.sharedFormBound='1';
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    if(form.dataset.submitting==='1'||!form.reportValidity())return;
+    form.dataset.submitting='1';
+    form.setAttribute('aria-busy','true');
+    var button=form.querySelector('button[type="submit"],input[type="submit"]');
+    var oldText=button?(button.tagName==='INPUT'?button.value:button.textContent):'';
+    var status=form.querySelector('[data-form-error]');
+    if(!status){status=document.createElement('p');status.className='form-note form-error';status.dataset.formError='1';status.setAttribute('role','alert');status.setAttribute('aria-live','assertive');status.style.gridColumn='1 / -1';status.style.width='100%';form.appendChild(status);}
+    status.hidden=true;
+    if(button){button.disabled=true;if(button.tagName==='INPUT')button.value='Отправляем…';else button.textContent='Отправляем…';}
+    var controller=typeof AbortController==='function'?new AbortController():null;
+    var timeout=setTimeout(function(){if(controller)controller.abort();},20000);
+    function finish(){clearTimeout(timeout);form.dataset.submitting='0';form.setAttribute('aria-busy','false');if(button){button.disabled=false;if(button.tagName==='INPUT')button.value=oldText;else button.textContent=oldText;}}
+    var options={method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}};
+    if(controller)options.signal=controller.signal;
+    fetch(form.action,options).then(function(res){
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      finish();goal('form_submit');goal('lead_form_ok');form.style.display='none';var ok=successNodeFor(form);ok.style.display='block';ok.hidden=false;
+    }).catch(function(){
+      finish();status.textContent='Не удалось подтвердить отправку заявки. Данные сохранены. Попробуйте ещё раз или позвоните: +7 (925) 047-42-25.';status.hidden=false;
+    });
+  });
+});
 if(!rm&&window.matchMedia&&!window.matchMedia('(hover:none)').matches){var dot=document.querySelector('.cursor-dot'),ring=document.querySelector('.cursor-ring');if(dot&&ring){var mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.transform='translate('+(mx-3)+'px,'+(my-3)+'px)';},{passive:true});(function loop(){rx+=(mx-rx)*.16;ry+=(my-ry)*.16;ring.style.transform='translate('+(rx-ring.offsetWidth/2)+'px,'+(ry-ring.offsetHeight/2)+'px)';requestAnimationFrame(loop);})();}}
 /* shared-crafted-cursor-hover-v1 */
 document.addEventListener('mouseover',function(e){

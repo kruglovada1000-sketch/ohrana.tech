@@ -2,10 +2,11 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: '.',
-  testMatch: 'tech-control.spec.mjs',
+  testMatch: ['tech-control.spec.mjs', 'site-regression.spec.mjs'],
   timeout: 30_000,
   expect: { timeout: 7_000 },
-  fullyParallel: false,
+  fullyParallel: true,
+  workers: process.env.CI ? 2 : undefined,
   retries: 1,
   reporter: [
     ['list'],
@@ -17,6 +18,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
     video: 'retain-on-failure',
+    reducedMotion: 'reduce',
   },
   projects: [
     {

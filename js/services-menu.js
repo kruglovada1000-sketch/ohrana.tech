@@ -2,12 +2,6 @@
 (function(){
  'use strict';
 
- // Always pull the current shared header CSS after a deployment.
- var servicesCss=document.querySelector('link[href^="/css/services-menu.css"],link[href*="/css/services-menu.css?"]');
- if(servicesCss){
-  servicesCss.href='/css/services-menu.css?v=20260925-yy2';
- }
-
  // Shared visual regression fixes for the current site shell.
  if(!document.querySelector('link[data-visual-fixes="20260924"]')){
   var visualFixes=document.createElement('link');
@@ -15,15 +9,6 @@
   visualFixes.href='/css/visual-fixes-20260924.css?v=20260925-3';
   visualFixes.dataset.visualFixes='20260924';
   document.head.appendChild(visualFixes);
- }
-
- // Restore the real company photograph on homepage section 01.
- if(location.pathname==='/'||location.pathname==='/index.html'){
-  var aboutImage=document.querySelector('#about .about-visual img');
-  if(aboutImage){
-   aboutImage.src='/images/chop-company.jpg';
-   aboutImage.alt='ЧОО «Рускорпорация» — охрана объектов и бизнеса';
-  }
  }
 
  // Price carousel uses the transparent brand shield.
@@ -110,8 +95,8 @@
  group.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
    e.preventDefault();
-   setOpen(false);
    button.focus();
+   setOpen(false);
   }
   if(e.key==='ArrowDown'&&!panel.contains(e.target)){
    var firstLink=panel.querySelector('a');
