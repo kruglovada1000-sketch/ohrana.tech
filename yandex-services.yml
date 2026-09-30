@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<yml_catalog date="2026-09-29 18:00">
+<yml_catalog date="2026-09-30 12:00">
   <shop>
     <name>ЧОО «Рускорпорация»</name>
     <company>ООО ЧОО «Рускорпорация охрана и консалтинг»</company>
@@ -139,7 +139,7 @@
       <offer id="event-security-offer">
         <name>ЧОО «Рускорпорация»</name>
         <url>https://ohrana.tech/ohrana-meropriyatiy-v-moskve/</url>
-        <price from="true">25000</price>
+        <price from="true">4000</price>
         <currencyId>RUR</currencyId>
         <categoryId>27</categoryId>
         <set-ids>event-security</set-ids>
@@ -152,7 +152,7 @@
         <param name="Конверсия">1</param>
         <param name="Организация">true</param>
         <param name="Выполняется по адресу заказчика">true</param>
-        <sales_notes>Цена от 25 000 ₽ за мероприятие</sales_notes>
+        <sales_notes>Цена от 4 000 ₽ в час за 1 охранника</sales_notes>
       </offer>
     </offers>
   </shop>
