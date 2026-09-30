@@ -1,0 +1,158 @@
+name: SEO recovery for GitHub Pages 2026-09-30
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/seo-recovery-20260930.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Apply canonical, terminology and legacy URL fixes
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import html, re, xml.etree.ElementTree as ET
+
+          changed=set()
+          def rw(path, transform):
+              p=Path(path)
+              old=p.read_text(encoding='utf-8')
+              new=transform(old)
+              if new!=old:
+                  p.write_text(new,encoding='utf-8')
+                  changed.add(str(p))
+
+          # 1. Homepage canonical must exist in HTML itself. GitHub Pages does not execute .htaccess.
+          def homepage(s):
+              if '<link rel="canonical"' not in s:
+                  anchor=re.search(r'(<meta name="description"[^>]*>\s*)',s)
+                  if not anchor:
+                      raise SystemExit('Homepage meta description anchor not found')
+                  pos=anchor.end()
+                  s=s[:pos]+'<link rel="canonical" href="https://ohrana.tech/">\n'+s[pos:]
+              return s
+          rw('index.html',homepage)
+
+          # 2. Company-specific terminology only. Do not rewrite generic SEO articles comparing ЧОП/ЧОО.
+          exact_replacements={
+              'ООО ЧОП «Рускорпорация»':'ООО ЧОО «Рускорпорация»',
+              'ЧОП «Рускорпорация»':'ЧОО «Рускорпорация»',
+              'Лицензированное частное охранное предприятие':'Лицензированная частная охранная организация',
+              'лицензированное частное охранное предприятие':'лицензированная частная охранная организация',
+              'Лицензированный ЧОП — профессиональная охрана':'Лицензированное ЧОО — профессиональная охрана',
+              'Лицензированный ЧОП —':'Лицензированное ЧОО —',
+              'копию лицензии ЧОП':'копию лицензии ЧОО',
+              'При инциденте отвечает ЧОП':'При инциденте отвечает ЧОО',
+              'ущерб компенсирует ЧОП как организация':'ущерб компенсирует ЧОО как организация',
+          }
+          for p in Path('.').rglob('*.html'):
+              if '.git' in p.parts:
+                  continue
+              s=p.read_text(encoding='utf-8')
+              n=s
+              for a,b in exact_replacements.items():
+                  n=n.replace(a,b)
+              if n!=s:
+                  p.write_text(n,encoding='utf-8')
+                  changed.add(str(p))
+
+          # 3. Commercial factual consistency for event pages.
+          rw('ohrana-meropriyatiy/index.html',lambda s:s.replace('5000+ мероприятий','18 лет опыта'))
+          def event_moscow(s):
+              s=s.replace('<div class="stat"><b>20 лет</b><span>опыта в охране</span></div>',
+                          '<div class="stat"><b>18 лет</b><span>опыта в охране</span></div>')
+              s=s.replace('<div class="stat"><b>8 000+</b><span>охраняемых объектов</span></div>',
+                          '<div class="stat"><b>5 000+</b><span>охраняемых объектов</span></div>')
+              return s
+          rw('ohrana-meropriyatiy-v-moskve/index.html',event_moscow)
+
+          # 4. Static redirect stubs for GitHub Pages. These replace Apache-only .htaccess redirects.
+          redirects={
+              'kompleksnaja-ohrana/index.html':'/stati/kompleksnaya-ohrana.html',
+              'stati/nochnaya-ohrana.html':'/stati/nochnaya-ohrana-obektov.html',
+              'stati/ohrana-meropriyatiy-v-moskve.html':'/ohrana-meropriyatiy-v-moskve/',
+              'soprovozhdenie-gruzov/index.html':'/stati/soprovozhdenie-gruzov.html',
+              'stati/ohrana-restoranov.html':'/ohrana-restoranov/',
+              'stati/ohrana-restoranov/index.html':'/ohrana-restoranov/',
+              'stati/ohrana-yuvelirnyh-magazinov/index.html':'/stati/ohrana-uvelirnyh-magazinov.html',
+              'stati/ohrana-yuvelirnyh-magazinov.html':'/stati/ohrana-uvelirnyh-magazinov.html',
+              'stati/ohrana-uvelirnyh-magazinov/index.html':'/stati/ohrana-uvelirnyh-magazinov.html',
+              'uslugi/ohrana-skladov/index.html':'/ohrana-skladov/',
+              'uslugi/ohrana-magazinov/index.html':'/ohrana-magazinov/',
+              'uslugi/ohrana-ofisov/index.html':'/ohrana-ofisov/',
+              'uslugi/ohrana-torgovyh-centrov/index.html':'/ohrana-torgovyh-centrov/',
+              'uslugi/ohrana-biznes-centrov/index.html':'/ohrana-biznes-centrov/',
+              'uslugi/ohrana-gostinic/index.html':'/ohrana-gostinic/',
+              'uslugi/ohrana-avtosalonov/index.html':'/ohrana-avtosalonov/',
+              'uslugi/ohrana-restoranov/index.html':'/ohrana-restoranov/',
+              'uslugi/ohrana-parkovok/index.html':'/ohrana-parkovok/',
+              'uslugi/ohrana-stroitelnyh-obektov/index.html':'/ohrana-stroitelnyh-obektov/',
+          }
+          tpl='''<!doctype html>\n<html lang="ru"><head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>Страница перемещена — ЧОО «Рускорпорация»</title>\n<link rel="canonical" href="https://ohrana.tech{target}">\n<meta http-equiv="refresh" content="0; url={target}">\n<script>location.replace({js_target});</script>\n</head><body>\n<p>Страница перемещена: <a href="{target}">перейти на актуальную страницу</a>.</p>\n</body></html>\n'''
+          import json
+          for path,target in redirects.items():
+              p=Path(path); p.parent.mkdir(parents=True,exist_ok=True)
+              content=tpl.format(target=html.escape(target,quote=True),js_target=json.dumps(target,ensure_ascii=False))
+              old=p.read_text(encoding='utf-8') if p.exists() else None
+              if old!=content:
+                  p.write_text(content,encoding='utf-8')
+                  changed.add(path)
+
+          # 5. Sitemap sanity + refresh touched canonical pages.
+          sp=Path('sitemap.xml')
+          s=sp.read_text(encoding='utf-8')
+          for url in [
+              'https://ohrana.tech/',
+              'https://ohrana.tech/ohrana-meropriyatiy/',
+              'https://ohrana.tech/ohrana-meropriyatiy-v-moskve/',
+          ]:
+              pat=re.compile(r'(<url><loc>'+re.escape(url)+r'</loc><lastmod>)([^<]+)(</lastmod></url>)')
+              s=pat.sub(r'\g<1>2026-09-30\g<3>',s)
+          sp.write_text(s,encoding='utf-8')
+          ET.parse(sp)
+          locs=re.findall(r'<loc>(.*?)</loc>',s)
+          if len(locs)!=len(set(locs)):
+              dup=[x for x in set(locs) if locs.count(x)>1]
+              raise SystemExit('Duplicate sitemap URLs: '+repr(dup))
+
+          # 6. Critical checks.
+          home=Path('index.html').read_text(encoding='utf-8')
+          assert '<link rel="canonical" href="https://ohrana.tech/">' in home
+          assert 'ГБР 5–10' not in home and 'ГБР 5-10' not in home
+          ev=Path('ohrana-meropriyatiy/index.html').read_text(encoding='utf-8')
+          assert '5000+ мероприятий' not in ev
+          assert 'от 4 000 ₽/час' in ev
+          assert 'ГБР 10–15 мин' in ev
+          em=Path('ohrana-meropriyatiy-v-moskve/index.html').read_text(encoding='utf-8')
+          assert '<b>18 лет</b>' in em and '<b>5 000+</b>' in em
+
+          print('SEO_RECOVERY_CHANGED:')
+          for f in sorted(changed): print(' -',f)
+          print('SITEMAP_URLS:',len(locs))
+          print('LEGACY_STUBS:',len(redirects))
+          PY
+
+      - name: Commit and remove one-off workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/seo-recovery-20260930.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git commit -m "SEO recovery: canonical and legacy URL handling"
+          git push
