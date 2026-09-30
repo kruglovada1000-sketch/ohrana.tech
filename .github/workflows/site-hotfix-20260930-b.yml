@@ -1,0 +1,198 @@
+name: Site hotfix second pass 2026-09-30
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/site-hotfix-20260930-b.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  hotfix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Apply second-pass consistency fixes
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          changed = set()
+
+          def read(path):
+              return Path(path).read_text(encoding='utf-8')
+
+          def write(path, new):
+              p = Path(path)
+              old = p.read_text(encoding='utf-8')
+              if new != old:
+                  p.write_text(new, encoding='utf-8')
+                  changed.add(path)
+
+          # Company standard: GБР arrival is up to 10–15 minutes.
+          key_pages = [
+              'index.html',
+              'fizicheskaya-ohrana/index.html',
+              'ohrana-pult/index.html',
+              'ohrana-meropriyatiy/index.html',
+              'ohrana-meropriyatiy-v-moskve/index.html',
+          ]
+          for path in key_pages:
+              if not Path(path).exists():
+                  continue
+              s = read(path)
+              out = s.replace('5–10', '10–15').replace('5-10', '10-15')
+              write(path, out)
+
+          # Main page: official terminology and event hourly rate.
+          path = 'index.html'
+          s = read(path)
+          out = s
+          out = out.replace('Лицензированное частное охранное предприятие', 'Лицензированная частная охранная организация')
+          out = out.replace('лицензированное частное охранное предприятие', 'лицензированная частная охранная организация')
+          out = out.replace("['Охрана мероприятий','35 000 ₽','event','/ohrana-meropriyatiy/']", "['Охрана мероприятий','4 000 ₽/час','event','/ohrana-meropriyatiy/']")
+          out = out.replace('ГБР 5–10 мин', 'ГБР 10–15 мин').replace('ГБР 5-10 мин', 'ГБР 10-15 мин')
+          write(path, out)
+
+          # Event landing: 4,000 RUB/hour per guard everywhere, no legacy tiers in price output.
+          path = 'ohrana-meropriyatiy/index.html'
+          s = read(path)
+          out = s
+          out = out.replace('копию лицензии ЧОП', 'копию лицензии ЧОО')
+          out = out.replace('от 8 000 ₽/смена', 'от 4 000 ₽/час')
+          out = out.replace('от 14 000 ₽/смена', 'от 4 000 ₽/час')
+          out = out.replace('от 25 000 ₽/смена', 'от 4 000 ₽/час')
+          out = out.replace('от 8 000 ₽<span> / смена (4 ч)</span>', 'от 4 000 ₽<span> / час за 1 охранника</span>')
+          out = out.replace('от 14 000 ₽<span> / смена (4 ч)</span>', 'от 4 000 ₽<span> / час за 1 охранника</span>')
+          out = out.replace('от 25 000 ₽<span> / смена (4 ч)</span>', 'от 4 000 ₽<span> / час за 1 охранника</span>')
+          out = out.replace('Тарифы от 8 000 ₽ за смену (4 часа), минимальный заказ — 4 часа.', 'Стоимость от 4 000 ₽ в час за 1 охранника, минимальный заказ — 4 часа.')
+          for old in ('8000','14000','25000'):
+              out = out.replace(f'"minPrice":"{old}","priceCurrency":"RUB","unitText":"смена 4 часа"', '"minPrice":"4000","priceCurrency":"RUB","unitText":"час за 1 охранника"')
+          write(path, out)
+
+          # Calculator must match the commercial rate.
+          path = 'js/ohrana-meropriyatiy.js'
+          s = read(path)
+          out = re.sub(r'var rates=\{standard:\d+,premium:\d+,vip:\d+\};', 'var rates={standard:4000,premium:4000,vip:4000};', s)
+          write(path, out)
+
+          # Physical-security page should not carry the old event package price.
+          path = 'fizicheskaya-ohrana/index.html'
+          s = read(path)
+          out = s.replace('"minPrice":"35000","priceCurrency":"RUB","unitText":"событие"', '"minPrice":"4000","priceCurrency":"RUB","unitText":"час за 1 охранника"')
+          out = out.replace('<div class="price-item"><span>Охрана мероприятия (до 100 человек)</span><b>от 35 000 ₽ /событие</b></div>', '<div class="price-item"><span>Охрана мероприятия</span><b>от 4 000 ₽ /час за 1 охранника</b></div>')
+          write(path, out)
+
+          # Moscow landing: same hourly pricing and official terminology.
+          path = 'ohrana-meropriyatiy-v-moskve/index.html'
+          s = read(path)
+          out = s.replace('"lowPrice":"25000"', '"lowPrice":"4000"')
+          out = out.replace('от 25 000 ₽ / событие', 'от 4 000 ₽ / час за 1 охранника')
+          out = out.replace('от 35 000 ₽ / событие', 'от 4 000 ₽ / час за 1 охранника')
+          out = out.replace('при инциденте отвечает ЧОП', 'при инциденте отвечает ЧОО')
+          write(path, out)
+
+          # Price catalog: hourly event rate in title/structured data/visible copy.
+          path = 'ceny/index.html'
+          s = read(path)
+          out = s.replace('Цены на услуги ЧОП', 'Цены на услуги ЧОО')
+          for old in ('8000','14000','25000'):
+              out = out.replace(f'"minPrice":"{old}","priceCurrency":"RUB","unitText":"4 часа"', '"minPrice":"4000","priceCurrency":"RUB","unitText":"час за 1 охранника"')
+          out = out.replace('от 8 000 ₽/4 часа', 'от 4 000 ₽/час за 1 охранника')
+          write(path, out)
+
+          # Yandex services feed: keep event offer in sync.
+          path = 'yandex-services.yml'
+          s = read(path)
+          out = s
+          out = re.sub(r'<yml_catalog date="[^"]+">', '<yml_catalog date="2026-09-30 13:00">', out, count=1)
+          # Narrowly change the event-security offer only.
+          m = re.search(r'(<offer[^>]*>.*?<set-ids>event-security</set-ids>.*?</offer>)', out, flags=re.S)
+          if m:
+              block = m.group(1)
+              block2 = re.sub(r'<price(?: from="true")?>\d+</price>', '<price from="true">4000</price>', block, count=1)
+              block2 = re.sub(r'<sales_notes>.*?</sales_notes>', '<sales_notes>Цена от 4 000 ₽ в час за 1 охранника</sales_notes>', block2, count=1, flags=re.S)
+              out = out[:m.start(1)] + block2 + out[m.end(1):]
+          write(path, out)
+
+          # SEO safety: counters with a numeric data-value/data-count must expose their final value in HTML,
+          # not zero that only JavaScript later replaces.
+          for p in Path('.').rglob('*.html'):
+              if '.git' in p.parts:
+                  continue
+              s = p.read_text(encoding='utf-8')
+              def repl(m):
+                  attrs = m.group('attrs')
+                  val = m.group('val')
+                  suffix_m = re.search(r'data-suffix="([^"]*)"', attrs)
+                  suffix = suffix_m.group(1) if suffix_m else ''
+                  shown = f'{int(val):,}'.replace(',', ' ') + suffix
+                  return '<b' + attrs + '>' + shown + '</b>'
+              out = re.sub(r'<b(?P<attrs>[^>]*data-(?:value|count)="(?P<val>\d+)"[^>]*)>\s*0\s*</b>', repl, s)
+              if out != s:
+                  p.write_text(out, encoding='utf-8')
+                  changed.add(str(p))
+
+          # Refresh sitemap lastmod for the commercial pages touched here.
+          path = 'sitemap.xml'
+          if Path(path).exists():
+              s = read(path)
+              out = s
+              urls = [
+                  'https://ohrana.tech/',
+                  'https://ohrana.tech/fizicheskaya-ohrana/',
+                  'https://ohrana.tech/ohrana-pult/',
+                  'https://ohrana.tech/ohrana-meropriyatiy/',
+                  'https://ohrana.tech/ohrana-meropriyatiy-v-moskve/',
+                  'https://ohrana.tech/ceny/',
+              ]
+              for url in urls:
+                  pat = re.compile(r'(<url><loc>'+re.escape(url)+r'</loc><lastmod>)([^<]+)(</lastmod></url>)')
+                  out = pat.sub(r'\g<1>2026-09-30\g<3>', out)
+              write(path, out)
+
+          # Verification: no obsolete response time on the five key commercial pages.
+          for path in key_pages:
+              t = read(path)
+              if '5–10' in t or '5-10' in t:
+                  raise SystemExit(f'Obsolete GБР timing remains in {path}')
+
+          checks = {
+              'index.html': ['10–15', '4 000 ₽/час', 'частная охранная организация'],
+              'ohrana-meropriyatiy/index.html': ['4 000 ₽/час', '10–15'],
+              'js/ohrana-meropriyatiy.js': ['standard:4000,premium:4000,vip:4000'],
+              'ceny/index.html': ['4 000 ₽/час за 1 охранника'],
+              'yandex-services.yml': ['Цена от 4 000 ₽ в час за 1 охранника'],
+          }
+          for path, needles in checks.items():
+              t = read(path)
+              for needle in needles:
+                  if needle not in t:
+                      raise SystemExit(f'Missing {needle!r} in {path}')
+
+          print('SECOND_PASS_CHANGED_FILES:')
+          for p in sorted(changed):
+              print(' -', p)
+          PY
+
+      - name: Commit fixes and remove one-off workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/site-hotfix-20260930-b.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git commit -m "Second pass: normalize GБР timing and event pricing"
+          git push
