@@ -126,3 +126,61 @@
     padding-right:11px!important;
   }
 }
+
+/* ============================================================
+   DESKTOP READABILITY PASS — 2026-10-01
+   Larger body copy and accordion text without touching mobile.
+   ============================================================ */
+@media(min-width:961px){
+  body{font-size:17px}
+
+  /* Introductory and section copy */
+  .hero .lead,
+  .sec-head p{
+    font-size:1.08rem!important;
+    line-height:1.78!important;
+  }
+
+  /* Accordions used by Articles, Contacts/FAQ and other sections */
+  .accordion-header,
+  .faq-q,
+  .faq-question,
+  .acc-q,
+  details>summary{
+    font-size:1.12rem!important;
+    line-height:1.5!important;
+  }
+
+  .accordion-trailer,
+  .accordion-content p,
+  .accordion-content li,
+  .faq-a p,
+  .faq-a li,
+  .faq-answer p,
+  .faq-answer li,
+  .acc-a p,
+  .acc-a li,
+  details>div p,
+  details>div li{
+    font-size:1.04rem!important;
+    line-height:1.78!important;
+  }
+
+  /* Search/filter text on the articles page */
+  .search-input-wrap input{font-size:1.05rem!important}
+  .cat-btn,.search-count{font-size:.90rem!important}
+
+  /* Frequently used informational blocks */
+  .contact-card p,.contact-card li,
+  .info-box p,.info-box li,
+  .quick-item,.qi-txt{
+    font-size:1rem!important;
+    line-height:1.7!important;
+  }
+
+  /* Small utility copy that was especially tiny on desktop */
+  .breadcrumbs{font-size:.88rem!important}
+  .ft-grid a,.ft-grid li,.ft-about p{font-size:.94rem!important}
+  .ft-legal p,.ft-legal li{font-size:.86rem!important}
+  .ft-bottom{font-size:.80rem!important}
+}
