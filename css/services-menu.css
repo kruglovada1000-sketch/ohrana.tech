@@ -128,27 +128,46 @@
 }
 
 /* ============================================================
-   DESKTOP READABILITY PASS — 2026-10-01
-   Larger body copy and accordion text without touching mobile.
+   READABILITY PASS V2 — 2026-10-01
+   High-contrast dark theme + clearly larger desktop typography.
    ============================================================ */
-@media(min-width:961px){
-  body{font-size:17px}
+:root:not([data-theme="light"]){
+  --ink:#FFFDF7!important;
+  --mut:#D4D7DE!important;
+}
+:root:not([data-theme="light"]) main :where(
+  p,li,.lead,.accordion-trailer,.faq-a p,.faq-a li,.faq-answer p,.faq-answer li,
+  .acc-a p,.acc-a li,.comp-desc,.contact-card p,.contact-card li,.info-box p,.info-box li,
+  .quick-item,.qi-txt,.search-count,.no-results p,.cta-band p
+){color:#D4D7DE!important}
+:root:not([data-theme="light"]) main :where(
+  .accordion-header,.faq-q,.faq-question,.acc-q,details>summary
+){color:#FFFDF7!important}
+:root:not([data-theme="light"]) .breadcrumbs,
+:root:not([data-theme="light"]) .ft-grid a,
+:root:not([data-theme="light"]) .ft-grid li,
+:root:not([data-theme="light"]) .ft-about p,
+:root:not([data-theme="light"]) .ft-legal p,
+:root:not([data-theme="light"]) .ft-legal li,
+:root:not([data-theme="light"]) .ft-bottom{color:#C8CCD4!important}
 
-  /* Introductory and section copy */
+@media(min-width:961px){
+  body{font-size:18px!important}
+
   .hero .lead,
   .sec-head p{
-    font-size:1.08rem!important;
-    line-height:1.78!important;
+    font-size:19px!important;
+    line-height:1.8!important;
   }
 
-  /* Accordions used by Articles, Contacts/FAQ and other sections */
   .accordion-header,
   .faq-q,
   .faq-question,
   .acc-q,
   details>summary{
-    font-size:1.12rem!important;
+    font-size:20px!important;
     line-height:1.5!important;
+    font-weight:700!important;
   }
 
   .accordion-trailer,
@@ -162,25 +181,30 @@
   .acc-a li,
   details>div p,
   details>div li{
-    font-size:1.04rem!important;
-    line-height:1.78!important;
+    font-size:18px!important;
+    line-height:1.8!important;
   }
 
-  /* Search/filter text on the articles page */
-  .search-input-wrap input{font-size:1.05rem!important}
-  .cat-btn,.search-count{font-size:.90rem!important}
+  main :where(.content,.article-body,.a-body,.doc-body,.service-content,.text-content) :where(p,li){
+    font-size:18px!important;
+    line-height:1.8!important;
+  }
 
-  /* Frequently used informational blocks */
+  .search-input-wrap input{font-size:17px!important}
+  .cat-btn,.search-count{font-size:15px!important}
+  .accordion-content .acc-cat{font-size:13px!important}
+  .accordion-header .acc-date{font-size:14px!important;color:var(--gold)!important}
+
   .contact-card p,.contact-card li,
   .info-box p,.info-box li,
-  .quick-item,.qi-txt{
-    font-size:1rem!important;
-    line-height:1.7!important;
+  .quick-item,.qi-txt,
+  .comp-desc,.feature-card p,.service-card p{
+    font-size:17px!important;
+    line-height:1.75!important;
   }
 
-  /* Small utility copy that was especially tiny on desktop */
-  .breadcrumbs{font-size:.88rem!important}
-  .ft-grid a,.ft-grid li,.ft-about p{font-size:.94rem!important}
-  .ft-legal p,.ft-legal li{font-size:.86rem!important}
-  .ft-bottom{font-size:.80rem!important}
+  .breadcrumbs{font-size:15px!important}
+  .ft-grid a,.ft-grid li,.ft-about p{font-size:15px!important}
+  .ft-legal p,.ft-legal li{font-size:14px!important}
+  .ft-bottom{font-size:13px!important}
 }
