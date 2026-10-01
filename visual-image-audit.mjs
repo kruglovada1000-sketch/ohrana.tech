@@ -67,6 +67,21 @@ await context.route('**/*', async route => {
 const findings = [];
 const intentionalCrops = [];
 const pageErrors = [];
+const readability = [];
+const readingBlocks = new Map([
+  ['/', '.faq-list'],
+  ['/kontakty/', '.faq-list'],
+  ['/ohrana-moskovskaya-oblast/', '.faq-list'],
+  ['/stati/', '.accordion-item'],
+  ['/stati/kak-vybrat-chop-dlya-ohrany-obekta.html', '.article-body']
+]);
+async function readingSizes(page) {
+  return page.locator('main .faq-q,main .faq-a p,main .accordion-header,main .accordion-trailer,main .article-body p').evaluateAll(nodes => nodes.slice(0,8).map(el => ({
+    element: el.className || el.tagName,
+    fontSize: getComputedStyle(el).fontSize,
+    lineHeight: getComputedStyle(el).lineHeight
+  })));
+}
 let shotCount = 0;
 
 for (const file of files) {
@@ -140,6 +155,18 @@ for (const file of files) {
         }
       }
     }
+    // Save representative desktop reading blocks alongside the image report.
+    if (route === resolvedRoute && readingBlocks.has(route)) {
+      const block = page.locator(readingBlocks.get(route)).first();
+      if (route === '/stati/') await block.locator('.accordion-header').click();
+      const desktop = await readingSizes(page);
+      for (const theme of ['dark', 'light']) {
+        if (await page.locator('html').getAttribute('data-theme') !== theme) await page.locator('#themeToggle').click();
+        await block.screenshot({ path: path.join(OUT, `reading-${safeName(route)}-${theme}.png`), animations: 'disabled' });
+      }
+      await page.setViewportSize({ width: 390, height: 844 });
+      readability.push({ route, desktop, phone: await readingSizes(page) });
+    }
   } catch (error) {
     pageErrors.push({ route, error: String(error && error.message ? error.message : error) });
   } finally {
@@ -160,6 +187,7 @@ const json = {
   pageErrors
 };
 fs.writeFileSync(path.join(OUT, 'image-crop-report.json'), JSON.stringify(json, null, 2));
+fs.writeFileSync(path.join(OUT, 'reading-sizes.json'), JSON.stringify(readability, null, 2));
 
 const md = [];
 md.push('# Visual image crop audit');
