@@ -156,3 +156,41 @@ html[data-theme="light"] .theme-yinyang{
 @media(max-width:640px){
   .site-header .hd-right>.hd-phone{font-size:.72rem;line-height:1.25;white-space:normal;max-width:104px;text-align:right}
 }
+
+/* Desktop reading sizes; phone layouts keep their existing type scale. */
+@media (min-width:1024px){
+  main{font-size:20px;line-height:1.7}
+  main p,main li,main dd{font-size:20px!important;line-height:1.75!important}
+  main .lead,main .service-lead,main .hero-desc{font-size:22px!important;line-height:1.65!important}
+
+  main .faq-q,main .accordion-header,main .faq summary,main details>summary{
+    font-size:22px!important;line-height:1.45!important;text-align:left;
+  }
+  main .faq-q,main .accordion-header{padding:22px 26px!important}
+  main .faq-q>span:first-child,main .accordion-header>span:first-child{min-width:0}
+  main .faq-a,main .faq-a-in,main .faq-answer,main .accordion-trailer{
+    font-size:20px!important;line-height:1.75!important;
+  }
+  main .accordion-buttons .btn,main .btn{font-size:18px!important;line-height:1.4!important}
+  main .acc-date,main .accordion-content .acc-cat,main .cat-btn,
+  main .search-count,main .breadcrumbs,main .article-meta,main .author span{
+    font-size:16px!important;line-height:1.5!important;
+  }
+
+  main .qi-txt b,main .quick-item b{font-size:20px!important;line-height:1.45!important}
+  main .qi-txt small,main .quick-item small,main .stat span{font-size:16px!important;line-height:1.6!important}
+  main form label,main form input:not([type="checkbox"]):not([type="radio"]),
+  main form select,main form textarea{font-size:18px!important;line-height:1.5!important}
+  main .form-note,main .form-privacy,main .form-agree,main .form-legal,
+  main .form-check,main .check-row,main .price-note,main .table-note,
+  main .image-caption,main .cta-legal,main .footnote{font-size:17px!important;line-height:1.65!important}
+  main .price-table th,main .price-table td,main table.prices th,main table.prices td{
+    font-size:18px!important;line-height:1.6!important;
+  }
+  main .card-face.back p,main .card-face.back li,main .face.back p,main .face.back li{
+    font-size:18px!important;line-height:1.6!important;
+  }
+  footer .ft-bottom,footer .ft-legal p,footer .ft-legal li,footer .ft-grid a,footer .ft-links a{
+    font-size:16px!important;line-height:1.65!important;
+  }
+}
