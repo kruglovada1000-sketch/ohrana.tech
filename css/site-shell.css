@@ -118,3 +118,66 @@ html[data-theme="light"] .theme-yinyang{
   nav.nav .wrap>a:first-child{padding-left:16px!important}
   nav.nav .wrap>a:first-child::after{left:16px!important;right:16px!important;bottom:6px!important;height:1px!important}
 }
+
+/* flip-card-readability-v1
+   Shared by the contract, physical-security and personal-security cards.
+   Both faces size the grid row, so larger text never needs a fixed-height box. */
+.flip-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.flip{height:auto;min-width:0}
+.flip .flip-in{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  min-height:19rem;
+}
+.flip .face{
+  position:relative;
+  inset:auto;
+  grid-area:1 / 1;
+  min-width:0;
+  padding:1.5rem;
+  gap:.75rem;
+  color:var(--ink);
+  overflow-wrap:anywhere;
+}
+.flip .face.front b{font-size:1.625rem;line-height:1.25}
+.flip .face.front small{
+  font-size:.875rem;
+  line-height:1.5;
+  letter-spacing:.03em;
+  color:var(--ink);
+}
+.flip .face.back p{
+  font-size:1.125rem;
+  line-height:1.65;
+  color:var(--ink)!important;
+}
+.flip .face.back .f-tag{
+  font-size:.875rem;
+  line-height:1.5;
+  letter-spacing:.08em;
+  margin-bottom:0;
+  color:var(--gold);
+}
+.flip .face.back :is(.f-note,.f-link){
+  font-size:1rem;
+  line-height:1.5;
+  letter-spacing:.01em;
+  color:var(--gold2);
+}
+.flip .face.back .f-link{align-self:flex-start;padding-top:.25rem}
+.flip .face.back p a{
+  color:var(--gold2);
+  text-decoration:underline;
+  text-underline-offset:.2em;
+}
+.flip :is(.f-ic,.f-top,.f-tag,small,.f-link,.f-note){flex-shrink:0}
+.flip :is(small,.f-link) svg{flex-shrink:0}
+@media(max-width:960px){
+  .flip-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:640px){
+  .flip-grid{grid-template-columns:minmax(0,1fr)}
+  .flip .flip-in{min-height:17rem}
+  .flip .face{padding:1.25rem}
+  .flip .face.back p{font-size:1rem}
+}
